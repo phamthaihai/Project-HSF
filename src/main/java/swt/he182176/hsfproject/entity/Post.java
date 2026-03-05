@@ -26,9 +26,9 @@ public class Post {
     @Column(name = "user_id")
     private User id;
 
-
-
     public Post() {
     }
+
+
 
 }
