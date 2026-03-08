@@ -23,7 +23,7 @@ public class User {
     private String phone;
 
     @ManyToOne
-    @Column(name="role_id")
+    @JoinColumn(name="role_id")
     private Role role;
 
     @Column(name = "status")

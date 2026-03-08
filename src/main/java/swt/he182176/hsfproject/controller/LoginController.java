@@ -32,6 +32,6 @@ public class LoginController {
 
         User user = userService.login(loginDTO);
 
-
+        return "";
     }
 }
