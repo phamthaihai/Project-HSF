@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>My Courses</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f5f7fb;
+            margin: 0;
+            padding: 30px;
+        }
+
+        .container {
+            width: 1100px;
+            margin: 0 auto;
+        }
+
+        .title {
+            font-size: 32px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        .err {
+            color: red;
+            background: #fff;
+            border: 1px solid #ddd;
+            padding: 14px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .note {
+            color: #444;
+            margin-bottom: 18px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 18px;
+        }
+
+        .card {
+            display: flex;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+
+        .thumb {
+            width: 220px;
+            height: 150px;
+            object-fit: cover;
+            background: #ddd;
+        }
+
+        .content {
+            flex: 1;
+            padding: 14px;
+        }
+
+        .course-title {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .meta {
+            color: #555;
+            font-size: 14px;
+            margin-bottom: 6px;
+        }
+
+        .desc {
+            font-size: 14px;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .empty {
+            background: white;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 8px 14px;
+            border: 1px solid #777;
+            border-radius: 6px;
+            background: #f2f2f2;
+            text-decoration: none;
+            color: black;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="title">My Courses</div>
+
+    <div th:if="${err}" class="err" th:text="${err}"></div>
+
+    <div class="note" th:if="${testUserId != null}">
+        Testing with userId = <strong th:text="${testUserId}"></strong>
+    </div>
+
+    <div th:if="${#lists.isEmpty(courses)}" class="empty">
+        No approved courses found.
+    </div>
+
+    <div class="grid" th:if="${!#lists.isEmpty(courses)}">
+        <div class="card" th:each="c : ${courses}">
+            <img class="thumb"
+                 th:src="${c.thumbnailUrl != null and !#strings.isEmpty(c.thumbnailUrl) ? c.thumbnailUrl : 'https://via.placeholder.com/300x180?text=My+Course'}"
+                 alt="thumbnail">
+
+            <div class="content">
+                <div class="course-title" th:text="${c.title}"></div>
+
+                <div class="meta">
+                    Level:
+                    <span th:text="${c.level}"></span>
+                </div>
+
+                <div class="meta">
+                    Duration:
+                    <span th:text="${c.duration}"></span> hours
+                </div>
+
+                <div class="desc" th:text="${c.description}"></div>
+
+                <a href="#" class="btn">Start Learning</a>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

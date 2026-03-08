@@ -15,7 +15,6 @@ import swt.he182176.hsfproject.service.UserService;
 
 @Controller
 public class LoginController {
-
     @Autowired
     private UserService userService;
 
