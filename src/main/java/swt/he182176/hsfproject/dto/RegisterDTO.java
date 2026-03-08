@@ -1,9 +1,6 @@
 package swt.he182176.hsfproject.dto;
 
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 
 public class RegisterDTO {
     @NotBlank(message = "Fullname is required")
@@ -17,39 +14,32 @@ public class RegisterDTO {
     @Pattern(regexp = "^[0-9]{10}$", message = "Phone must be 10 digits")
     private String phone;
 
-    @NotBlank(message = "Password is reuqired")
+    @NotBlank(message = "Password is required")
     @Size(min = 7, message = "Password must be greater than 6 characters")
     private String password;
 
-    public @NotBlank(message = "Fullname is required") String getFullname() {
-        return fullname;
+    @NotBlank(message = "Confirm password is required")
+    private String confirmPassword;
+
+    @AssertTrue(message = "Confirm password does not match")
+    public boolean isPasswordMatch() {
+        if (password == null || confirmPassword == null) return false;
+        return password.equals(confirmPassword);
     }
 
-    public void setFullname(@NotBlank(message = "Fullname is required") String fullname) {
-        this.fullname = fullname;
-    }
+    // getters/setters
+    public String getFullname() { return fullname; }
+    public void setFullname(String fullname) { this.fullname = fullname; }
 
-    public @NotBlank(message = "Password is reuqired") @Size(min = 7, message = "Password must be greater than 6 characters") String getPassword() {
-        return password;
-    }
+    public String getEmail() { return email; }
+    public void setEmail(String email) { this.email = email; }
 
-    public void setPassword(@NotBlank(message = "Password is reuqired") @Size(min = 7, message = "Password must be greater than 6 characters") String password) {
-        this.password = password;
-    }
+    public String getPhone() { return phone; }
+    public void setPhone(String phone) { this.phone = phone; }
 
-    public @NotBlank(message = "Email is required") @Email(message = "Invalid email format") String getEmail() {
-        return email;
-    }
+    public String getPassword() { return password; }
+    public void setPassword(String password) { this.password = password; }
 
-    public void setEmail(@NotBlank(message = "Email is required") @Email(message = "Invalid email format") String email) {
-        this.email = email;
-    }
-
-    public @NotBlank(message = "Phone is required") @Pattern(regexp = "^[0-9]{10}$", message = "Phone must be 10 digits") String getPhone() {
-        return phone;
-    }
-
-    public void setPhone(@NotBlank(message = "Phone is required") @Pattern(regexp = "^[0-9]{10}$", message = "Phone must be 10 digits") String phone) {
-        this.phone = phone;
-    }
+    public String getConfirmPassword() { return confirmPassword; }
+    public void setConfirmPassword(String confirmPassword) { this.confirmPassword = confirmPassword; }
 }

@@ -21,23 +21,26 @@ public class ChangePasswordController {
                                  Model model, HttpSession session) {
         User user = (User)session.getAttribute("user");
 
-        if(user==null){
-            return "redirect:/login";
-        }
-
-        if(!user.getPassword().equals(oldPassword)){
-            model.addAttribute("errol", "Wrong password");
+        // kiểm tra mật khẩu cũ
+        if (!userService.matchesPassword(oldPassword, user.getPasswordHash())) {
+            model.addAttribute("error", "Wrong old password");
             return "change-password";
         }
 
-        if(!user.getPassword().equals(confirmPassword)){
-            model.addAttribute("errol", "Wrong confirm password");
+        // kiểm tra confirm password
+        if (!newPassword.equals(confirmPassword)) {
+            model.addAttribute("error", "Confirm password does not match");
             return "change-password";
         }
 
-        user.setPassword(newPassword);
+        // cập nhật password mới
+        user.setPasswordHash(userService.encodePassword(newPassword));
         userService.save(user);
-        model.addAttribute("message","Change Password Successful!");
+
+        // cập nhật lại session
+        session.setAttribute("user", user);
+
+        model.addAttribute("message", "Change password successful!");
         return "change-password";
     }
 }

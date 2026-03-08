@@ -13,26 +13,22 @@ public class Datarole {
     @Bean
     CommandLineRunner initRoles(RoleRepository roleRepository) {
         return args -> {
-
-            if (roleRepository.findByName("ADMIN") == null) {
-                Role admin = new Role();
-                admin.setName("ADMIN");
-                roleRepository.save(admin);
-            }
-
-            if (roleRepository.findByName("MANAGER") == null) {
-                Role manager = new Role();
-                manager.setName("MANAGER");
-                roleRepository.save(manager);
-            }
-
-            if (roleRepository.findByName("MEMBER") == null) {
-                Role member = new Role();
-                member.setName("MEMBER");
-                roleRepository.save(member);
-            }
+            seed(roleRepository, "ADMIN");
+            seed(roleRepository, "MANAGER");
+            seed(roleRepository, "MEMBER");
+            seed(roleRepository, "MARKETING"); // theo spec có marketing
 
             System.out.println("Roles update successfully!");
         };
+    }
+
+
+    private void seed(RoleRepository repo, String name) {
+        if (repo.findByName(name).isEmpty()) {
+            Role r = new Role();
+            r.setName(name);
+            r.setStatus(true);
+            repo.save(r);
+        }
     }
 }

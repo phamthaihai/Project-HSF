@@ -15,6 +15,7 @@ import swt.he182176.hsfproject.service.UserService;
 
 @Controller
 public class LoginController {
+
     @Autowired
     private UserService userService;
 
@@ -25,13 +26,23 @@ public class LoginController {
     }
 
     @PostMapping("/login")
-    public String loginUser(@Valid @ModelAttribute("loginDTO") LoginDTO loginDTO, BindingResult result, Model model, HttpSession session) {
+    public String loginUser(@Valid @ModelAttribute("loginDTO") LoginDTO loginDTO,
+                            BindingResult result,
+                            Model model,
+                            HttpSession session) {
         if (result.hasErrors()) {
             return "login";
         }
 
         User user = userService.login(loginDTO);
 
+        if (user == null) {
+            model.addAttribute("error", "Invalid email or password, or account is not verified/active");
+            return "login";
+        }
 
+        session.setAttribute("user", user);
+
+        return "redirect:/";
     }
 }
