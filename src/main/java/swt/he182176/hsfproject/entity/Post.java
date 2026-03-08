@@ -2,6 +2,8 @@ package swt.he182176.hsfproject.entity;
 
 import jakarta.persistence.*;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Table(name = "Post")
 public class Post {
@@ -11,22 +13,46 @@ public class Post {
     private int postId;
 
     @Column(name = "name", nullable = false)
-    private String name;
+    private String name; // title
 
     @Column(name = "type")
-    private String type;
+    private String type; // category
 
     @Column(name = "content", columnDefinition = "NVARCHAR(MAX)")
     private String content;
 
-    @Column(name = "description")
+    @Column(name = "description", length = 1000)
     private String description;
 
-    @ManyToOne
+    @Column(name = "status", length = 20)
+    private String status; // Draft / Published / Hidden
+
+    @Column(name = "created_at")
+    private LocalDateTime createdAt;
+
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
+
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
     public Post() {
+    }
+
+    @PrePersist
+    public void prePersist() {
+        LocalDateTime now = LocalDateTime.now();
+        this.createdAt = now;
+        this.updatedAt = now;
+        if (this.status == null || this.status.isBlank()) {
+            this.status = "Draft";
+        }
+    }
+
+    @PreUpdate
+    public void preUpdate() {
+        this.updatedAt = LocalDateTime.now();
     }
 
     public int getPostId() {
@@ -67,6 +93,30 @@ public class Post {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
     }
 
     public User getUser() {

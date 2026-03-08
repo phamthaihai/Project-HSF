@@ -7,9 +7,13 @@ import swt.he182176.hsfproject.entity.User;
 import java.util.Optional;
 
 @Repository
-public interface UserRepository extends JpaRepository<User,Integer> {
+public interface UserRepository extends JpaRepository<User, Integer> {
+
     Optional<User> findByEmail(String email);
-    Boolean existsByEmail(String email);
+
+    boolean existsByEmail(String email);
+
+    boolean existsByEmailAndIdNot(String email, Integer id);
 
     Optional<User> findByVerifyToken(String verifyToken);
 }

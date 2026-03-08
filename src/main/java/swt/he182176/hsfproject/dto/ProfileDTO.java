@@ -1,44 +1,38 @@
 package swt.he182176.hsfproject.dto;
 
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+
 public class ProfileDTO {
-    private String userName;
-    private String url_img;
+
+    @NotBlank(message = "Full name is required")
+    @Size(max = 100, message = "Full name must be <= 100 characters")
+    private String fullName;
+
+    @NotBlank(message = "Email is required")
+    @Email(message = "Email is invalid")
     private String email;
+
+    @NotBlank(message = "Phone is required")
+    @Size(max = 20, message = "Phone must be <= 20 characters")
     private String phone;
-    private boolean active;
+
     public ProfileDTO() {
     }
 
-    public ProfileDTO(String userName, String url_img, String phone, String email, boolean active) {
-        this.userName = userName;
-        this.url_img = url_img;
-        this.phone = phone;
+    public ProfileDTO(String fullName, String email, String phone) {
+        this.fullName = fullName;
         this.email = email;
-        this.active = active;
-    }
-
-    public String getUserName() {
-        return userName;
-    }
-
-    public void setUserName(String userName) {
-        this.userName = userName;
-    }
-
-    public String getUrl_img() {
-        return url_img;
-    }
-
-    public void setUrl_img(String url_img) {
-        this.url_img = url_img;
-    }
-
-    public String getPhone() {
-        return phone;
-    }
-
-    public void setPhone(String phone) {
         this.phone = phone;
+    }
+
+    public String getFullName() {
+        return fullName;
+    }
+
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
     }
 
     public String getEmail() {
@@ -49,11 +43,11 @@ public class ProfileDTO {
         this.email = email;
     }
 
-    public boolean isActive() {
-        return active;
+    public String getPhone() {
+        return phone;
     }
 
-    public void setActive(boolean active) {
-        this.active = active;
+    public void setPhone(String phone) {
+        this.phone = phone;
     }
 }

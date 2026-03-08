@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Blog Details</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #f5f6fa; margin: 0; padding: 24px; }
+    .container { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; }
+    .left, .right { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,.08); }
+    .meta { color: #666; margin-bottom: 12px; }
+    .content { white-space: pre-wrap; line-height: 1.6; }
+    .related-item { padding: 12px 0; border-bottom: 1px solid #e5e7eb; }
+    .related-item:last-child { border-bottom: none; }
+    a { text-decoration: none; color: #2563eb; }
+  </style>
+</head>
+<body>
+<div class="container">
+  <div class="left">
+    <h1 th:text="${blog.name}"></h1>
+
+    <div class="meta">
+      Category: <span th:text="${blog.type}"></span>
+      |
+      Author: <span th:text="${blog.user != null ? blog.user.fullName : 'N/A'}"></span>
+      |
+      Updated: <span th:text="${blog.updatedAt}"></span>
+    </div>
+
+    <p><strong>Description:</strong></p>
+    <p th:text="${blog.description}"></p>
+
+    <hr>
+
+    <div class="content" th:text="${blog.content}"></div>
+  </div>
+
+  <div class="right">
+    <h3>Related Blogs</h3>
+
+    <div class="related-item"
+         th:each="r : ${relatedBlogs}"
+         th:if="${r.postId != blog.postId}">
+      <a th:href="@{'/blogs/' + ${r.postId}}" th:text="${r.name}"></a>
+    </div>
+  </div>
+</div>
+</body>
+</html>
