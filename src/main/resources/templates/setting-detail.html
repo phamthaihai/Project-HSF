@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Setting Details</title>
+  <style>
+    body {
+      font-family: "Times New Roman", serif;
+      background: #fff;
+      margin: 30px;
+    }
+
+    .container {
+      width: 720px;
+      margin: 0 auto;
+      border: 1px solid #333;
+      padding: 18px;
+      background: #f8f8f8;
+    }
+
+    .title {
+      font-size: 34px;
+      font-weight: bold;
+      margin-bottom: 16px;
+    }
+
+    .row {
+      display: flex;
+      gap: 20px;
+      margin-bottom: 12px;
+    }
+
+    .group {
+      flex: 1;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    input[type="text"], input[type="number"], select, textarea {
+      width: 100%;
+      border: 1px solid #999;
+      padding: 6px 8px;
+    }
+
+    textarea {
+      resize: vertical;
+    }
+
+    .radio-group {
+      display: flex;
+      gap: 16px;
+      align-items: center;
+      margin-top: 8px;
+    }
+
+    .error {
+      color: red;
+      font-size: 13px;
+      display: block;
+      margin-top: 4px;
+    }
+
+    .global-error {
+      color: red;
+      margin-bottom: 10px;
+    }
+
+    button {
+      margin-top: 12px;
+      width: 100px;
+      height: 34px;
+      border: 1px solid #999;
+      background: #eee;
+    }
+
+    a {
+      color: blue;
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <div class="title">Setting Details</div>
+
+  <div th:if="${err}" class="global-error" th:text="${err}"></div>
+
+  <form th:action="@{/settings/save}" th:object="${settingDTO}" method="post">
+    <input type="hidden" th:field="*{id}">
+
+    <div class="row">
+      <div class="group">
+        <label>Name*</label>
+        <input type="text" th:field="*{name}">
+        <small class="error" th:errors="*{name}"></small>
+      </div>
+
+      <div class="group">
+        <label>Type*</label>
+        <select th:field="*{typeId}">
+          <option value="">-- Select Type --</option>
+          <option th:each="t : ${types}" th:value="${t.id}" th:text="${t.name}"></option>
+        </select>
+        <small class="error" th:errors="*{typeId}"></small>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="group">
+        <label>Value</label>
+        <input type="text" th:field="*{value}">
+        <small class="error" th:errors="*{value}"></small>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="group">
+        <label>Priority*</label>
+        <input type="number" th:field="*{priority}">
+        <small class="error" th:errors="*{priority}"></small>
+      </div>
+
+      <div class="group">
+        <label>Status</label>
+        <div class="radio-group">
+          <label><input type="radio" th:field="*{status}" value="true"> Active</label>
+          <label><input type="radio" th:field="*{status}" value="false"> Inactive</label>
+        </div>
+        <small class="error" th:errors="*{status}"></small>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="group">
+        <label>Description</label>
+        <textarea rows="4" th:field="*{description}"></textarea>
+        <small class="error" th:errors="*{description}"></small>
+      </div>
+    </div>
+
+    <button type="submit">Submit</button>
+    &nbsp;
+    <a th:href="@{/settings}">Back to list</a>
+  </form>
+</div>
+</body>
+</html>

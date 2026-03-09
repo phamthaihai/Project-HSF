@@ -9,14 +9,14 @@ public class Role {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @Column(name = "name")
+    @Column(name = "name", nullable = false, unique = true, length = 30)
     private String name;
 
-    @Column(name="description")
+    @Column(name="description", length = 255)
     private String description;
 
-    @Column(name="status")
-    private Boolean status;
+    @Column(name="status", nullable = false)
+    private Boolean status = true;
 
     public Role() {}
 

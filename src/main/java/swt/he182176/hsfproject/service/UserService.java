@@ -1,63 +1,140 @@
 package swt.he182176.hsfproject.service;
 
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import swt.he182176.hsfproject.dto.LoginDTO;
+import swt.he182176.hsfproject.dto.ProfileDTO;
 import swt.he182176.hsfproject.dto.RegisterDTO;
 import swt.he182176.hsfproject.entity.Role;
 import swt.he182176.hsfproject.entity.User;
+import swt.he182176.hsfproject.entity.UserStatus;
 import swt.he182176.hsfproject.repository.RoleRepository;
 import swt.he182176.hsfproject.repository.UserRepository;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class UserService {
+
     @Autowired
     private UserRepository userRepository;
 
     @Autowired
     private RoleRepository roleRepository;
 
+    @Autowired
+    private BCryptPasswordEncoder encoder;
+
     public User login(LoginDTO loginDTO) {
         Optional<User> userOptional = userRepository.findByEmail(loginDTO.getEmail());
         if (userOptional.isEmpty()) {
             return null;
         }
+
         User user = userOptional.get();
 
-        if(!user.getPassword().equals(loginDTO.getPassword())) {
+        if (!encoder.matches(loginDTO.getPassword(), user.getPasswordHash())) {
             return null;
         }
 
-        if(!user.getStatus().equals("Active")) {
+        if (user.getStatus() != UserStatus.ACTIVE) {
             return null;
         }
+
         return user;
     }
 
     public User register(RegisterDTO registerDTO) {
-        if(userRepository.existsByEmail(registerDTO.getEmail())) {
+        if (userRepository.existsByEmail(registerDTO.getEmail())) {
             throw new RuntimeException("Email đã tồn tại");
         }
 
+        Role memberRole = roleRepository.findByName("MEMBER")
+                .orElseThrow(() -> new RuntimeException("Role MEMBER không tồn tại"));
+
         User user = new User();
         user.setEmail(registerDTO.getEmail());
-        user.setPassword(registerDTO.getPassword());
         user.setPhone(registerDTO.getPhone());
         user.setFullName(registerDTO.getFullname());
-        user.setStatus("ACTIVE");
-
-        Role memberRole = roleRepository.findByName("Member");
         user.setRole(memberRole);
+        user.setPasswordHash(encoder.encode(registerDTO.getPassword()));
+        user.setStatus(UserStatus.UNVERIFIED);
+        user.setEmailVerified(false);
+
+        String token = UUID.randomUUID().toString().replace("-", "");
+        user.setVerifyToken(token);
+        user.setVerifyTokenExpiresAt(LocalDateTime.now().plusMinutes(30));
 
         return userRepository.save(user);
+    }
+
+    @Transactional
+    public void verifyEmail(String token) {
+        User user = userRepository.findByVerifyToken(token)
+                .orElseThrow(() -> new RuntimeException("Token khong hop le"));
+
+        if (user.getVerifyTokenExpiresAt() == null || user.getVerifyTokenExpiresAt().isBefore(LocalDateTime.now())) {
+            throw new RuntimeException("Token đã hết hạn");
+        }
+
+        user.setEmailVerified(true);
+        user.setStatus(UserStatus.ACTIVE);
+        user.setVerifyToken(null);
+        user.setVerifyTokenExpiresAt(null);
+
+        userRepository.save(user);
     }
 
     public User save(User user) {
         return userRepository.save(user);
     }
 
+    public String encodePassword(String rawPassword) {
+        return encoder.encode(rawPassword);
+    }
+
+    public boolean matchesPassword(String rawPassword, String passwordHash) {
+        return encoder.matches(rawPassword, passwordHash);
+    }
+
+    public Optional<User> findById(Integer id) {
+        return userRepository.findById(id);
+    }
+
+    @Transactional
+    public User updateProfile(Integer userId, ProfileDTO dto) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        if (userRepository.existsByEmailAndIdNot(dto.getEmail(), userId)) {
+            throw new RuntimeException("Email already exists");
+        }
+
+        user.setFullName(dto.getFullName());
+        user.setEmail(dto.getEmail());
+        user.setPhone(dto.getPhone());
+
+        return userRepository.save(user);
+    }
+
+    @Transactional
+    public void changePassword(Integer userId, String oldPassword, String newPassword, String confirmPassword) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        if (!matchesPassword(oldPassword, user.getPasswordHash())) {
+            throw new RuntimeException("Wrong current password");
+        }
+
+        if (!newPassword.equals(confirmPassword)) {
+            throw new RuntimeException("Confirm password does not match");
+        }
+
+        user.setPasswordHash(encodePassword(newPassword));
+        userRepository.save(user);
+    }
 }
-
-
