@@ -4,7 +4,7 @@ import swt.he182176.hsfproject.entity.Course;
 
 import java.util.List;
 
-public interface CourseService {
+public interface CourseAdminService {
 
     List<Course> getAllCourses();
 

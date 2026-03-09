@@ -10,14 +10,14 @@ import swt.he182176.hsfproject.entity.Course;
 import swt.he182176.hsfproject.entity.User;
 import swt.he182176.hsfproject.repository.CategoryRepository;
 import swt.he182176.hsfproject.repository.UserRepository;
-import swt.he182176.hsfproject.service.CourseService;
+import swt.he182176.hsfproject.service.CourseAdminService;
 
 @Controller
 @RequestMapping("/courses")
-public class CourseController {
+public class CourseAdminController {
 
     @Autowired
-    CourseService courseService;
+    CourseAdminService courseService;
     @Autowired
     CategoryRepository categoryRepository;
     @Autowired

@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import swt.he182176.hsfproject.entity.Course;
 import swt.he182176.hsfproject.entity.User;
 import swt.he182176.hsfproject.repository.EnrollmentRepository;
-import swt.he182176.hsfproject.service.CourseService;
+import swt.he182176.hsfproject.service.CourseAdminService;
 
 import java.util.List;
 
@@ -15,10 +15,10 @@ import java.util.List;
 @Controller
 public class HomeController {
 
-    private final CourseService courseService;
+    private final CourseAdminService courseService;
     private final EnrollmentRepository enrollmentRepository;
 
-    public HomeController(CourseService courseService,
+    public HomeController(CourseAdminService courseService,
                           EnrollmentRepository enrollmentRepository) {
         this.courseService = courseService;
         this.enrollmentRepository = enrollmentRepository;

@@ -3,16 +3,16 @@ package swt.he182176.hsfproject.service.impl;
 import org.springframework.stereotype.Service;
 import swt.he182176.hsfproject.entity.Course;
 import swt.he182176.hsfproject.repository.CourseRepository;
-import swt.he182176.hsfproject.service.CourseService;
+import swt.he182176.hsfproject.service.CourseAdminService;
 
 import java.util.List;
 
 @Service
-public class CourseServiceImpl implements CourseService {
+public class CourseAdminServiceImpl implements CourseAdminService {
 
     private final CourseRepository courseRepository;
 
-    public CourseServiceImpl(CourseRepository courseRepository) {
+    public CourseAdminServiceImpl(CourseRepository courseRepository) {
         this.courseRepository = courseRepository;
     }
 
