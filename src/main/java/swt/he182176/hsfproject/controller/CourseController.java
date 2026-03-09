@@ -1,53 +1,82 @@
 package swt.he182176.hsfproject.controller;
 
-import jakarta.servlet.http.HttpSession;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import swt.he182176.hsfproject.entity.Category;
 import swt.he182176.hsfproject.entity.Course;
 import swt.he182176.hsfproject.entity.User;
+import swt.he182176.hsfproject.repository.CategoryRepository;
+import swt.he182176.hsfproject.repository.UserRepository;
 import swt.he182176.hsfproject.service.CourseService;
 
-import java.util.List;
-
 @Controller
+@RequestMapping("/courses")
 public class CourseController {
 
     @Autowired
-    private CourseService courseService;
+    CourseService courseService;
+    @Autowired
+    CategoryRepository categoryRepository;
+    @Autowired
+    UserRepository userRepository;
 
-    @GetMapping("/public-courses")
-    public String showPublicCourses(@RequestParam(required = false) String keyword, Model model) {
-        List<Course> courses = courseService.getPublicCourses(keyword);
-        model.addAttribute("courses", courses);
-        model.addAttribute("keyword", keyword);
-        return "public-courses";
+    @GetMapping
+    public String showCourseList(Model model){
+
+        model.addAttribute("courses", courseService.getAllCourses());
+
+        return "course-list";
     }
 
-    @GetMapping("/my-courses")
-    public String showMyCourses(
-            @RequestParam(required = false) Integer userId,
-            HttpSession session,
-            Model model
-    ) {
-        User loginUser = (User) session.getAttribute("user");
+    @GetMapping("/add")
+    public String showAddCourse(Model model){
 
-        Integer targetUserId = null;
-        if (loginUser != null) {
-            targetUserId = loginUser.getId();
-        } else if (userId != null) {
-            targetUserId = userId;
-        }
+        Course course = new Course();
+        course.setInstructor(new User());
+        course.setCategory(new Category());
 
-        if (targetUserId == null) {
-            model.addAttribute("err", "Chưa có user để xem My Courses. Tạm thời test bằng /my-courses?userId=1");
-            return "my-courses";
-        }
+        model.addAttribute("course", course);
 
-        List<Course> courses = courseService.getMyCourses(targetUserId);
-        model.addAttribute("courses", courses);
-        model.addAttribute("testUserId", targetUserId);
-        return "my-courses";
+        model.addAttribute("categories", categoryRepository.findAll());
+        model.addAttribute("managers", userRepository.findByRole_Name("MANAGER"));
+
+        return "course-detail";
     }
+
+
+    @GetMapping("/edit/{id}")
+    public String showEditCourse(@PathVariable int id,
+                                 Model model){
+
+        Course course = courseService.getCourseById(id);
+
+        model.addAttribute("course", course);
+
+        model.addAttribute("categories", categoryRepository.findAll());
+
+        model.addAttribute("managers", userRepository.findByRole_Name("MANAGER"));
+
+        return "course-detail";
+    }
+
+
+    @PostMapping("/save")
+    public String saveCourse(@ModelAttribute Course course){
+
+        courseService.updateCourse(course);
+
+        return "redirect:/courses";
+    }
+
+    @GetMapping("/delete/{id}")
+    public String deleteCourse(@PathVariable int id){
+
+        courseService.deleteCourse(id);
+
+        return "redirect:/courses";
+    }
+
 }

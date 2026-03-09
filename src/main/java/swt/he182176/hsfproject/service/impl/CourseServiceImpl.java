@@ -1,10 +1,8 @@
 package swt.he182176.hsfproject.service.impl;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import swt.he182176.hsfproject.entity.Course;
 import swt.he182176.hsfproject.repository.CourseRepository;
-import swt.he182176.hsfproject.repository.EnrollmentRepository;
 import swt.he182176.hsfproject.service.CourseService;
 
 import java.util.List;
@@ -12,20 +10,35 @@ import java.util.List;
 @Service
 public class CourseServiceImpl implements CourseService {
 
-    @Autowired
-    private CourseRepository courseRepository;
+    private final CourseRepository courseRepository;
 
-    @Autowired
-    private EnrollmentRepository enrollmentRepository;
-
-    @Override
-    public List<Course> getPublicCourses(String keyword) {
-        String kw = (keyword == null || keyword.trim().isEmpty()) ? null : keyword.trim();
-        return courseRepository.findPublicCourses(kw);
+    public CourseServiceImpl(CourseRepository courseRepository) {
+        this.courseRepository = courseRepository;
     }
 
     @Override
-    public List<Course> getMyCourses(int userId) {
-        return enrollmentRepository.findApprovedCoursesByUserId(userId);
+    public List<Course> getAllCourses() {
+        return courseRepository.findAll();
+    }
+
+    @Override
+    public Course getCourseById(int id) {
+        return courseRepository.findById(id).orElse(null);
+    }
+
+
+    @Override
+    public Course updateCourse(Course course) {
+        return courseRepository.save(course);
+    }
+
+    @Override
+    public List<Course> getPublishedCourses() {
+        return courseRepository.findByPublishedTrue();
+    }
+
+    @Override
+    public void deleteCourse(int id) {
+        courseRepository.deleteById(id);
     }
 }

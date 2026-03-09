@@ -1,6 +1,7 @@
 package swt.he182176.hsfproject.entity;
 import jakarta.persistence.*;
 
+
 import java.time.LocalDateTime;
 
 @Entity
@@ -8,7 +9,7 @@ import java.time.LocalDateTime;
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Integer id;
 
     @Column(name="email", nullable=false, unique=true, length = 255)
     private String email;
@@ -33,17 +34,14 @@ public class User {
     @Column(nullable = false, length = 20)
     private UserStatus status;
 
-    // token verify email
     @Column(name = "verify_token", length = 64)
     private String verifyToken;
 
-    //hieu luc thoi gian email
     @Column(name = "verify_token_expires_at")
     private LocalDateTime verifyTokenExpiresAt;
 
     @Column(name = "email_verified", nullable = false)
     private Boolean emailVerified;
-
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;
@@ -79,11 +77,11 @@ public class User {
         this.updatedAt = LocalDateTime.now();
     }
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
-    public User(int id, LocalDateTime createdAt, Boolean emailVerified,
+    public User(Integer id, LocalDateTime createdAt, Boolean emailVerified,
                 LocalDateTime verifyTokenExpiresAt, String verifyToken, UserStatus status, String passwordHash) {
         this.id = id;
         this.createdAt = createdAt;
@@ -94,7 +92,7 @@ public class User {
         this.passwordHash = passwordHash;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 

@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 public class Course {
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
-    private int courseId;
+    private Integer courseId;
 
     @Column(name="title")
     private String title;
@@ -24,45 +24,37 @@ public class Course {
     private String level;
 
     @Column(name="duration")
-    private int duration;
+    private Integer duration;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name="category_id")
-    private Category categoryId;
+    private Category category;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name="instructor_id")
     private User instructor;
 
     @Column(name="thumbnail_url")
     private String thumbnailUrl;
 
-    @Column(name="pulished")
-    private boolean pulished;
+    @Column(nullable = false, name = "published")
+    private boolean published = false;
 
+    @Column(name = "created_at")
     private LocalDateTime createAt;
+    @PrePersist
+    public void prePersist(){
+        this.createAt = LocalDateTime.now();
+    }
 
     public Course() {}
 
-    public Course(int courseId, LocalDateTime createAt, boolean pulished, String thumbnailUrl, Category categoryId, User instructor, int duration, double price, String level, String description, String title) {
-        this.courseId = courseId;
-        this.createAt = createAt;
-        this.pulished = pulished;
-        this.thumbnailUrl = thumbnailUrl;
-        this.categoryId = categoryId;
-        this.instructor = instructor;
-        this.duration = duration;
-        this.price = price;
-        this.level = level;
-        this.description = description;
-        this.title = title;
-    }
 
-    public int getCourseId() {
+    public Integer getCourseId() {
         return courseId;
     }
 
-    public void setCourseId(int courseId) {
+    public void setCourseId(Integer courseId) {
         this.courseId = courseId;
     }
 
@@ -82,11 +74,11 @@ public class Course {
         this.description = description;
     }
 
-    public double getPrice() {
+    public Double getPrice() {
         return price;
     }
 
-    public void setPrice(double price) {
+    public void setPrice(Double price) {
         this.price = price;
     }
 
@@ -98,20 +90,20 @@ public class Course {
         this.level = level;
     }
 
-    public int getDuration() {
+    public Integer getDuration() {
         return duration;
     }
 
-    public void setDuration(int duration) {
+    public void setDuration(Integer duration) {
         this.duration = duration;
     }
 
-    public Category getCategoryId() {
-        return categoryId;
+    public Category getCategory() {
+        return category;
     }
 
-    public void setCategoryId(Category categoryId) {
-        this.categoryId = categoryId;
+    public void setCategory(Category category) {
+        this.category = category;
     }
 
     public User getInstructor() {
@@ -130,12 +122,12 @@ public class Course {
         this.thumbnailUrl = thumbnailUrl;
     }
 
-    public boolean isPulished() {
-        return pulished;
+    public boolean isPublished() {
+        return published;
     }
 
-    public void setPulished(boolean pulished) {
-        this.pulished = pulished;
+    public void setPublished(boolean published) {
+        this.published = published;
     }
 
     public LocalDateTime getCreateAt() {
