@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Public Courses</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f5f7fb;
+            margin: 0;
+            padding: 30px;
+        }
+
+        .container {
+            width: 1100px;
+            margin: 0 auto;
+        }
+
+        .title {
+            font-size: 32px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        .search-box {
+            background: #fff;
+            border: 1px solid #ddd;
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .search-box input {
+            width: 300px;
+            height: 38px;
+            padding: 6px 10px;
+            border: 1px solid #bbb;
+            border-radius: 6px;
+        }
+
+        .search-box button {
+            height: 38px;
+            padding: 0 16px;
+            border: 1px solid #888;
+            border-radius: 6px;
+            background: #eee;
+            cursor: pointer;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 18px;
+        }
+
+        .card {
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+
+        .thumb {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+            background: #ddd;
+        }
+
+        .content {
+            padding: 14px;
+        }
+
+        .course-title {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .meta {
+            color: #555;
+            font-size: 14px;
+            margin-bottom: 6px;
+        }
+
+        .desc {
+            font-size: 14px;
+            color: #333;
+            min-height: 60px;
+            margin-bottom: 10px;
+        }
+
+        .price {
+            font-weight: bold;
+            color: #0b57d0;
+            margin-bottom: 10px;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 8px 14px;
+            border: 1px solid #777;
+            border-radius: 6px;
+            background: #f2f2f2;
+            text-decoration: none;
+            color: black;
+        }
+
+        .empty {
+            background: white;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="title">Public Courses</div>
+
+    <form class="search-box" th:action="@{/public-courses}" method="get">
+        <input type="text" name="keyword" placeholder="Search by course title..." th:value="${keyword}">
+        <button type="submit">Search</button>
+    </form>
+
+    <div th:if="${#lists.isEmpty(courses)}" class="empty">
+        No public courses found.
+    </div>
+
+    <div class="grid" th:if="${!#lists.isEmpty(courses)}">
+        <div class="card" th:each="c : ${courses}">
+            <img class="thumb"
+                 th:src="${c.thumbnailUrl != null and !#strings.isEmpty(c.thumbnailUrl)
+                          ? c.thumbnailUrl : 'https://via.placeholder.com/400x220?text=Course'}"
+                 alt="thumbnail">
+
+            <div class="content">
+                <div class="course-title" th:text="${c.title}"></div>
+
+                <div class="meta">
+                    Level:
+                    <span th:text="${c.level}"></span>
+                </div>
+
+                <div class="meta">
+                    Duration:
+                    <span th:text="${c.duration}"></span> hours
+                </div>
+
+                <div class="desc" th:text="${c.description}"></div>
+
+                <div class="price">
+                    Price:
+                    <span th:text="${c.price}"></span>
+                </div>
+
+                <a href="#" class="btn">View Details</a>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

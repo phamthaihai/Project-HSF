@@ -44,7 +44,9 @@ public class Course {
 
     public Course() {}
 
-    public Course(int courseId, LocalDateTime createAt, boolean pulished, String thumbnailUrl, Category categoryId, User instructor, int duration, double price, String level, String description, String title) {
+    public Course(int courseId, LocalDateTime createAt, boolean pulished, String thumbnailUrl
+            , Category categoryId, User instructor, int duration, double price
+            , String level, String description, String title) {
         this.courseId = courseId;
         this.createAt = createAt;
         this.pulished = pulished;
