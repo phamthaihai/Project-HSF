@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 public class Course {
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
-    private int courseId;
+    private Integer courseId;
 
     @Column(name="title")
     private String title;
@@ -24,11 +24,11 @@ public class Course {
     private String level;
 
     @Column(name="duration")
-    private int duration;
+    private Integer duration;
 
     @ManyToOne
     @JoinColumn(name="category_id")
-    private Category categoryId;
+    private Category category;
 
     @ManyToOne
     @JoinColumn(name="instructor_id")
@@ -40,16 +40,20 @@ public class Course {
     @Column(name="pulished")
     private boolean pulished;
 
+
+
     private LocalDateTime createAt;
 
     public Course() {}
 
-    public Course(int courseId, LocalDateTime createAt, boolean pulished, String thumbnailUrl, Category categoryId, User instructor, int duration, double price, String level, String description, String title) {
+    public Course(Integer courseId, LocalDateTime createAt, boolean pulished, String thumbnailUrl
+            , Category category, User instructor, Integer duration, double price
+            , String level, String description, String title) {
         this.courseId = courseId;
         this.createAt = createAt;
         this.pulished = pulished;
         this.thumbnailUrl = thumbnailUrl;
-        this.categoryId = categoryId;
+        this.category = category;
         this.instructor = instructor;
         this.duration = duration;
         this.price = price;
@@ -58,11 +62,11 @@ public class Course {
         this.title = title;
     }
 
-    public int getCourseId() {
+    public Integer getCourseId() {
         return courseId;
     }
 
-    public void setCourseId(int courseId) {
+    public void setCourseId(Integer courseId) {
         this.courseId = courseId;
     }
 
@@ -98,20 +102,20 @@ public class Course {
         this.level = level;
     }
 
-    public int getDuration() {
+    public Integer getDuration() {
         return duration;
     }
 
-    public void setDuration(int duration) {
+    public void setDuration(Integer duration) {
         this.duration = duration;
     }
 
-    public Category getCategoryId() {
-        return categoryId;
+    public Category getCategory() {
+        return category;
     }
 
-    public void setCategoryId(Category categoryId) {
-        this.categoryId = categoryId;
+    public void setCategory(Category category) {
+        this.category = category;
     }
 
     public User getInstructor() {
