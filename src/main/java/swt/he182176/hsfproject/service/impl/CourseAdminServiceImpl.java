@@ -2,6 +2,7 @@ package swt.he182176.hsfproject.service.impl;
 
 import org.springframework.stereotype.Service;
 import swt.he182176.hsfproject.entity.Course;
+import swt.he182176.hsfproject.repository.CourseAdminRepository;
 import swt.he182176.hsfproject.repository.CourseRepository;
 import swt.he182176.hsfproject.service.CourseAdminService;
 
@@ -10,9 +11,9 @@ import java.util.List;
 @Service
 public class CourseAdminServiceImpl implements CourseAdminService {
 
-    private final CourseRepository courseRepository;
+    private final CourseAdminRepository courseRepository;
 
-    public CourseAdminServiceImpl(CourseRepository courseRepository) {
+    public CourseAdminServiceImpl(CourseAdminRepository courseRepository) {
         this.courseRepository = courseRepository;
     }
 
@@ -34,7 +35,7 @@ public class CourseAdminServiceImpl implements CourseAdminService {
 
     @Override
     public List<Course> getPublishedCourses() {
-        return courseRepository.findByPublishedTrue();
+        return courseRepository.findByPulishedTrue();
     }
 
     @Override

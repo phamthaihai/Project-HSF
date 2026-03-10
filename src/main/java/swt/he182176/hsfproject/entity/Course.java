@@ -26,29 +26,41 @@ public class Course {
     @Column(name="duration")
     private Integer duration;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne
     @JoinColumn(name="category_id")
     private Category category;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne
     @JoinColumn(name="instructor_id")
     private User instructor;
 
     @Column(name="thumbnail_url")
     private String thumbnailUrl;
 
-    @Column(nullable = false, name = "published")
-    private boolean published = false;
+    @Column(name="pulished")
+    private boolean pulished;
 
-    @Column(name = "created_at")
+
+
     private LocalDateTime createAt;
-    @PrePersist
-    public void prePersist(){
-        this.createAt = LocalDateTime.now();
-    }
 
     public Course() {}
 
+    public Course(Integer courseId, LocalDateTime createAt, boolean pulished, String thumbnailUrl
+            , Category category, User instructor, Integer duration, double price
+            , String level, String description, String title) {
+        this.courseId = courseId;
+        this.createAt = createAt;
+        this.pulished = pulished;
+        this.thumbnailUrl = thumbnailUrl;
+        this.category = category;
+        this.instructor = instructor;
+        this.duration = duration;
+        this.price = price;
+        this.level = level;
+        this.description = description;
+        this.title = title;
+    }
 
     public Integer getCourseId() {
         return courseId;
@@ -74,11 +86,11 @@ public class Course {
         this.description = description;
     }
 
-    public Double getPrice() {
+    public double getPrice() {
         return price;
     }
 
-    public void setPrice(Double price) {
+    public void setPrice(double price) {
         this.price = price;
     }
 
@@ -122,12 +134,12 @@ public class Course {
         this.thumbnailUrl = thumbnailUrl;
     }
 
-    public boolean isPublished() {
-        return published;
+    public boolean isPulished() {
+        return pulished;
     }
 
-    public void setPublished(boolean published) {
-        this.published = published;
+    public void setPulished(boolean pulished) {
+        this.pulished = pulished;
     }
 
     public LocalDateTime getCreateAt() {

@@ -21,7 +21,7 @@ public class Category {
     @Column(name = "status")
     private String status;
 
-    @OneToMany(mappedBy = "category")
+    @OneToMany(mappedBy = "category", cascade = CascadeType.ALL)
     private List<Course> courses;
 
     public Category() {

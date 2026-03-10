@@ -16,7 +16,7 @@ public class Datarole {
             seed(roleRepository, "ADMIN");
             seed(roleRepository, "MANAGER");
             seed(roleRepository, "MEMBER");
-            seed(roleRepository, "MARKETING"); // theo spec có marketing
+            seed(roleRepository, "MARKETING");
 
             if (roleRepository.findByName("MARKETING") == null) {
                 Role member = new Role();

@@ -1,7 +1,11 @@
 package swt.he182176.hsfproject.controller;
 
+import jakarta.servlet.http.HttpSession;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import swt.he182176.hsfproject.dto.ProfileDTO;
@@ -10,27 +14,49 @@ import swt.he182176.hsfproject.service.UserService;
 
 @Controller
 public class UserProfileController {
+
     @Autowired
-    UserService userService;
+    private UserService userService;
 
-    @GetMapping("/list")
-    public String showUserProfile(){
-        return "list";
+    @GetMapping("/user-profile")
+    public String showUserProfileForm(Model model, HttpSession session) {
+        User user = (User) session.getAttribute("user");
+        if (user == null) {
+            return "redirect:/login";
+        }
+
+        ProfileDTO dto = new ProfileDTO(
+                user.getFullName(),
+                user.getEmail(),
+                user.getPhone()
+        );
+
+        model.addAttribute("profileDTO", dto);
+        return "user-profile";
     }
 
-    @GetMapping("/user-profile-details")
-    public String showUserProfileForm(){
-        return "user-profile-details";
-    }
+    @PostMapping("/user-profile")
+    public String updateUserProfile(@Valid ProfileDTO profileDTO,
+                                    BindingResult result,
+                                    Model model,
+                                    HttpSession session) {
+        User currentUser = (User) session.getAttribute("user");
+        if (currentUser == null) {
+            return "redirect:/login";
+        }
 
-    @PostMapping("/user-profile-details")
-    public String userProfileDetails(){
-        User user = new User();
-        ProfileDTO profileDTO = new ProfileDTO();
-        user.setFullName(profileDTO.getUserName());
-        user.setEmail(profileDTO.getEmail());
-        user.setPhone((profileDTO.getPhone()));
-        userService.save(user);
-        return "redirect:/list";
+        if (result.hasErrors()) {
+            return "user-profile";
+        }
+
+        try {
+            User updatedUser = userService.updateProfile(currentUser.getId(), profileDTO);
+            session.setAttribute("user", updatedUser);
+            model.addAttribute("success", "Profile updated successfully");
+        } catch (RuntimeException e) {
+            model.addAttribute("error", e.getMessage());
+        }
+
+        return "user-profile";
     }
 }

@@ -1,46 +1,61 @@
 package swt.he182176.hsfproject.controller;
 
 import jakarta.servlet.http.HttpSession;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import swt.he182176.hsfproject.dto.ChangePasswordDTO;
 import swt.he182176.hsfproject.entity.User;
 import swt.he182176.hsfproject.service.UserService;
 
 @Controller
 public class ChangePasswordController {
+
     @Autowired
-    UserService userService;
+    private UserService userService;
+
+    @GetMapping("/change-password")
+    public String showChangePasswordForm(Model model, HttpSession session) {
+        User user = (User) session.getAttribute("user");
+        if (user == null) {
+            return "redirect:/login";
+        }
+
+        model.addAttribute("changePasswordDTO", new ChangePasswordDTO());
+        return "change-password";
+    }
 
     @PostMapping("/change-password")
-    public String changePassword(@RequestParam("oldPassword") String oldPassword,
-                                 @RequestParam("newPassword") String newPassword,
-                                 @RequestParam("confirmPassword") String confirmPassword,
-                                 Model model, HttpSession session) {
-        User user = (User)session.getAttribute("user");
+    public String changePassword(@Valid ChangePasswordDTO dto,
+                                 BindingResult result,
+                                 Model model,
+                                 HttpSession session) {
+        User user = (User) session.getAttribute("user");
+        if (user == null) {
+            return "redirect:/login";
+        }
 
-        // kiểm tra mật khẩu cũ
-        if (!userService.matchesPassword(oldPassword, user.getPasswordHash())) {
-            model.addAttribute("error", "Wrong old password");
+        if (result.hasErrors()) {
             return "change-password";
         }
 
-        // kiểm tra confirm password
-        if (!newPassword.equals(confirmPassword)) {
-            model.addAttribute("error", "Confirm password does not match");
+        try {
+            userService.changePassword(
+                    user.getId(),
+                    dto.getOldPassword(),
+                    dto.getNewPassword(),
+                    dto.getConfirmPassword()
+            );
+
+            session.invalidate();
+            return "redirect:/login?msg=passwordChanged";
+        } catch (RuntimeException e) {
+            model.addAttribute("error", e.getMessage());
             return "change-password";
         }
-
-        // cập nhật password mới
-        user.setPasswordHash(userService.encodePassword(newPassword));
-        userService.save(user);
-
-        // cập nhật lại session
-        session.setAttribute("user", user);
-
-        model.addAttribute("message", "Change password successful!");
-        return "change-password";
     }
 }
