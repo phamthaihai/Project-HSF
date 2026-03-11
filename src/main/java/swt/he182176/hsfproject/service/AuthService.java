@@ -58,6 +58,52 @@ public class AuthService {
 
         if (u.getVerifyTokenExpiresAt() == null || u.getVerifyTokenExpiresAt().isBefore(LocalDateTime.now())) {
             throw new IllegalArgumentException("Token exired");
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         }
 
         u.setEmailVerified(true);

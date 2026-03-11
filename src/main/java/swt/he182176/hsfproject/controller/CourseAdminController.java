@@ -12,6 +12,8 @@ import swt.he182176.hsfproject.repository.CategoryRepository;
 import swt.he182176.hsfproject.repository.UserRepository;
 import swt.he182176.hsfproject.service.CourseAdminService;
 
+import java.time.LocalDateTime;
+
 @Controller
 @RequestMapping("/courses")
 public class CourseAdminController {
@@ -42,6 +44,7 @@ public class CourseAdminController {
 
         model.addAttribute("categories", categoryRepository.findAll());
         model.addAttribute("managers", userRepository.findByRole_Name("MANAGER"));
+        course.setCreateAt(LocalDateTime.now());
 
         return "course-detail";
     }
@@ -67,6 +70,7 @@ public class CourseAdminController {
     public String saveCourse(@ModelAttribute Course course){
 
         courseService.updateCourse(course);
+        course.setCreateAt(LocalDateTime.now());
 
         return "redirect:/courses";
     }
