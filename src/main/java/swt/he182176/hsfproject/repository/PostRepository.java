@@ -49,4 +49,5 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
         WHERE p.postId = :id AND LOWER(p.status) = 'published'
     """)
     Optional<Post> findPublishedById(@Param("id") Integer id);
+    long countByStatus(String status);
 }

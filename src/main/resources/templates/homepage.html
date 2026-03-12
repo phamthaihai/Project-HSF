@@ -237,7 +237,8 @@
 
                     <!-- nếu chưa mua -->
                     <a class="btn"
-                       th:if="${user == null or !#lists.contains(enrolledCourses,c)}">
+                       th:if="${user == null or !#lists.contains(enrolledCourses,c)}"
+                       th:href="@{/course/{id}/enroll(id=${c.courseId})}">
                         Enroll Now
                     </a>
 

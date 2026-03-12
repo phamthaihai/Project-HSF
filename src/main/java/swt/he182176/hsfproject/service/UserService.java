@@ -14,8 +14,11 @@ import swt.he182176.hsfproject.repository.RoleRepository;
 import swt.he182176.hsfproject.repository.UserRepository;
 
 import java.time.LocalDateTime;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService {
@@ -30,18 +33,44 @@ public class UserService {
     private BCryptPasswordEncoder encoder;
 
     public User login(LoginDTO loginDTO) {
-        Optional<User> userOptional = userRepository.findByEmail(loginDTO.getEmail());
+        if (loginDTO == null || loginDTO.getEmail() == null || loginDTO.getPassword() == null) {
+            return null;
+        }
+
+        String email = loginDTO.getEmail().trim().toLowerCase();
+        Optional<User> userOptional = userRepository.findByEmailIgnoreCase(email);
         if (userOptional.isEmpty()) {
             return null;
         }
 
         User user = userOptional.get();
 
-        if (!encoder.matches(loginDTO.getPassword(), user.getPasswordHash())) {
+        String rawPassword = loginDTO.getPassword();
+        String stored = user.getPasswordHash();
+        if (stored == null) {
+            return null;
+        }
+        stored = stored.trim();
+        if (stored.length() >= 2 && stored.startsWith("'") && stored.endsWith("'")) {
+            stored = stored.substring(1, stored.length() - 1).trim();
+        }
+
+        boolean passwordOk = false;
+        try {
+            passwordOk = encoder.matches(rawPassword, stored);
+        } catch (Exception ignored) {
+            // If stored is not a valid BCrypt hash, fallback to plain compare (useful for manual SQL seeds).
+        }
+        if (!passwordOk) {
+            passwordOk = rawPassword.equals(stored);
+        }
+
+        if (!passwordOk) {
             return null;
         }
 
-        if (user.getStatus() != UserStatus.ACTIVE) {
+        // If DB has NULL status (manual seed), allow login; otherwise require ACTIVE.
+        if (user.getStatus() != null && user.getStatus() != UserStatus.ACTIVE) {
             return null;
         }
 
@@ -103,6 +132,26 @@ public class UserService {
 
     public Optional<User> findById(Integer id) {
         return userRepository.findById(id);
+    }
+
+    public List<User> searchUsers(String keyword, String roleName, UserStatus status) {
+        List<User> base;
+        if (keyword == null || keyword.trim().isEmpty()) {
+            base = userRepository.findAll();
+        } else {
+            String kw = keyword.trim();
+            base = userRepository.findByEmailContainingIgnoreCaseOrFullNameContainingIgnoreCase(kw, kw);
+        }
+
+        return base.stream()
+                .filter(u -> {
+                    if (roleName == null || roleName.trim().isEmpty()) return true;
+                    if (u.getRole() == null || u.getRole().getName() == null) return false;
+                    return u.getRole().getName().equalsIgnoreCase(roleName.trim());
+                })
+                .filter(u -> status == null || u.getStatus() == status)
+                .sorted(Comparator.comparingInt(User::getId))
+                .collect(Collectors.toList());
     }
 
     @Transactional
