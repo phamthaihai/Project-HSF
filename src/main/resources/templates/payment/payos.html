@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+
+    <title>PayOS Payment</title>
+
+    <style>
+
+        body{
+            text-align:center;
+            font-family:Arial;
+            background:#f5f5f5;
+        }
+
+        .container{
+            margin-top:50px;
+        }
+
+        .qr{
+            margin-top:30px;
+        }
+
+        button{
+            margin-top:20px;
+            padding:12px 20px;
+            background:#4CAF50;
+            color:white;
+            border:none;
+            border-radius:5px;
+            cursor:pointer;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+    <h2>Scan QR to Pay</h2>
+
+    <div class="qr">
+
+        <img th:src="${qrCode}" width="300">
+
+    </div>
+
+    <p>Please complete payment using your banking app.</p>
+
+    <a th:href="${checkoutUrl}">
+        <button>Open PayOS Checkout</button>
+    </a>
+
+</div>
+
+</body>
+</html>

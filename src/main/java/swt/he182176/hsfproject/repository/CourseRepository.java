@@ -12,7 +12,7 @@ public interface CourseRepository extends JpaRepository<Course, Integer> {
     @Query("""
         select c
         from Course c
-        where c.pulished = true
+        where c.published = true
           and (
                 :keyword is null
                 or trim(:keyword) = ''
