@@ -37,21 +37,22 @@ public class Course {
     @Column(name="thumbnail_url")
     private String thumbnailUrl;
 
-    @Column(name="pulished")
-    private boolean pulished;
+    @Column(name="published")
+    private boolean published;
 
 
 
+    @Column(name = "created_at")
     private LocalDateTime createAt;
 
     public Course() {}
 
-    public Course(Integer courseId, LocalDateTime createAt, boolean pulished, String thumbnailUrl
+    public Course(Integer courseId, LocalDateTime createAt, boolean published, String thumbnailUrl
             , Category category, User instructor, Integer duration, double price
             , String level, String description, String title) {
         this.courseId = courseId;
         this.createAt = createAt;
-        this.pulished = pulished;
+        this.published = published;
         this.thumbnailUrl = thumbnailUrl;
         this.category = category;
         this.instructor = instructor;
@@ -134,12 +135,12 @@ public class Course {
         this.thumbnailUrl = thumbnailUrl;
     }
 
-    public boolean isPulished() {
-        return pulished;
+    public boolean isPublished() {
+        return published;
     }
 
     public void setPulished(boolean pulished) {
-        this.pulished = pulished;
+        this.published = pulished;
     }
 
     public LocalDateTime getCreateAt() {
