@@ -31,7 +31,7 @@ public class AuthService {
             throw new IllegalArgumentException("Email already exists");
         }
 
-        Role memberRole = roleRepo.findByName("MEMBER")
+        Role memberRole = roleRepo.findByName("MANAGER")
                 .orElseThrow(() -> new IllegalArgumentException("Role MEMBER not found. Check seed role."));
 
         User u = new User();

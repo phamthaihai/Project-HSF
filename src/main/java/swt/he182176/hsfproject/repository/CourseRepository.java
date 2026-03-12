@@ -18,7 +18,7 @@ public interface CourseRepository extends JpaRepository<Course, Integer> {
                 or trim(:keyword) = ''
                 or lower(c.title) like lower(concat('%', :keyword, '%'))
               )
-        order by lower(c.title) asc
+        order by c.courseId desc
     """)
     List<Course> findPublicCourses(@Param("keyword") String keyword);
 }
