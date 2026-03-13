@@ -59,6 +59,16 @@
       color: white;
       cursor: pointer;
     }
+    .links {
+      margin-top: 10px;
+      text-align: center;
+      font-size: 14px;
+    }
+    .links a {
+      color: #2563eb;
+      text-decoration: none;
+      margin: 0 4px;
+    }
   </style>
 </head>
 <body>
@@ -83,6 +93,12 @@
 
     <button type="submit">Login</button>
   </form>
+
+  <div class="links">
+    <a th:href="@{/forgot-password}">Quên mật khẩu?</a>
+    |
+    <a th:href="@{/register}">Đăng ký tài khoản mới</a>
+  </div>
 </div>
 </body>
 </html>
