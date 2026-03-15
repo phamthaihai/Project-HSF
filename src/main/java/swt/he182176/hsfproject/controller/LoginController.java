@@ -16,6 +16,7 @@ import swt.he182176.hsfproject.service.UserService;
 
 @Controller
 public class LoginController {
+
     @Autowired
     private UserService userService;
 
@@ -24,6 +25,7 @@ public class LoginController {
                                 @ModelAttribute("err") String err,
                                 Model model,
                                 HttpSession session) {
+        // Nếu đã đăng nhập thì chuyển sang trang profile (hoặc trang chủ tùy bạn)
         User currentUser = (User) session.getAttribute("user");
         if (currentUser != null) {
             if (currentUser.getRole() != null

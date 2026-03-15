@@ -53,6 +53,7 @@ public class UserService {
         if (stored == null) {
             return null;
         }
+
         stored = stored.trim();
         if (stored.length() >= 2 && stored.startsWith("'") && stored.endsWith("'")) {
             stored = stored.substring(1, stored.length() - 1).trim();
@@ -62,64 +63,20 @@ public class UserService {
         try {
             passwordOk = encoder.matches(rawPassword, stored);
         } catch (Exception ignored) {
-            // If stored is not a valid BCrypt hash, fallback to plain compare (useful for manual SQL seeds).
+            // Fallback for manually seeded plain-text passwords.
         }
+
         if (!passwordOk) {
             passwordOk = rawPassword.equals(stored);
         }
 
-        if (!passwordOk) {
-            return null;
-        }
-
-        // If DB has NULL status (manual seed), allow login; otherwise require ACTIVE.
-        if (user.getStatus() != null && user.getStatus() != UserStatus.ACTIVE) {
+        if (!passwordOk || user.getStatus() != UserStatus.ACTIVE) {
             return null;
         }
 
         return user;
     }
 
-    public User register(RegisterDTO registerDTO) {
-        if (userRepository.existsByEmail(registerDTO.getEmail())) {
-            throw new RuntimeException("Email đã tồn tại");
-        }
-
-        Role memberRole = roleRepository.findByName("MEMBER")
-                .orElseThrow(() -> new RuntimeException("Role MEMBER không tồn tại"));
-
-        User user = new User();
-        user.setEmail(registerDTO.getEmail());
-        user.setPhone(registerDTO.getPhone());
-        user.setFullName(registerDTO.getFullname());
-        user.setRole(memberRole);
-        user.setPasswordHash(encoder.encode(registerDTO.getPassword()));
-        user.setStatus(UserStatus.UNVERIFIED);
-        user.setEmailVerified(false);
-
-        String token = UUID.randomUUID().toString().replace("-", "");
-        user.setVerifyToken(token);
-        user.setVerifyTokenExpiresAt(LocalDateTime.now().plusMinutes(30));
-
-        return userRepository.save(user);
-    }
-
-    @Transactional
-    public void verifyEmail(String token) {
-        User user = userRepository.findByVerifyToken(token)
-                .orElseThrow(() -> new RuntimeException("Token khong hop le"));
-
-        if (user.getVerifyTokenExpiresAt() == null || user.getVerifyTokenExpiresAt().isBefore(LocalDateTime.now())) {
-            throw new RuntimeException("Token đã hết hạn");
-        }
-
-        user.setEmailVerified(true);
-        user.setStatus(UserStatus.ACTIVE);
-        user.setVerifyToken(null);
-        user.setVerifyTokenExpiresAt(null);
-
-        userRepository.save(user);
-    }
 
     public User save(User user) {
         return userRepository.save(user);
@@ -152,8 +109,12 @@ public class UserService {
 
         return base.stream()
                 .filter(u -> {
-                    if (roleName == null || roleName.trim().isEmpty()) return true;
-                    if (u.getRole() == null || u.getRole().getName() == null) return false;
+                    if (roleName == null || roleName.trim().isEmpty()) {
+                        return true;
+                    }
+                    if (u.getRole() == null || u.getRole().getName() == null) {
+                        return false;
+                    }
                     return u.getRole().getName().equalsIgnoreCase(roleName.trim());
                 })
                 .filter(u -> status == null || u.getStatus() == status)

@@ -15,58 +15,68 @@ import java.util.UUID;
 
 @Service
 public class AuthService {
-    private UserRepository userRepo;
+
+    private final UserRepository userRepo;
     private final RoleRepository roleRepo;
     private final BCryptPasswordEncoder encoder;
+    private final EmailService emailService;
 
-    public AuthService(UserRepository userRepo, RoleRepository roleRepo, BCryptPasswordEncoder encoder) {
+    public AuthService(UserRepository userRepo,
+                       RoleRepository roleRepo,
+                       BCryptPasswordEncoder encoder,
+                       EmailService emailService) {
         this.userRepo = userRepo;
         this.roleRepo = roleRepo;
         this.encoder = encoder;
+        this.emailService = emailService;
     }
 
     @Transactional
-    public String register(RegisterDTO dto) {
-        if (userRepo.existsByEmail(dto.getEmail().trim().toLowerCase())) {
+    public void register(RegisterDTO dto, String baseUrl) {
+
+        String email = dto.getEmail().trim().toLowerCase();
+
+        if (userRepo.existsByEmail(email)) {
             throw new IllegalArgumentException("Email already exists");
         }
 
-        Role memberRole = roleRepo.findByName("MEMBER")
+        Role memberRole = roleRepo.findByName("MANAGER")
                 .orElseThrow(() -> new IllegalArgumentException("Role MEMBER not found. Check seed role."));
 
-        User u = new User();
-        u.setEmail(dto.getEmail().trim().toLowerCase());
-        u.setFullName(dto.getFullname().trim());
-        u.setPhone(dto.getPhone().trim());
-        u.setRole(memberRole);
-
-        u.setPasswordHash(encoder.encode(dto.getPassword()));
-
-        u.setStatus(UserStatus.UNVERIFIED);
-        u.setEmailVerified(false);
-
         String token = UUID.randomUUID().toString().replace("-", "");
-        userRepo.save(u);
 
-        return token;
+        User user = new User();
+        user.setEmail(email);
+        user.setFullName(dto.getFullname().trim());
+        user.setPhone(dto.getPhone() != null ? dto.getPhone().trim() : null);
+        user.setRole(memberRole);
+        user.setPasswordHash(encoder.encode(dto.getPassword()));
+        user.setStatus(UserStatus.UNVERIFIED);
+        user.setEmailVerified(false);
+        user.setVerifyToken(token);
+        user.setVerifyTokenExpiresAt(LocalDateTime.now().plusMinutes(30));
+
+        userRepo.save(user);
+
+        String verifyLink = baseUrl + "/verify?token=" + token;
+        emailService.sendVerificationEmail(user.getEmail(), user.getFullName(), verifyLink);
     }
 
     @Transactional
     public void verifyEmail(String token) {
-        User u = userRepo.findByVerifyToken(token)
-                .orElseThrow(() -> new IllegalArgumentException("Invalid Email"));
+        User user = userRepo.findByVerifyToken(token)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid verification token."));
 
-        if (u.getVerifyTokenExpiresAt() == null || u.getVerifyTokenExpiresAt().isBefore(LocalDateTime.now())) {
-            throw new IllegalArgumentException("Token exired");
+        if (user.getVerifyTokenExpiresAt() == null
+                || user.getVerifyTokenExpiresAt().isBefore(LocalDateTime.now())) {
+            throw new IllegalArgumentException("Verification token has expired.");
         }
 
-        u.setEmailVerified(true);
-        u.setStatus(UserStatus.ACTIVE);
+        user.setEmailVerified(true);
+        user.setStatus(UserStatus.ACTIVE);
+        user.setVerifyToken(null);
+        user.setVerifyTokenExpiresAt(null);
 
-        //xóa token ko verify lại
-        u.setVerifyToken(null);
-        u.setVerifyTokenExpiresAt(null);
-
-        userRepo.save(u);
+        userRepo.save(user);
     }
 }
