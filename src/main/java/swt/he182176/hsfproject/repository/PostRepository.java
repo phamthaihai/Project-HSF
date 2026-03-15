@@ -1,5 +1,6 @@
 package swt.he182176.hsfproject.repository;
 
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -63,5 +64,8 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
     """)
     List<Post> findRelatedPublishedBlogs(@Param("currentId") Integer currentId,
                                          @Param("category") String category);
+
     long countByStatus(String status);
+
+    List<Post> findByStatusOrderByCreatedAtDesc(String status, Pageable pageable);
 }

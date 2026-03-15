@@ -1,6 +1,7 @@
 package swt.he182176.hsfproject.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import swt.he182176.hsfproject.dto.PostDTO;
@@ -63,6 +64,13 @@ public class PostService {
         post.setStatus(dto.getStatus());
 
         return postRepository.save(post);
+    }
+
+    public List<Post> getLatestPosts() {
+        return postRepository.findByStatusOrderByCreatedAtDesc(
+                "Published",
+                PageRequest.of(0, 4)
+        );
     }
 
     private String normalize(String value) {

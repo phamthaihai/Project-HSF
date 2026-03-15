@@ -8,20 +8,23 @@ import swt.he182176.hsfproject.entity.Course;
 import swt.he182176.hsfproject.entity.User;
 import swt.he182176.hsfproject.repository.EnrollmentRepository;
 import swt.he182176.hsfproject.service.CourseAdminService;
+import swt.he182176.hsfproject.service.PostService;
 
 import java.util.List;
-
 
 @Controller
 public class HomeController {
 
     private final CourseAdminService courseService;
     private final EnrollmentRepository enrollmentRepository;
+    private final PostService postService;
 
     public HomeController(CourseAdminService courseService,
-                          EnrollmentRepository enrollmentRepository) {
+                          EnrollmentRepository enrollmentRepository,
+                          PostService postService) {
         this.courseService = courseService;
         this.enrollmentRepository = enrollmentRepository;
+        this.postService = postService;
     }
 
     @GetMapping("/")
@@ -30,14 +33,14 @@ public class HomeController {
         List<Course> courses = courseService.getPublishedCourses();
         model.addAttribute("courses", courses);
 
+        model.addAttribute("latestPosts", postService.getLatestPosts());
+
         User user = (User) session.getAttribute("user");
         model.addAttribute("user", user);
 
-        if(user != null){
-
+        if (user != null) {
             List<Course> enrolledCourses =
                     enrollmentRepository.findApprovedCoursesByUserId(user.getId());
-
             model.addAttribute("enrolledCourses", enrolledCourses);
         }
 
