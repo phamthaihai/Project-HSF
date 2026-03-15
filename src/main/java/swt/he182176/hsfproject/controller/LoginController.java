@@ -25,15 +25,22 @@ public class LoginController {
                                 @ModelAttribute("err") String err,
                                 Model model,
                                 HttpSession session) {
+        // Nếu đã đăng nhập thì chuyển sang trang profile (hoặc trang chủ tùy bạn)
         User currentUser = (User) session.getAttribute("user");
         if (currentUser != null) {
-            return "redirect:/user-profile";
+            if (currentUser.getRole() != null
+                    && "ADMIN".equalsIgnoreCase(currentUser.getRole().getName())) {
+                return "redirect:/admin/dashboard";
+            }
+            return "redirect:/";
         }
 
+        // Khởi tạo form nếu chưa có
         if (!model.containsAttribute("loginDTO")) {
             model.addAttribute("loginDTO", new LoginDTO());
         }
 
+        // Map flash attribute từ đăng ký/verify sang message hiển thị trên login.html
         if (msg != null && !msg.isBlank()) {
             model.addAttribute("success", msg);
         }
@@ -57,19 +64,26 @@ public class LoginController {
         User user = userService.login(loginDTO);
 
         if (user == null) {
-            model.addAttribute("error", "Invalid email, password, or your email has not been verified.");
+            model.addAttribute("error", "Email hoặc mật khẩu không đúng hoặc tài khoản chưa được kích hoạt");
             return "login";
         }
 
+        // Lưu user vào session
         session.setAttribute("user", user);
-        ra.addFlashAttribute("msg", "Login successful");
-        return "redirect:/user-profile";
+        ra.addFlashAttribute("msg", "Đăng nhập thành công");
+
+        // Điều hướng theo role sau khi đăng nhập
+        if (user.getRole() != null
+                && "ADMIN".equalsIgnoreCase(user.getRole().getName())) {
+            return "redirect:/admin/dashboard";
+        }
+        return "redirect:/";
     }
 
     @GetMapping("/logout")
     public String logout(HttpSession session, RedirectAttributes ra) {
         session.invalidate();
-        ra.addFlashAttribute("msg", "You have logged out");
+        ra.addFlashAttribute("msg", "Bạn đã đăng xuất");
         return "redirect:/login";
     }
 }
