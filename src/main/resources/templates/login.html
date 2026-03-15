@@ -1,88 +1,147 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-  <meta charset="UTF-8">
-  <title>Login</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f5f6fa;
-      margin: 0;
-      padding: 40px;
-    }
-    .box {
-      max-width: 450px;
-      margin: auto;
-      background: white;
-      padding: 24px;
-      border-radius: 10px;
-      box-shadow: 0 2px 10px rgba(0,0,0,.08);
-    }
-    h2 {
-      margin-top: 0;
-      text-align: center;
-    }
-    .row {
-      margin-bottom: 14px;
-    }
-    label {
-      display: block;
-      margin-bottom: 6px;
-      font-weight: bold;
-    }
-    input {
-      width: 100%;
-      padding: 10px;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-      box-sizing: border-box;
-    }
-    .error {
-      color: red;
-      font-size: 13px;
-      margin-top: 4px;
-    }
-    .msg-error {
-      color: red;
-      margin-bottom: 12px;
-    }
-    .msg-success {
-      color: green;
-      margin-bottom: 12px;
-    }
-    button {
-      width: 100%;
-      padding: 10px;
-      border: none;
-      border-radius: 6px;
-      background: #2563eb;
-      color: white;
-      cursor: pointer;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <title>User Login</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: "Times New Roman", serif;
+            background: #ffffff;
+            color: #000;
+        }
+
+        .page-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .global-error {
+            color: red;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+
+        .global-success {
+            color: green;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+
+        .login-wrapper {
+            width: 360px;
+            border: 1px solid #333;
+            background: #f3f3f3;
+            padding: 22px 18px 18px 18px;
+        }
+
+        .login-title {
+            font-size: 22px;
+            font-weight: bold;
+            margin-bottom: 14px;
+        }
+
+        .form-group {
+            margin-bottom: 12px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 14px;
+            margin-bottom: 4px;
+        }
+
+        .form-group input {
+            width: 100%;
+            height: 36px;
+            padding: 4px 8px;
+            border: 1px solid #999;
+            border-radius: 3px;
+            background: #fff;
+        }
+
+        .helper-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            margin-top: 8px;
+            margin-bottom: 12px;
+            font-size: 14px;
+        }
+
+        .helper-row a {
+            color: blue;
+            text-decoration: underline;
+            white-space: nowrap;
+        }
+
+        .helper-row span {
+            color: #555;
+        }
+
+        .btn-login {
+            width: 100%;
+            height: 38px;
+            margin-top: 4px;
+            border: 1px solid #999;
+            border-radius: 3px;
+            background: linear-gradient(#fefefe, #e5e5e5);
+            cursor: pointer;
+            font-family: "Times New Roman", serif;
+            font-size: 16px;
+        }
+
+        .btn-login:hover {
+            background: linear-gradient(#ffffff, #dcdcdc);
+        }
+
+        .error-text {
+            color: red;
+            font-size: 12px;
+            display: block;
+            margin-top: 3px;
+        }
+    </style>
 </head>
 <body>
-<div class="box">
-  <h2>Login</h2>
 
-  <div th:if="${error}" class="msg-error" th:text="${error}"></div>
-  <div th:if="${success}" class="msg-success" th:text="${success}"></div>
+<div class="page-container">
+    <div th:if="${error}" class="global-error" th:text="${error}"></div>
+    <div th:if="${success}" class="global-success" th:text="${success}"></div>
 
-  <form th:action="@{/login}" th:object="${loginDTO}" method="post">
-    <div class="row">
-      <label>Email</label>
-      <input type="email" th:field="*{email}">
-      <div class="error" th:errors="*{email}"></div>
+    <div class="login-wrapper">
+        <div class="login-title">User Login</div>
+
+        <form th:action="@{/login}" th:object="${loginDTO}" method="post">
+            <div class="form-group">
+                <label>Email*</label>
+                <input type="email" th:field="*{email}">
+                <small class="error-text" th:errors="*{email}"></small>
+            </div>
+
+            <div class="form-group">
+                <label>Password*</label>
+                <input type="password" th:field="*{password}">
+                <small class="error-text" th:errors="*{password}"></small>
+            </div>
+
+            <div class="helper-row">
+                <a th:href="@{/register}">Don't have an account?</a>
+            </div>
+
+            <button type="submit" class="btn-login">Login</button>
+        </form>
     </div>
-
-    <div class="row">
-      <label>Password</label>
-      <input type="password" th:field="*{password}">
-      <div class="error" th:errors="*{password}"></div>
-    </div>
-
-    <button type="submit">Login</button>
-  </form>
 </div>
+
 </body>
 </html>
