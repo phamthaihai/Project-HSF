@@ -11,6 +11,7 @@ public class UserDTO {
     private Integer roleId;
     private UserStatus status;
     private Boolean emailVerified;
+    private String password;
 
     public Integer getId() {
         return id;
@@ -67,4 +68,12 @@ public class UserDTO {
     public void setEmailVerified(Boolean emailVerified) {
         this.emailVerified = emailVerified;
     }
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+}
 
