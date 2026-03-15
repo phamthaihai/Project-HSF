@@ -126,7 +126,7 @@
 
     <a href="#"><i class="fa fa-cog"></i> System Settings</a>
 
-    <a href="#"><i class="fa fa-users"></i> User Accounts</a>
+    <a th:href="@{/users}"><i class="fa fa-users"></i> User Accounts</a>
 
     <a href="#"><i class="fa fa-file"></i> Post List</a>
 
@@ -141,8 +141,16 @@
         <i class="fa fa-bars"></i>
     </div>
 
-    <div>
-        <i class="fa fa-user"></i> Administrator
+    <div style="display:flex; gap:15px; align-items:center;">
+
+        <a th:href="@{/user-profile}" style="color:white; text-decoration:none;">
+            <i class="fa fa-user"></i> Administrator
+        </a>
+
+        <a th:href="@{/logout}" style="color:white; text-decoration:none;">
+            <i class="fa fa-sign-out-alt"></i> Logout
+        </a>
+
     </div>
 
 </div>
