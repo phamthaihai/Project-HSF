@@ -24,8 +24,15 @@ public class PostService {
         return postRepository.searchPublishedBlogs(normalize(keyword), normalize(category));
     }
 
-    public List<String> getAllCategories() {
-        return postRepository.findAllCategories();
+    public List<String> getPublishedCategories() {
+        return postRepository.findPublishedCategories();
+    }
+
+    public List<Post> getRelatedPublishedBlogs(Integer currentId, String category) {
+        if (category == null || category.trim().isBlank()) {
+            return List.of();
+        }
+        return postRepository.findRelatedPublishedBlogs(currentId, category.trim());
     }
 
     public Post getById(Integer id) {
