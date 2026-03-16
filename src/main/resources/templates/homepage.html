@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>StudyHub</title>
@@ -87,23 +87,46 @@
             font-weight: 600;
         }
 
+        .auth-links {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .btn-login {
+            color: #374151 !important;
+            font-weight: 500 !important;
+        }
+
+        .btn-register {
+            background: #6d28d9;
+            color: #fff !important;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-weight: 600 !important;
+        }
+
+        .btn-register:hover {
+            background: #5b21b6;
+        }
+
+        /* USER MENU */
+        .user-menu-container {
+            position: relative;
+        }
+
         .user-box {
             display: flex;
             align-items: center;
             gap: 10px;
+            cursor: pointer;
+            padding: 4px;
+            border-radius: 8px;
+            transition: background 0.2s;
         }
 
-        .user-profile-link {
-            text-decoration: none;
-            color: inherit;
-            padding: 6px 10px;
-            border-radius: 999px;
-            transition: background 0.18s ease, transform 0.18s ease;
-        }
-
-        .user-profile-link:hover {
+        .user-box:hover {
             background: #f3f4f6;
-            transform: translateY(-1px);
         }
 
         .user-name {
@@ -122,6 +145,62 @@
             justify-content: center;
             font-weight: 700;
             color: #374151;
+            overflow: hidden;
+        }
+
+        .avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* DROPDOWN MENU */
+        .user-dropdown {
+            display: none;
+            position: absolute;
+            top: 100%;
+            right: 0;
+            margin-top: 8px;
+            background: #fff;
+            border: 1px solid #e5e7eb;
+            border-radius: 10px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.12);
+            min-width: 200px;
+            z-index: 100;
+            overflow: hidden;
+        }
+
+        .user-menu-container:hover .user-dropdown {
+            display: block;
+        }
+
+        .dropdown-item {
+            display: block;
+            padding: 12px 16px;
+            color: #374151;
+            font-size: 15px;
+            transition: background 0.15s;
+        }
+
+        .dropdown-item:hover {
+            background: #f3f4f6;
+            color: #111827;
+        }
+
+        .dropdown-item.dashboard {
+            background: #f0fdf4;
+            color: #166534;
+            font-weight: 600;
+        }
+
+        .dropdown-item.dashboard:hover {
+            background: #dcfce7;
+        }
+
+        .dropdown-divider {
+            height: 1px;
+            background: #e5e7eb;
+            margin: 4px 0;
         }
 
         /* PAGE */
@@ -157,11 +236,10 @@
             text-decoration: underline;
         }
 
-        /* COURSES */
-        /* COURSES */
+        /* COURSE GRID */
         .course-grid {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: repeat(4, 1fr);
             gap: 22px;
         }
 
@@ -172,6 +250,8 @@
             overflow: hidden;
             box-shadow: 0 6px 20px rgba(15, 23, 42, 0.05);
             transition: transform 0.18s ease, box-shadow 0.18s ease;
+            display: flex;
+            flex-direction: column;
         }
 
         .course-card:hover {
@@ -181,59 +261,81 @@
 
         .course-thumb {
             width: 100%;
-            height: 220px;
+            height: 190px;
             object-fit: cover;
             display: block;
             background: #e5e7eb;
         }
 
         .course-body {
-            padding: 16px;
+            padding: 16px 16px 18px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
         }
 
         .course-title {
             margin: 0 0 10px;
-            font-size: 22px;
+            font-size: 18px;
             line-height: 1.4;
             font-weight: 700;
             color: #111827;
-            min-height: 60px;
+
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            min-height: 50px;
         }
 
-        .course-desc {
-            margin: 0 0 12px;
-            font-size: 14px;
-            line-height: 1.6;
-            color: #6b7280;
-            min-height: 45px;
+        .course-card:hover .course-title {
+            color: #2563eb;
         }
 
         .course-meta {
-            font-size: 14px;
-            color: #374151;
-            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            margin-top: auto;
+            padding-top: 12px;
         }
 
         .course-price {
-            font-size: 20px;
+            font-size: 18px;
             font-weight: 800;
-            color: #2563eb;
-            margin-top: 12px;
+            color: #111827;
         }
 
         .course-btn {
-            margin-top: 14px;
-            display: inline-block;
-            padding: 10px 14px;
-            border-radius: 10px;
-            background: #2563eb;
-            color: #fff;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 8px 16px;
+            border-radius: 8px;
             font-size: 14px;
-            font-weight: 700;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s;
         }
 
-        .course-btn:hover {
-            background: #1d4ed8;
+        .btn-enroll {
+            background: #6d28d9;
+            color: #fff;
+        }
+
+        .btn-enroll:hover {
+            background: #5b21b6;
+        }
+
+        .btn-continue {
+            background: #16a34a;
+            color: #fff;
+        }
+
+        .btn-continue:hover {
+            background: #15803d;
         }
 
         /* POSTS */
@@ -271,8 +373,8 @@
 
         .post-title {
             margin: 0 0 10px;
-            font-size: 27px;
-            line-height: 1.45;
+            font-size: 18px;
+            line-height: 1.4;
             font-weight: 700;
             color: #111827;
 
@@ -280,7 +382,7 @@
             -webkit-line-clamp: 2;
             -webkit-box-orient: vertical;
             overflow: hidden;
-            min-height: 52px;
+            min-height: 50px;
         }
 
         .post-card:hover .post-title {
@@ -344,12 +446,8 @@
 
         /* RESPONSIVE */
         @media (max-width: 1200px) {
-            .post-grid {
+            .course-grid, .post-grid {
                 grid-template-columns: repeat(3, 1fr);
-            }
-
-            .course-grid {
-                grid-template-columns: repeat(2, 1fr);
             }
         }
 
@@ -371,7 +469,7 @@
                 font-size: 28px;
             }
 
-            .post-grid {
+            .course-grid, .post-grid {
                 grid-template-columns: repeat(2, 1fr);
             }
         }
@@ -392,7 +490,7 @@
                 flex-direction: column;
             }
 
-            .post-grid {
+            .course-grid, .post-grid {
                 grid-template-columns: 1fr;
             }
 
@@ -401,10 +499,6 @@
                 justify-content: center;
                 padding: 14px 0;
                 text-align: center;
-            }
-
-            .course-grid {
-                grid-template-columns: 1fr;
             }
         }
     </style>
@@ -417,40 +511,50 @@
             <a th:href="@{/}" class="logo">LOGO</a>
 
             <nav class="nav">
-                <th:block th:if="${user != null
-        and user.role != null
-        and user.role.name != null
-        and (#strings.equalsIgnoreCase(user.role.name, 'ADMIN')
-            or #strings.equalsIgnoreCase(user.role.name, 'MANAGER')
-            or #strings.equalsIgnoreCase(user.role.name, 'MARKETING'))}">
-                    <a th:href="@{/posts}">Posts</a>
-                </th:block>
-
-                <th:block th:if="${user == null
-        or user.role == null
-        or user.role.name == null
-        or #strings.equalsIgnoreCase(user.role.name, 'MEMBER')}">
-                    <a th:href="@{/blogs}">Blogs</a>
-                </th:block>
-
-                <a th:href="@{/courses}">Courses</a>
+                <a th:href="@{/blogs}">Blogs</a>
+                <a th:href="@{/public-courses}">Courses</a>
             </nav>
         </div>
 
         <div class="header-right">
-            <th:block th:if="${user != null}">
-                <a th:href="@{/user-profile}" class="user-box user-profile-link">
-                    <span class="user-name" th:text="${user.fullName}">User Name</span>
-                    <div class="avatar"
-                         th:text="${user.fullName != null && !#strings.isEmpty(user.fullName) ? #strings.substring(user.fullName,0,1) : 'U'}">
-                        AVT
-                    </div>
+            <!-- Khi chưa đăng nhập -->
+            <th:block th:if="${user == null}">
+                <div class="auth-links">
+                    <a th:href="@{/login}" class="btn-login">Đăng nhập</a>
+                    <a th:href="@{/register}" class="btn-register">Đăng ký</a>
                 </div>
             </th:block>
 
-            <th:block th:if="${user == null}">
-                <a th:href="@{/login}">Login</a>
-                <a th:href="@{/register}">Register</a>
+            <!-- Khi đã đăng nhập -->
+            <th:block th:if="${user != null}">
+                <div class="user-menu-container">
+                    <div class="user-box">
+                        <span class="user-name" th:text="${user.fullName}">User Name</span>
+                        <div class="avatar">
+                            <span th:text="${#strings.substring(user.fullName, 0, 1)}">U</span>
+                        </div>
+                    </div>
+
+                    <!-- Dropdown menu -->
+                    <div class="user-dropdown">
+                        <!-- Chỉ hiển thị cho ADMIN, MANAGER, MARKETING -->
+                        <a th:if="${isAdmin}" th:href="@{/admin/dashboard}" class="dropdown-item dashboard">
+                            📊 Bảng điều khiển
+                        </a>
+                        <a th:if="${isAdmin}" class="dropdown-divider"></a>
+
+                        <a th:href="@{/my-courses}" class="dropdown-item">
+                            📚 Khóa học của tôi
+                        </a>
+                        <a th:href="@{/user-profile}" class="dropdown-item">
+                            👤 Hồ sơ cá nhân
+                        </a>
+                        <div class="dropdown-divider"></div>
+                        <a th:href="@{/logout}" class="dropdown-item">
+                            🚪 Đăng xuất
+                        </a>
+                    </div>
+                </div>
             </th:block>
         </div>
     </div>
@@ -462,52 +566,48 @@
         <!-- Featured Courses -->
         <section class="section">
             <div class="section-header">
-                <h2 class="section-title">Featured Courses</h2>
-                <a class="section-link" th:href="@{/public-courses}">View All</a>
+                <h2 class="section-title">Khóa học nổi bật</h2>
+                <a class="section-link" th:href="@{/courses}">Xem tất cả</a>
             </div>
 
-            <div th:if="${#lists.isEmpty(courses)}" style="background:#fff;border:1px solid #e5e7eb;border-radius:16px;padding:24px;">
-                No featured courses available.
-            </div>
-
-            <div class="course-grid" th:if="${!#lists.isEmpty(courses)}">
-                <div class="course-card"
-                     th:each="course, stat : ${courses}"
-                     th:if="${stat.index < 6}">
-
-                    <img class="course-thumb"
-                         th:src="${course.thumbnailUrl != null and !#strings.isEmpty(course.thumbnailUrl)
-              ? course.thumbnailUrl : 'https://via.placeholder.com/600x400?text=Course'}"
-                         alt="Course image">
+            <div class="course-grid">
+                <div class="course-card" th:each="c : ${courses}">
+                    <a th:href="@{/courses/{id}(id=${c.courseId})}">
+                        <img class="course-thumb"
+                             th:src="${c.thumbnailUrl != null && !#strings.isEmpty(c.thumbnailUrl) ? c.thumbnailUrl : 'https://picsum.photos/600/400'}"
+                             alt="Course thumbnail">
+                    </a>
 
                     <div class="course-body">
-                        <h3 class="course-title" th:text="${course.title}">Course title</h3>
-
-                        <p class="course-desc" th:text="${course.description}">
-                            Course description
-                        </p>
-
-                        <div class="course-meta">
-                            Category:
-                            <span th:text="${course.category != null ? course.category.name : 'N/A'}"></span>
-                        </div>
-
-                        <div class="course-meta">
-                            Level: <span th:text="${course.level}"></span>
-                        </div>
-
-                        <div class="course-meta">
-                            Duration: <span th:text="${course.duration}"></span> hours
-                        </div>
-
-                        <div class="course-price"
-                             th:text="${#numbers.formatDecimal(course.price, 1, 'COMMA', 0, 'POINT')}">
-                        </div>
-
-                        <a class="course-btn"
-                           th:href="@{/public-courses/{id}(id=${course.courseId})}">
-                            View Details
+                        <a th:href="@{/courses/{id}(id=${c.courseId})}">
+                            <h3 class="course-title" th:text="${c.title}">Course Title</h3>
                         </a>
+
+                        <div class="course-meta">
+                            <span class="course-price" th:text="${#numbers.formatDecimal(c.price, 0, 'COMMA', 0, 'POINT') + ' VNĐ'}">0 VNĐ</span>
+
+                            <!-- Nếu chưa đăng nhập -->
+                            <th:block th:if="${user == null}">
+                                <a th:href="@{/courses/{id}(id=${c.courseId})}" class="course-btn btn-enroll">
+                                    + Đăng ký ngay
+                                </a>
+                            </th:block>
+
+                            <!-- Nếu đã đăng nhập -->
+                            <th:block th:if="${user != null}">
+                                <!-- Kiểm tra đã enroll chưa -->
+                                <th:block th:if="${enrolledCourseIds != null && enrolledCourseIds.contains(c.courseId)}">
+                                    <a th:href="@{/courses/{id}(id=${c.courseId})}" class="course-btn btn-continue">
+                                        Tiếp tục học
+                                    </a>
+                                </th:block>
+                                <th:block th:if="${enrolledCourseIds == null || !enrolledCourseIds.contains(c.courseId)}">
+                                    <a th:href="@{/courses/{id}(id=${c.courseId})}" class="course-btn btn-enroll">
+                                        Enroll Now
+                                    </a>
+                                </th:block>
+                            </th:block>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -516,8 +616,8 @@
         <!-- Featured Posts -->
         <section class="section">
             <div class="section-header">
-                <h2 class="section-title">Featured Posts</h2>
-                <a class="section-link" th:href="@{/blogs}">View All</a>
+                <h2 class="section-title">Bài viết mới</h2>
+                <a class="section-link" th:href="@{/blogs}">Xem tất cả</a>
             </div>
 
             <div class="post-grid">
@@ -526,8 +626,9 @@
                    th:href="@{/blogs/{id}(id=${post.postId})}">
 
                     <img class="post-thumb"
-                         th:src="${post.thumbnailUrl != null && !#strings.isEmpty(post.thumbnailUrl)} ? @{${post.thumbnailUrl}} : 'https://picsum.photos/600/400'"
+                         src="https://picsum.photos/600/400"
                          alt="Post image">
+
                     <div class="post-body">
                         <h3 class="post-title" th:text="${post.name}">Post title</h3>
 
@@ -538,9 +639,7 @@
                         <div class="post-meta">
                             <span class="post-type" th:text="${post.type}">Category</span>
                             <span class="post-date"
-                                  th:text="${post.createdAt != null ? #temporals.format(post.createdAt, 'dd/MM/yyyy') : ''}">
-                                16/03/2026
-                            </span>
+                                  th:text="${#temporals.format(post.createdAt, 'dd/MM/yyyy')}">16/03/2026</span>
                         </div>
                     </div>
                 </a>
@@ -558,4 +657,4 @@
 </footer>
 
 </body>
-</html>
+</html>l>

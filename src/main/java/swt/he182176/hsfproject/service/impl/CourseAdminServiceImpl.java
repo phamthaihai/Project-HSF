@@ -30,7 +30,7 @@ public class CourseAdminServiceImpl implements CourseAdminService {
 
     @Override
     public List<Course> getAllCourses() {
-        return courseAdminRepository.findAll();
+        return courseAdminRepository.findAllWithDetails();
     }
 
     @Override
@@ -40,6 +40,10 @@ public class CourseAdminServiceImpl implements CourseAdminService {
 
     @Override
     public Course updateCourse(Course course) {
+        if (course.getSalePrice() != null && course.getSalePrice() > 0) {
+            course.setPrice(course.getPrice() - course.getSalePrice());
+            if (course.getPrice() < 0) course.setPrice(0);
+        }
         return courseAdminRepository.save(course);
     }
 

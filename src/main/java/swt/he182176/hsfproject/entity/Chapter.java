@@ -28,7 +28,7 @@ public class Chapter {
     private Course course;
 
     @OneToMany(mappedBy = "chapter", cascade = CascadeType.ALL, orphanRemoval = true)
-    @OrderBy("order ASC")
+    @OrderBy("orderIndex ASC")
     private List<Lesson> lessons = new ArrayList<>();
 
     @Column(name="thumbnail_url", columnDefinition = "NVARCHAR(1000)")

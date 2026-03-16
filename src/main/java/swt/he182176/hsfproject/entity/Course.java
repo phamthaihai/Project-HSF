@@ -22,6 +22,9 @@ public class Course {
     @Column(name="price")
     private double price;
 
+    @Column(name="sale_price")
+    private Double salePrice;
+
     @Column(name="level", columnDefinition = "NVARCHAR(50)")
     private String level;
 
@@ -99,6 +102,14 @@ public class Course {
         this.price = price;
     }
 
+    public Double getSalePrice() {
+        return salePrice;
+    }
+
+    public void setSalePrice(Double salePrice) {
+        this.salePrice = salePrice;
+    }
+
     public String getLevel() {
         return level;
     }
@@ -140,6 +151,10 @@ public class Course {
     }
 
     public Boolean isPublished() {
+        return published;
+    }
+
+    public Boolean getPublished() {
         return published;
     }
 
