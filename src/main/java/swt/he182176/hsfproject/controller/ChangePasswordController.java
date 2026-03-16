@@ -7,8 +7,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import swt.he182176.hsfproject.dto.ChangePasswordDTO;
+import swt.he182176.hsfproject.dto.ProfileDTO;
 import swt.he182176.hsfproject.entity.User;
 import swt.he182176.hsfproject.service.UserService;
 
@@ -19,18 +21,12 @@ public class ChangePasswordController {
     private UserService userService;
 
     @GetMapping("/change-password")
-    public String showChangePasswordForm(Model model, HttpSession session) {
-        User user = (User) session.getAttribute("user");
-        if (user == null) {
-            return "redirect:/login";
-        }
-
-        model.addAttribute("changePasswordDTO", new ChangePasswordDTO());
-        return "change-password";
+    public String showChangePasswordForm() {
+        return "redirect:/user-profile?tab=password";
     }
 
     @PostMapping("/change-password")
-    public String changePassword(@Valid ChangePasswordDTO dto,
+    public String changePassword(@Valid @ModelAttribute("changePasswordDTO") ChangePasswordDTO dto,
                                  BindingResult result,
                                  Model model,
                                  HttpSession session) {
@@ -40,7 +36,15 @@ public class ChangePasswordController {
         }
 
         if (result.hasErrors()) {
-            return "change-password";
+            model.addAttribute("currentUser", user);
+            model.addAttribute("profileDTO", new ProfileDTO(
+                    user.getFullName(),
+                    user.getEmail(),
+                    user.getPhone(),
+                    user.getAvatar()
+            ));
+            model.addAttribute("activeTab", "password");
+            return "user-profile";
         }
 
         try {
@@ -54,8 +58,16 @@ public class ChangePasswordController {
             session.invalidate();
             return "redirect:/login?msg=passwordChanged";
         } catch (RuntimeException e) {
-            model.addAttribute("error", e.getMessage());
-            return "change-password";
+            model.addAttribute("currentUser", user);
+            model.addAttribute("profileDTO", new ProfileDTO(
+                    user.getFullName(),
+                    user.getEmail(),
+                    user.getPhone(),
+                    user.getAvatar()
+            ));
+            model.addAttribute("activeTab", "password");
+            model.addAttribute("passwordError", e.getMessage());
+            return "user-profile";
         }
     }
 }

@@ -93,6 +93,19 @@
             gap: 10px;
         }
 
+        .user-profile-link {
+            text-decoration: none;
+            color: inherit;
+            padding: 6px 10px;
+            border-radius: 999px;
+            transition: background 0.18s ease, transform 0.18s ease;
+        }
+
+        .user-profile-link:hover {
+            background: #f3f4f6;
+            transform: translateY(-1px);
+        }
+
         .user-name {
             font-size: 16px;
             color: #111827;
@@ -196,7 +209,6 @@
             line-height: 1.45;
             font-weight: 700;
             color: #111827;
-
             display: -webkit-box;
             -webkit-line-clamp: 2;
             -webkit-box-orient: vertical;
@@ -213,7 +225,6 @@
             font-size: 14px;
             line-height: 1.6;
             color: #6b7280;
-
             display: -webkit-box;
             -webkit-line-clamp: 2;
             -webkit-box-orient: vertical;
@@ -352,13 +363,13 @@
 
         <div class="header-right">
             <th:block th:if="${user != null}">
-                <div class="user-box">
+                <a th:href="@{/user-profile}" class="user-box user-profile-link">
                     <span class="user-name" th:text="${user.fullName}">User Name</span>
                     <div class="avatar"
                          th:text="${user.fullName != null && !#strings.isEmpty(user.fullName) ? #strings.substring(user.fullName,0,1) : 'U'}">
                         AVT
                     </div>
-                </div>
+                </a>
             </th:block>
 
             <th:block th:if="${user == null}">
@@ -372,7 +383,6 @@
 <main class="page">
     <div class="container">
 
-        <!-- Featured Courses -->
         <section class="section">
             <div class="section-header">
                 <h2 class="section-title">Featured Courses</h2>
@@ -384,7 +394,6 @@
             </div>
         </section>
 
-        <!-- Featured Posts -->
         <section class="section">
             <div class="section-header">
                 <h2 class="section-title">Featured Posts</h2>
@@ -399,6 +408,7 @@
                     <img class="post-thumb"
                          th:src="${post.thumbnailUrl != null && !#strings.isEmpty(post.thumbnailUrl)} ? @{${post.thumbnailUrl}} : 'https://picsum.photos/600/400'"
                          alt="Post image">
+
                     <div class="post-body">
                         <h3 class="post-title" th:text="${post.name}">Post title</h3>
 
