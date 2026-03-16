@@ -7,6 +7,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import swt.he182176.hsfproject.service.CourseAdminService;
 
+import java.util.Map;
+
 @Controller
 @RequestMapping("/admin")
 public class AdminDashboardController {
@@ -21,5 +23,6 @@ public class AdminDashboardController {
 
         return "admin-dashboard";
     }
+
 }
 

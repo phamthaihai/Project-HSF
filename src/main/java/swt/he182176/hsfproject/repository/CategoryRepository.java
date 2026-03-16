@@ -6,5 +6,6 @@ import swt.he182176.hsfproject.entity.Category;
 import java.util.List;
 
 public interface CategoryRepository extends JpaRepository<Category, Integer> {
+    boolean existsByName(String name);
     List<Category> findByStatusIgnoreCase(String status);
 }

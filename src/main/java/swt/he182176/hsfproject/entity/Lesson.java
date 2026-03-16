@@ -2,72 +2,47 @@ package swt.he182176.hsfproject.entity;
 
 import jakarta.persistence.*;
 
-import java.time.LocalDateTime;
-
 @Entity
-@Table(name = "lesson")
+@Table(name="lesson")
 public class Lesson {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "lesson_id")
     private Integer lessonId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "chapter_id", nullable = false)
-    private Chapter chapter;
-
-    @Column(name = "title", nullable = false, length = 255)
+    @Column(name = "title", nullable = false, columnDefinition = "NVARCHAR(500)")
     private String title;
 
-    @Column(name = "content_type", length = 30)
+    @Column(name = "content_type", columnDefinition = "NVARCHAR(50)")
     private String contentType;
 
-    @Column(name = "video_url", length = 1000)
-    private String videoUrl;
+    @Column(name = "content_video", columnDefinition = "NVARCHAR(1000)")
+    private String contentVideo;
 
-    @Column(name = "pdf_url", length = 1000)
-    private String pdfUrl;
+    @Column(name = "duration")
+    private Integer duration;
 
-    @Column(name = "content", columnDefinition = "NVARCHAR(MAX)")
-    private String content;
+    @Column(name = "order_index")
+    private Integer orderIndex;
 
-    @Column(name = "sort_order")
-    private Integer sortOrder;
+    @Column(name = "preview_lesson")
+    private Boolean isPreview = false;
 
-    @Column(name = "status", length = 20)
-    private String status;
+    @ManyToOne
+    @JoinColumn(name = "chapter_id")
+    private Chapter chapter;
 
-    @Column(name = "created_at")
-    private LocalDateTime createdAt;
-
-    @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
-
-    public Lesson() {
+    public Lesson(Integer lessonId, String title, String contentType, String contentVideo, Integer duration, Integer orderIndex, Boolean isPreview, Chapter chapter) {
+        this.lessonId = lessonId;
+        this.title = title;
+        this.contentType = contentType;
+        this.contentVideo = contentVideo;
+        this.duration = duration;
+        this.orderIndex = orderIndex;
+        this.isPreview = isPreview;
+        this.chapter = chapter;
     }
 
-    @PrePersist
-    public void prePersist() {
-        LocalDateTime now = LocalDateTime.now();
-        if (createdAt == null) {
-            createdAt = now;
-        }
-        if (updatedAt == null) {
-            updatedAt = now;
-        }
-        if (status == null || status.trim().isEmpty()) {
-            status = "ACTIVE";
-        }
-        if (sortOrder == null) {
-            sortOrder = 1;
-        }
-    }
-
-    @PreUpdate
-    public void preUpdate() {
-        updatedAt = LocalDateTime.now();
-    }
+    public Lesson(){}
 
     public Integer getLessonId() {
         return lessonId;
@@ -75,14 +50,6 @@ public class Lesson {
 
     public void setLessonId(Integer lessonId) {
         this.lessonId = lessonId;
-    }
-
-    public Chapter getChapter() {
-        return chapter;
-    }
-
-    public void setChapter(Chapter chapter) {
-        this.chapter = chapter;
     }
 
     public String getTitle() {
@@ -101,59 +68,43 @@ public class Lesson {
         this.contentType = contentType;
     }
 
-    public String getVideoUrl() {
-        return videoUrl;
+    public String getContentVideo() {
+        return contentVideo;
     }
 
-    public void setVideoUrl(String videoUrl) {
-        this.videoUrl = videoUrl;
+    public void setContentVideo(String contentVideo) {
+        this.contentVideo = contentVideo;
     }
 
-    public String getPdfUrl() {
-        return pdfUrl;
+    public Integer getDuration() {
+        return duration;
     }
 
-    public void setPdfUrl(String pdfUrl) {
-        this.pdfUrl = pdfUrl;
+    public void setDuration(Integer duration) {
+        this.duration = duration;
     }
 
-    public String getContent() {
-        return content;
+    public Integer getOrderIndex() {
+        return orderIndex;
     }
 
-    public void setContent(String content) {
-        this.content = content;
+    public void setOrderIndex(Integer orderIndex) {
+        this.orderIndex = orderIndex;
     }
 
-    public Integer getSortOrder() {
-        return sortOrder;
+    public Boolean getPreview() {
+        return isPreview;
     }
 
-    public void setSortOrder(Integer sortOrder) {
-        this.sortOrder = sortOrder;
+    public void setPreview(Boolean preview) {
+        isPreview = preview;
     }
 
-    public String getStatus() {
-        return status;
+    public Chapter getChapter() {
+        return chapter;
     }
 
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(LocalDateTime updatedAt) {
-        this.updatedAt = updatedAt;
+    public void setChapter(Chapter chapter) {
+        this.chapter = chapter;
     }
 }

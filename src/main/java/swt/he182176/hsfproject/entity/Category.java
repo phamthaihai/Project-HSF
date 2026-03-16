@@ -12,13 +12,13 @@ public class Category {
     @Column(name = "category_id")
     private Integer categoryId;
 
-    @Column(name = "name")
+    @Column(name = "name", columnDefinition = "NVARCHAR(255)")
     private String name;
 
-    @Column(name = "description")
+    @Column(name = "description", columnDefinition = "NVARCHAR(MAX)")
     private String description;
 
-    @Column(name = "status")
+    @Column(name = "status", columnDefinition = "NVARCHAR(50)")
     private String status;
 
     @OneToMany(mappedBy = "category", cascade = CascadeType.ALL)
