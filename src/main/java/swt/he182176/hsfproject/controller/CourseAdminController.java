@@ -1,5 +1,6 @@
 package swt.he182176.hsfproject.controller;
 
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -11,6 +12,7 @@ import swt.he182176.hsfproject.repository.CategoryRepository;
 import swt.he182176.hsfproject.repository.UserRepository;
 import swt.he182176.hsfproject.service.CourseAdminService;
 
+import java.time.LocalDateTime;
 import java.util.Map;
 
 @Controller
@@ -18,19 +20,16 @@ import java.util.Map;
 public class CourseAdminController {
 
     @Autowired
-    CourseAdminService courseService;
+    private CourseAdminService courseService;
 
     @Autowired
-    CategoryRepository categoryRepository;
+    private CategoryRepository categoryRepository;
 
     @Autowired
-    UserRepository userRepository;
-
-    // ================= DASHBOARD =================
+    private UserRepository userRepository;
 
     @GetMapping("/dashboard")
-    public String showDashboard(Model model){
-
+    public String showDashboard(Model model) {
         Map<String, Object> data = courseService.getDashboardData();
 
         model.addAttribute("totalUsers", data.get("totalUsers"));
@@ -42,23 +41,26 @@ public class CourseAdminController {
         return "admin-dashboard";
     }
 
-    // ================= COURSE LIST =================
-
     @GetMapping
-    public String showCourseList(Model model){
-
+    public String showCourseList(Model model) {
         model.addAttribute("courses", courseService.getAllCourses());
-
         return "course-list";
     }
 
-    // ================= ADD COURSE =================
-
     @GetMapping("/add")
-    public String showAddCourse(Model model){
-
+    public String showAddCourse(Model model, HttpSession session) {
         Course course = new Course();
-        course.setInstructor(new User());
+
+        User loginUser = (User) session.getAttribute("user");
+
+        if (loginUser != null
+                && loginUser.getRole() != null
+                && "MANAGER".equalsIgnoreCase(loginUser.getRole().getName())) {
+            course.setInstructor(loginUser);
+        } else {
+            course.setInstructor(new User());
+        }
+
         course.setCategory(new Category());
 
         model.addAttribute("course", course);
@@ -68,11 +70,8 @@ public class CourseAdminController {
         return "course-detail";
     }
 
-    // ================= EDIT COURSE =================
-
     @GetMapping("/edit/{id}")
-    public String showEditCourse(@PathVariable int id, Model model){
-
+    public String showEditCourse(@PathVariable int id, Model model) {
         Course course = courseService.getCourseById(id);
 
         model.addAttribute("course", course);
@@ -82,24 +81,55 @@ public class CourseAdminController {
         return "course-detail";
     }
 
-    // ================= SAVE COURSE =================
-
     @PostMapping("/save")
-    public String saveCourse(@ModelAttribute Course course){
+    public String saveCourse(@ModelAttribute Course course,
+                             @RequestParam(required = false) Integer categoryId,
+                             @RequestParam(required = false) Integer instructorId,
+                             @RequestParam(defaultValue = "false") boolean published,
+                             HttpSession session) {
+
+        Course oldCourse = null;
+        if (course.getCourseId() != null) {
+            oldCourse = courseService.getCourseById(course.getCourseId());
+        }
+
+        if (oldCourse != null && oldCourse.getCreateAt() != null) {
+            course.setCreateAt(oldCourse.getCreateAt());
+        } else {
+            course.setCreateAt(LocalDateTime.now());
+        }
+
+        if (categoryId != null) {
+            Category category = categoryRepository.findById(categoryId).orElse(null);
+            course.setCategory(category);
+        } else {
+            course.setCategory(null);
+        }
+
+        if (instructorId != null) {
+            User instructor = userRepository.findById(instructorId).orElse(null);
+            course.setInstructor(instructor);
+        } else {
+            User loginUser = (User) session.getAttribute("user");
+            if (loginUser != null
+                    && loginUser.getRole() != null
+                    && "MANAGER".equalsIgnoreCase(loginUser.getRole().getName())) {
+                course.setInstructor(loginUser);
+            } else {
+                course.setInstructor(null);
+            }
+        }
+
+        course.setPublished(published);
 
         courseService.updateCourse(course);
 
         return "redirect:/courses";
     }
 
-    // ================= DELETE COURSE =================
-
     @GetMapping("/delete/{id}")
-    public String deleteCourse(@PathVariable int id){
-
+    public String deleteCourse(@PathVariable int id) {
         courseService.deleteCourse(id);
-
         return "redirect:/courses";
     }
-
 }

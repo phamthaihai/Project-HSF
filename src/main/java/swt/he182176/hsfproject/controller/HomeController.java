@@ -4,20 +4,38 @@ import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import swt.he182176.hsfproject.entity.Course;
 import swt.he182176.hsfproject.entity.User;
+import swt.he182176.hsfproject.repository.EnrollmentRepository;
+import swt.he182176.hsfproject.service.CourseAdminService;
+import swt.he182176.hsfproject.service.CourseService;
 import swt.he182176.hsfproject.service.PostService;
+
+import java.util.List;
 
 @Controller
 public class HomeController {
 
+    private final CourseService courseService;
+    private final EnrollmentRepository enrollmentRepository;
     private final PostService postService;
 
-    public HomeController(PostService postService) {
+    public HomeController(CourseService courseService,
+                          EnrollmentRepository enrollmentRepository,
+                          PostService postService) {
+        this.courseService = courseService;
+        this.enrollmentRepository = enrollmentRepository;
         this.postService = postService;
     }
 
     @GetMapping("/")
-    public String home(Model model, HttpSession session) {
+    public String home(HttpSession session, Model model) {
+
+        List<Course> courses = courseService.getPublicCourses(null, null);
+        model.addAttribute("courses", courses);
+
+        model.addAttribute("latestPosts", postService.getLatestPublishedPosts());
+
         User user = (User) session.getAttribute("user");
 
         model.addAttribute("user", user);
