@@ -102,7 +102,7 @@
 <div class="container">
     <div class="header">
         <h3>
-            Edit Chapter -
+            <span th:text="${chapter.chapterId != null ? 'Edit Chapter' : 'Add Chapter'}">Chapter</span> -
             <span th:text="${course.title}">Course name</span>
         </h3>
         <a class="back-btn"
@@ -115,12 +115,12 @@
 
         <div class="form-group">
             <label>Chapter Title <span>*</span></label>
-            <input type="text" th:field="*{chaptertTitle}" required>
+            <input type="text" th:field="*{title}" required>
         </div>
 
         <div class="form-group">
             <label>Description</label>
-            <textarea th:field="*{chapterDescription}"></textarea>
+            <textarea th:field="*{description}"></textarea>
         </div>
 
         <div class="form-group">
@@ -129,7 +129,7 @@
             <div class="note">The order in which this chapter appears in the course</div>
         </div>
 
-        <button class="btn-submit" type="submit">Update Chapter</button>
+        <button class="btn-submit" type="submit" th:text="${chapter.chapterId != null ? 'Update Chapter' : 'Create Chapter'}">Save Chapter</button>
     </form>
 </div>
 

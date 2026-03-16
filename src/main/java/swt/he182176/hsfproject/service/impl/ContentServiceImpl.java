@@ -20,7 +20,7 @@ public class ContentServiceImpl implements ContentService {
     public java.util.List<Chapter> getChaptersByCourse(Integer courseId) {
         java.util.List<Chapter> chapters = chapterRepo.findByCourse_CourseIdOrderByChapterOrderAsc(courseId);
         for (Chapter ch : chapters) {
-            ch.setLessons(lessonRepo.findByChapter_ChapterIdOrderByOrderAsc(ch.getChapterId()));
+            ch.setLessons(lessonRepo.findByChapter_ChapterIdOrderByOrderIndexAsc(ch.getChapterId()));
         }
         return chapters;
     }
@@ -39,7 +39,7 @@ public class ContentServiceImpl implements ContentService {
 
     @Override
     public java.util.List<Lesson> getLessonsByChapter(Integer chapterId) {
-        return lessonRepo.findByChapter_ChapterIdOrderByOrderAsc(chapterId);
+        return lessonRepo.findByChapter_ChapterIdOrderByOrderIndexAsc(chapterId);
     }
 
     @Override public Lesson getLessonById(Integer id) {

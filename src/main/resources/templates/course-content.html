@@ -280,9 +280,9 @@
                     <div class="chapter-header">
                         <div>
                             <div class="chapter-title-text">
-                                Chapter <span th:text="${ch.chapterOrder}">1</span>: <span th:text="${ch.chaptertTitle}">Title</span>
+                                Chapter <span th:text="${ch.chapterOrder}">1</span>: <span th:text="${ch.title}">Title</span>
                             </div>
-                            <div class="chapter-desc" th:if="${ch.chapterDescription != null && !#strings.isEmpty(ch.chapterDescription)}" th:text="${ch.chapterDescription}">Description</div>
+                            <div class="chapter-desc" th:if="${ch.description != null && !#strings.isEmpty(ch.description)}" th:text="${ch.description}">Description</div>
                         </div>
                         <div class="chapter-actions">
                             <a class="btn-add-lesson" th:href="@{/courses/chapter/{chapterId}/lesson/add(chapterId=${ch.chapterId})}">+ Add Lesson</a>

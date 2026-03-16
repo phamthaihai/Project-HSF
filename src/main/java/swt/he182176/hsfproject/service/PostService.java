@@ -53,6 +53,14 @@ public class PostService {
         return postRepository.findPublishedPosts(PageRequest.of(0, 4));
     }
 
+    public List<Post> getLatestPosts() {
+        try {
+            return postRepository.findPublishedPosts(PageRequest.of(0, 4));
+        } catch (Exception e) {
+            return List.of();
+        }
+    }
+
     public List<Post> getRelatedPublishedBlogs(Integer currentId, String category) {
         if (category == null || category.isBlank()) return List.of();
         return postRepository.findRelatedPublishedBlogs(currentId, category);

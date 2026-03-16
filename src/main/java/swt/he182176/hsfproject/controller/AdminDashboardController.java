@@ -24,18 +24,5 @@ public class AdminDashboardController {
         return "admin-dashboard";
     }
 
-
-   @GetMapping("/dashboard")
-   public String showDashboard(Model model){
-
-       Map<String, Object> data = courseAdminService.getDashboardData();
-       model.addAttribute("totalUsers", data.get("totalUsers"));
-       model.addAttribute("totalCourses", data.get("totalCourses"));
-       model.addAttribute("publishedCourses", data.get("publishedCourses"));
-       model.addAttribute("publishedPosts", data.get("publishedPosts"));
-       model.addAttribute("recentCourses", data.get("recentCourses"));
-
-        return "admin-dashboard";
-   }
 }
 

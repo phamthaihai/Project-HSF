@@ -3,6 +3,8 @@ package swt.he182176.hsfproject.entity;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name="course")
@@ -40,7 +42,9 @@ public class Course {
     @Column(name="published", nullable = false)
     private Boolean published;
 
-
+    @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderBy("chapterOrder ASC")
+    private List<Chapter> chapters = new ArrayList<>();
 
     @Column(name = "created_at")
     private LocalDateTime createAt;
@@ -135,7 +139,7 @@ public class Course {
         this.thumbnailUrl = thumbnailUrl;
     }
 
-    public Boolean getPublished() {
+    public Boolean isPublished() {
         return published;
     }
 
@@ -149,5 +153,13 @@ public class Course {
 
     public void setCreateAt(LocalDateTime createAt) {
         this.createAt = createAt;
+    }
+
+    public List<Chapter> getChapters() {
+        return chapters;
+    }
+
+    public void setChapters(List<Chapter> chapters) {
+        this.chapters = chapters;
     }
 }

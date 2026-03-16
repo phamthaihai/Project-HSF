@@ -22,7 +22,7 @@ public class Lesson {
     private Integer duration;
 
     @Column(name = "order_index")
-    private Integer order;
+    private Integer orderIndex;
 
     @Column(name = "preview_lesson")
     private Boolean isPreview = false;
@@ -31,13 +31,13 @@ public class Lesson {
     @JoinColumn(name = "chapter_id")
     private Chapter chapter;
 
-    public Lesson(Integer lessonId, String title, String contentType, String contentVideo, Integer duration, Integer order, Boolean isPreview, Chapter chapter) {
+    public Lesson(Integer lessonId, String title, String contentType, String contentVideo, Integer duration, Integer orderIndex, Boolean isPreview, Chapter chapter) {
         this.lessonId = lessonId;
         this.title = title;
         this.contentType = contentType;
         this.contentVideo = contentVideo;
         this.duration = duration;
-        this.order = order;
+        this.orderIndex = orderIndex;
         this.isPreview = isPreview;
         this.chapter = chapter;
     }
@@ -84,12 +84,12 @@ public class Lesson {
         this.duration = duration;
     }
 
-    public Integer getOrder() {
-        return order;
+    public Integer getOrderIndex() {
+        return orderIndex;
     }
 
-    public void setOrder(Integer order) {
-        this.order = order;
+    public void setOrderIndex(Integer orderIndex) {
+        this.orderIndex = orderIndex;
     }
 
     public Boolean getPreview() {

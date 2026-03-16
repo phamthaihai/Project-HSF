@@ -12,10 +12,10 @@ public class Chapter {
     private Integer chapterId;
 
     @Column(name="name", columnDefinition = "NVARCHAR(255)")
-    private String Name;
+    private String name;
 
     @Column(name="title", columnDefinition = "NVARCHAR(500)")
-    private String chaptertTitle;
+    private String title;
 
     @Column(name="description", columnDefinition = "NVARCHAR(MAX)")
     private String chapterDescription;
@@ -36,10 +36,10 @@ public class Chapter {
 
     public Chapter(){}
 
-    public Chapter(Integer chapterId, String name, String chaptertTitle, String chapterDescription, Integer chapterOrder, Course course, Lesson lesson, String thumbnailUrl) {
+    public Chapter(Integer chapterId, String name, String title, String chapterDescription, Integer chapterOrder, Course course, Lesson lesson, String thumbnailUrl) {
         this.chapterId = chapterId;
-        Name = name;
-        this.chaptertTitle = chaptertTitle;
+        this.name = name;
+        this.title = title;
         this.chapterDescription = chapterDescription;
         this.chapterOrder = chapterOrder;
         this.course = course;
@@ -55,26 +55,26 @@ public class Chapter {
     }
 
     public String getName() {
-        return Name;
+        return name;
     }
 
     public void setName(String name) {
-        Name = name;
+        this.name = name;
     }
 
-    public String getChaptertTitle() {
-        return chaptertTitle;
+    public String getTitle() {
+        return title;
     }
 
-    public void setChaptertTitle(String chaptertTitle) {
-        this.chaptertTitle = chaptertTitle;
+    public void setTitle(String title) {
+        this.title = title;
     }
 
-    public String getChapterDescription() {
+    public String getDescription() {
         return chapterDescription;
     }
 
-    public void setChapterDescription(String chapterDescription) {
+    public void setDescription(String chapterDescription) {
         this.chapterDescription = chapterDescription;
     }
 
