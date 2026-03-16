@@ -7,6 +7,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import swt.he182176.hsfproject.entity.Course;
 import swt.he182176.hsfproject.entity.User;
+import swt.he182176.hsfproject.repository.CategoryRepository;
 import swt.he182176.hsfproject.service.CourseService;
 
 import java.util.List;
@@ -17,37 +18,41 @@ public class CourseController {
     @Autowired
     private CourseService courseService;
 
+    @Autowired
+    private CategoryRepository categoryRepository;
+
     @GetMapping("/public-courses")
-    public String showPublicCourses(@RequestParam(required = false) String keyword, Model model) {
-        List<Course> courses = courseService.getPublicCourses(keyword);
+    public String showPublicCourses(@RequestParam(required = false) String keyword,
+                                    @RequestParam(required = false) Integer categoryId,
+                                    Model model) {
+        List<Course> courses = courseService.getPublicCourses(keyword, categoryId);
+
         model.addAttribute("courses", courses);
         model.addAttribute("keyword", keyword);
-        return "public-courses";
+        model.addAttribute("categoryId", categoryId);
+        model.addAttribute("categories", categoryRepository.findByStatusIgnoreCase("ACTIVE"));
+
+        return "public-course";
+    }
+
+    @GetMapping("/public-courses/{id}")
+    public String showPublicCourseDetail(@PathVariable Integer id, Model model) {
+        Course course = courseService.getPublicCourseDetail(id);
+        model.addAttribute("course", course);
+        return "public-course-detail";
     }
 
     @GetMapping("/my-courses")
-    public String showMyCourses(
-            @RequestParam(required = false) Integer userId,
-            HttpSession session,
-            Model model
-    ) {
+    public String showMyCourses(HttpSession session, Model model) {
         User loginUser = (User) session.getAttribute("user");
 
-        Integer targetUserId = null;
-        if (loginUser != null) {
-            targetUserId = loginUser.getId();
-        } else if (userId != null) {
-            targetUserId = userId;
+        if (loginUser == null) {
+            return "redirect:/login";
         }
 
-        if (targetUserId == null) {
-            model.addAttribute("err", "Chưa có user để xem My Courses. Tạm thời test bằng /my-courses?userId=1");
-            return "my-courses";
-        }
-
-        List<Course> courses = courseService.getMyCourses(targetUserId);
+        List<Course> courses = courseService.getMyCourses(loginUser.getId());
         model.addAttribute("courses", courses);
-        model.addAttribute("testUserId", targetUserId);
+
         return "my-courses";
     }
 }

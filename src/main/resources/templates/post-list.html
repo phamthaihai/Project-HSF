@@ -4,67 +4,204 @@
   <meta charset="UTF-8">
   <title>Post List</title>
   <style>
-    body { font-family: Arial, sans-serif; background: #f5f6fa; margin: 0; padding: 24px; }
-    .box { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,.08); }
-    h2 { margin-top: 0; }
-    .topbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
-    form.filter { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 16px; }
-    input, select, button, a.btn { padding: 10px; border: 1px solid #ccc; border-radius: 6px; text-decoration: none; }
-    button, a.btn { background: #2563eb; color: white; cursor: pointer; }
-    table { width: 100%; border-collapse: collapse; background: white; }
-    th, td { border-bottom: 1px solid #ddd; padding: 10px; text-align: left; vertical-align: top; }
-    th { background: #f3f4f6; }
-    .badge { padding: 4px 8px; border-radius: 999px; font-size: 12px; background: #e5e7eb; }
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f3f3f3;
+      color: #222;
+    }
+
+    .page {
+      width: 1120px;
+      max-width: calc(100% - 40px);
+      margin: 38px auto;
+      border: 2px solid #5b8def;
+      background: #fff;
+      padding: 14px 14px 24px;
+    }
+
+    .title {
+      margin: 0 0 18px;
+      font-size: 28px;
+      font-weight: 800;
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 10px;
+      flex-wrap: wrap;
+    }
+
+    .filters {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .filters select,
+    .filters input {
+      height: 34px;
+      border: 1px solid #b9b9b9;
+      border-radius: 3px;
+      padding: 0 10px;
+      background: #fff;
+      font-size: 14px;
+    }
+
+    .filters select {
+      min-width: 180px;
+    }
+
+    .filters input {
+      width: 170px;
+    }
+
+    .btn {
+      height: 34px;
+      min-width: 72px;
+      padding: 0 14px;
+      border: 1px solid #b9b9b9;
+      border-radius: 3px;
+      background: #fff;
+      cursor: pointer;
+      text-decoration: none;
+      color: #222;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+    }
+
+    .btn:hover {
+      background: #f7f7f7;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 8px;
+      font-size: 14px;
+    }
+
+    th, td {
+      border: 1px solid #b7b7b7;
+      padding: 10px 8px;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      background: #dedede;
+      font-weight: 700;
+    }
+
+    .col-id { width: 52px; }
+    .col-title { width: 360px; }
+    .col-category { width: 150px; }
+    .col-author { width: 140px; }
+    .col-comment { width: 90px; }
+    .col-status { width: 95px; }
+    .col-updated { width: 170px; }
+    .col-actions { width: 120px; }
+
+    .actions a {
+      color: #1d4ed8;
+      margin-right: 8px;
+    }
+
+    .back {
+      display: inline-block;
+      margin-bottom: 14px;
+      color: #1d4ed8;
+      text-decoration: none;
+    }
+
+    .back:hover {
+      text-decoration: underline;
+    }
   </style>
 </head>
 <body>
-<div class="box">
+<div class="page">
+  <a class="back" th:href="@{/}">← Back Home</a>
+
+  <h1 class="title">Post List</h1>
+
   <div class="topbar">
-    <h2>Post List</h2>
+    <form class="filters" method="get" th:action="@{/posts}">
+      <select name="category">
+        <option value="">All Categories</option>
+        <option th:each="c : ${categories}"
+                th:value="${c}"
+                th:text="${c}"
+                th:selected="${category == c}">
+        </option>
+      </select>
+
+      <select name="author">
+        <option value="">All Authors</option>
+        <option th:each="a : ${authors}"
+                th:value="${a}"
+                th:text="${a}"
+                th:selected="${author == a}">
+        </option>
+      </select>
+
+      <input type="text" name="keyword" placeholder="Type keyword to search" th:value="${keyword}">
+      <button type="submit" class="btn">Search</button>
+    </form>
+
     <a class="btn" th:href="@{/posts/new}">New Post</a>
   </div>
-
-  <form class="filter" method="get" th:action="@{/posts}">
-    <input type="text" name="keyword" placeholder="Search title..." th:value="${keyword}">
-    <select name="category">
-      <option value="">All Categories</option>
-      <option th:each="c : ${categories}" th:value="${c}" th:text="${c}" th:selected="${category == c}"></option>
-    </select>
-    <select name="status">
-      <option value="">All Status</option>
-      <option value="Draft" th:selected="${status == 'Draft'}">Draft</option>
-      <option value="Published" th:selected="${status == 'Published'}">Published</option>
-      <option value="Hidden" th:selected="${status == 'Hidden'}">Hidden</option>
-    </select>
-    <button type="submit">Search</button>
-  </form>
 
   <table>
     <thead>
     <tr>
-      <th>ID</th>
-      <th>Title</th>
-      <th>Category</th>
-      <th>Author</th>
-      <th>Status</th>
-      <th>Updated At</th>
-      <th>Action</th>
+      <th class="col-id">Id</th>
+      <th class="col-title">Title</th>
+      <th class="col-category">Category</th>
+      <th class="col-author">Author</th>
+      <th class="col-comment">Comment</th>
+      <th class="col-status">Status</th>
+      <th class="col-updated">Updated At</th>
+      <th class="col-actions">Actions</th>
     </tr>
     </thead>
     <tbody>
     <tr th:each="p : ${posts}">
-      <td th:text="${p.postId}"></td>
-      <td th:text="${p.name}"></td>
-      <td th:text="${p.type}"></td>
-      <td th:text="${p.user != null ? p.user.fullName : 'N/A'}"></td>
-      <td><span class="badge" th:text="${p.status}"></span></td>
-      <td th:text="${p.updatedAt}"></td>
-      <td>
-        <a th:href="@{'/posts/' + ${p.postId}}">Edit</a>
+      <td th:text="${p.postId}">38</td>
+      <td th:text="${p.name}">Post title</td>
+      <td th:text="${p.type}">Lập trình</td>
+      <td th:text="${p.user != null ? p.user.fullName : 'N/A'}">Kien Nguyen</td>
+      <td>0</td>
+      <td th:text="${p.status}">Hidden</td>
+      <td th:text="${p.updatedAt != null ? #temporals.format(p.updatedAt, 'dd/MM/yyyy HH:mm:ss') : ''}">
+        30/09/2025 23:55:26
+      </td>
+      <td class="actions">
+        <a th:href="@{/posts/{id}(id=${p.postId})}">Edit</a>
+
+        <a th:if="${p.status == 'Draft' or p.status == 'Hidden'}"
+           th:href="@{/posts/{id}/show(id=${p.postId})}">
+          Show
+        </a>
+
+        <a th:if="${p.status == 'Published'}"
+           th:href="@{/posts/{id}/hide(id=${p.postId})}">
+          Hide
+        </a>
       </td>
     </tr>
+
     <tr th:if="${#lists.isEmpty(posts)}">
-      <td colspan="7">No posts found.</td>
+      <td colspan="8">No posts found.</td>
     </tr>
     </tbody>
   </table>

@@ -19,9 +19,16 @@ public class CourseServiceImpl implements CourseService {
     private EnrollmentRepository enrollmentRepository;
 
     @Override
-    public List<Course> getPublicCourses(String keyword) {
+    public List<Course> getPublicCourses(String keyword, Integer categoryId) {
         String kw = (keyword == null || keyword.trim().isEmpty()) ? null : keyword.trim();
-        return courseRepository.findPublicCourses(kw);
+        return courseRepository.findPublicCourses(kw, categoryId);
+    }
+
+    @Override
+    public Course getPublicCourseDetail(Integer courseId) {
+        return courseRepository.findById(courseId)
+                .filter(Course::isPublished)
+                .orElseThrow(() -> new RuntimeException("Course not found or not published"));
     }
 
     @Override

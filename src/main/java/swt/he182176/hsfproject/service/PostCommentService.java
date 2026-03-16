@@ -1,6 +1,5 @@
 package swt.he182176.hsfproject.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import swt.he182176.hsfproject.dto.CommentForm;
@@ -15,8 +14,11 @@ import java.util.*;
 @Service
 public class PostCommentService {
 
-    @Autowired
-    private PostCommentRepository postCommentRepository;
+    private final PostCommentRepository postCommentRepository;
+
+    public PostCommentService(PostCommentRepository postCommentRepository) {
+        this.postCommentRepository = postCommentRepository;
+    }
 
     public List<CommentView> getCommentViewsByPost(Integer postId) {
         List<PostComment> all = postCommentRepository.findByPost_PostIdOrderByCreatedAtAscIdAsc(postId);
@@ -66,6 +68,10 @@ public class PostCommentService {
 
     @Transactional
     public void addComment(Post post, User user, CommentForm form) {
+        if (user == null) {
+            throw new RuntimeException("You must login first to comment");
+        }
+
         PostComment comment = new PostComment();
         comment.setPost(post);
         comment.setUser(user);
@@ -75,7 +81,7 @@ public class PostCommentService {
             PostComment parent = postCommentRepository.findById(form.getParentId())
                     .orElseThrow(() -> new RuntimeException("Parent comment not found"));
 
-            if (parent.getPost().getPostId() != post.getPostId()) {
+            if (!Objects.equals(parent.getPost().getPostId(), post.getPostId())) {
                 throw new RuntimeException("Invalid parent comment");
             }
 
