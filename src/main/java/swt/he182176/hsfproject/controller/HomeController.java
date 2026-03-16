@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import swt.he182176.hsfproject.entity.Course;
 import swt.he182176.hsfproject.entity.User;
 import swt.he182176.hsfproject.repository.EnrollmentRepository;
-import swt.he182176.hsfproject.service.CourseAdminService;
+import swt.he182176.hsfproject.service.CourseService;
 import swt.he182176.hsfproject.service.PostService;
 
 import java.util.List;
@@ -15,11 +15,11 @@ import java.util.List;
 @Controller
 public class HomeController {
 
-    private final CourseAdminService courseService;
+    private final CourseService courseService;
     private final EnrollmentRepository enrollmentRepository;
     private final PostService postService;
 
-    public HomeController(CourseAdminService courseService,
+    public HomeController(CourseService courseService,
                           EnrollmentRepository enrollmentRepository,
                           PostService postService) {
         this.courseService = courseService;
@@ -30,7 +30,7 @@ public class HomeController {
     @GetMapping("/")
     public String home(HttpSession session, Model model) {
 
-        List<Course> courses = courseService.getPublishedCourses();
+        List<Course> courses = courseService.getPublicCourses(null, null);
         model.addAttribute("courses", courses);
 
         model.addAttribute("latestPosts", postService.getLatestPosts());

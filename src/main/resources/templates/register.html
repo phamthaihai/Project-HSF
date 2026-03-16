@@ -2,157 +2,271 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>User Register</title>
+    <title>Register</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
         * {
             box-sizing: border-box;
         }
 
+        :root {
+            --primary: #2563eb;
+            --primary-hover: #1d4ed8;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --border: #dbe2ea;
+            --bg-soft: #f8fafc;
+            --danger: #dc2626;
+            --white: #ffffff;
+        }
+
         body {
             margin: 0;
+            font-family: Arial, sans-serif;
             min-height: 100vh;
+            background:
+                    radial-gradient(circle at top left, rgba(37, 99, 235, 0.12), transparent 25%),
+                    radial-gradient(circle at bottom right, rgba(59, 130, 246, 0.10), transparent 30%),
+                    linear-gradient(135deg, #eef4ff 0%, #f8fbff 50%, #f4f7fb 100%);
             display: flex;
+            align-items: center;
             justify-content: center;
-            align-items: center;
-            font-family: "Times New Roman", serif;
-            background: #ffffff;
-            color: #000;
+            padding: 24px;
         }
 
-        .page-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+        .register-card {
+            width: 100%;
+            max-width: 520px;
+            background: var(--white);
+            border-radius: 22px;
+            box-shadow: 0 20px 60px rgba(15, 23, 42, 0.12);
+            padding: 36px 32px;
         }
 
-        .global-error {
-            color: red;
+        .form-header {
+            text-align: center;
+            margin-bottom: 28px;
+        }
+
+        .form-header h2 {
+            margin: 0 0 8px;
+            font-size: 36px;
+            color: var(--text-main);
+        }
+
+        .form-header p {
+            margin: 0;
+            color: var(--text-muted);
             font-size: 14px;
-            margin-bottom: 10px;
         }
 
-        .global-success {
-            color: green;
+        .alert {
+            border-radius: 12px;
+            padding: 12px 14px;
+            margin-bottom: 16px;
             font-size: 14px;
-            margin-bottom: 10px;
+            border: 1px solid transparent;
         }
 
-        .register-wrapper {
-            width: 360px;
-            border: 1px solid #333;
-            background: #f3f3f3;
-            padding: 22px 18px 18px 18px;
+        .alert-error {
+            background: #fef2f2;
+            color: #b91c1c;
+            border-color: #fecaca;
         }
 
-        .register-title {
-            font-size: 22px;
-            font-weight: bold;
-            margin-bottom: 14px;
+        .alert-success {
+            background: #f0fdf4;
+            color: #166534;
+            border-color: #bbf7d0;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
         }
 
         .form-group {
-            margin-bottom: 12px;
+            margin-bottom: 16px;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
         }
 
         .form-group label {
             display: block;
+            margin-bottom: 7px;
             font-size: 14px;
-            margin-bottom: 4px;
+            font-weight: 700;
+            color: var(--text-main);
         }
 
         .form-group input {
             width: 100%;
-            height: 36px;
-            padding: 4px 8px;
-            border: 1px solid #999;
-            border-radius: 3px;
+            height: 46px;
+            padding: 0 14px;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            background: var(--bg-soft);
+            outline: none;
+            font-size: 14px;
+            transition: all 0.2s ease;
+        }
+
+        .form-group input:focus {
+            border-color: var(--primary);
             background: #fff;
+            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
+        }
+
+        .input-error {
+            border-color: #fca5a5 !important;
+            background: #fff7f7 !important;
+        }
+
+        .error-text {
+            display: block;
+            margin-top: 6px;
+            font-size: 12px;
+            color: var(--danger);
+            min-height: 16px;
         }
 
         .btn-register {
             width: 100%;
-            height: 38px;
-            margin-top: 8px;
-            border: 1px solid #999;
-            border-radius: 3px;
-            background: linear-gradient(#fefefe, #e5e5e5);
+            height: 48px;
+            border: none;
+            border-radius: 12px;
+            background: linear-gradient(135deg, var(--primary) 0%, #3b82f6 100%);
+            color: white;
+            font-size: 15px;
+            font-weight: 700;
             cursor: pointer;
-            font-family: "Times New Roman", serif;
-            font-size: 16px;
+            margin-top: 8px;
+            box-shadow: 0 12px 24px rgba(37, 99, 235, 0.20);
+            transition: all 0.2s ease;
         }
 
         .btn-register:hover {
-            background: linear-gradient(#ffffff, #dcdcdc);
+            transform: translateY(-1px);
+            background: linear-gradient(135deg, var(--primary-hover) 0%, #2563eb 100%);
         }
 
         .bottom-link {
-            margin-top: 12px;
+            margin-top: 18px;
             text-align: center;
             font-size: 14px;
+            color: var(--text-muted);
         }
 
         .bottom-link a {
-            color: blue;
+            color: var(--primary);
+            font-weight: 700;
+            text-decoration: none;
+        }
+
+        .bottom-link a:hover {
             text-decoration: underline;
         }
 
-        .error-text {
-            color: red;
-            font-size: 12px;
-            display: block;
-            margin-top: 3px;
+        @media (max-width: 560px) {
+            .register-card {
+                padding: 28px 20px;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .form-header h2 {
+                font-size: 28px;
+            }
+
+            body {
+                padding: 14px;
+            }
         }
     </style>
 </head>
 <body>
 
-<div class="page-container">
-    <div th:if="${err}" class="global-error" th:text="${err}"></div>
-    <div th:if="${msg}" class="global-success" th:text="${msg}"></div>
+<div class="register-card">
+    <div class="form-header">
+        <h2>User Register</h2>
+        <p>Create your new account</p>
+    </div>
 
-    <div class="register-wrapper">
-        <div class="register-title">User Register</div>
+    <!-- Chỉ hiện khi thực sự có nội dung -->
+    <div th:if="${err != null and !#strings.isEmpty(err)}" class="alert alert-error" th:text="${err}"></div>
+    <div th:if="${msg != null and !#strings.isEmpty(msg)}" class="alert alert-success" th:text="${msg}"></div>
 
-        <form th:action="@{/register}" th:object="${registerDTO}" method="post">
-            <div class="form-group">
-                <label>Full Name*</label>
-                <input type="text" th:field="*{fullname}">
+    <form th:action="@{/register}" th:object="${registerDTO}" method="post">
+        <div class="form-grid">
+            <div class="form-group full-width">
+                <label for="fullname">Full Name *</label>
+                <input
+                        id="fullname"
+                        type="text"
+                        placeholder="Enter your full name"
+                        th:field="*{fullname}"
+                        th:classappend="${#fields.hasErrors('fullname')} ? 'input-error' : ''">
                 <small class="error-text" th:errors="*{fullname}"></small>
             </div>
 
             <div class="form-group">
-                <label>Email*</label>
-                <input type="email" th:field="*{email}">
+                <label for="email">Email *</label>
+                <input
+                        id="email"
+                        type="email"
+                        placeholder="Enter your email"
+                        th:field="*{email}"
+                        th:classappend="${#fields.hasErrors('email')} ? 'input-error' : ''">
                 <small class="error-text" th:errors="*{email}"></small>
             </div>
 
             <div class="form-group">
-                <label>Phone*</label>
-                <input type="text" th:field="*{phone}">
+                <label for="phone">Phone *</label>
+                <input
+                        id="phone"
+                        type="text"
+                        placeholder="Enter your phone number"
+                        th:field="*{phone}"
+                        th:classappend="${#fields.hasErrors('phone')} ? 'input-error' : ''">
                 <small class="error-text" th:errors="*{phone}"></small>
             </div>
 
             <div class="form-group">
-                <label>Password*</label>
-                <input type="password" th:field="*{password}">
+                <label for="password">Password *</label>
+                <input
+                        id="password"
+                        type="password"
+                        placeholder="Enter your password"
+                        th:field="*{password}"
+                        th:classappend="${#fields.hasErrors('password')} ? 'input-error' : ''">
                 <small class="error-text" th:errors="*{password}"></small>
             </div>
 
             <div class="form-group">
-                <label>Password Confirm*</label>
-                <input type="password" th:field="*{confirmPassword}">
+                <label for="confirmPassword">Confirm Password *</label>
+                <input
+                        id="confirmPassword"
+                        type="password"
+                        placeholder="Re-enter your password"
+                        th:field="*{confirmPassword}"
+                        th:classappend="${#fields.hasErrors('confirmPassword') or #fields.hasErrors('passwordMatch')} ? 'input-error' : ''">
                 <small class="error-text" th:errors="*{confirmPassword}"></small>
-                <small class="error-text" th:if="${#fields.hasErrors('passwordMatch')}" th:errors="*{passwordMatch}"></small>
+                <small class="error-text" th:errors="*{passwordMatch}"></small>
             </div>
+        </div>
 
-            <button type="submit" class="btn-register">Register</button>
+        <button type="submit" class="btn-register">Create Account</button>
 
-            <div class="bottom-link">
-                Already have an account?
-                <a th:href="@{/login}">Login here</a>
-            </div>
-        </form>
-    </div>
+        <div class="bottom-link">
+            Already have an account?
+            <a th:href="@{/login}">Login here</a>
+        </div>
+    </form>
 </div>
 
 </body>

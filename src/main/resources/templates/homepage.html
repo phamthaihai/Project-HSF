@@ -145,16 +145,82 @@
         }
 
         /* COURSES */
-        .empty-box {
+        /* COURSES */
+        .course-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 22px;
+        }
+
+        .course-card {
             background: #fff;
             border: 1px solid #e5e7eb;
-            border-radius: 16px;
-            min-height: 140px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            border-radius: 18px;
+            overflow: hidden;
+            box-shadow: 0 6px 20px rgba(15, 23, 42, 0.05);
+            transition: transform 0.18s ease, box-shadow 0.18s ease;
+        }
+
+        .course-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 28px rgba(15, 23, 42, 0.10);
+        }
+
+        .course-thumb {
+            width: 100%;
+            height: 220px;
+            object-fit: cover;
+            display: block;
+            background: #e5e7eb;
+        }
+
+        .course-body {
+            padding: 16px;
+        }
+
+        .course-title {
+            margin: 0 0 10px;
+            font-size: 22px;
+            line-height: 1.4;
+            font-weight: 700;
+            color: #111827;
+            min-height: 60px;
+        }
+
+        .course-desc {
+            margin: 0 0 12px;
+            font-size: 14px;
+            line-height: 1.6;
             color: #6b7280;
-            font-size: 16px;
+            min-height: 45px;
+        }
+
+        .course-meta {
+            font-size: 14px;
+            color: #374151;
+            margin-bottom: 8px;
+        }
+
+        .course-price {
+            font-size: 20px;
+            font-weight: 800;
+            color: #2563eb;
+            margin-top: 12px;
+        }
+
+        .course-btn {
+            margin-top: 14px;
+            display: inline-block;
+            padding: 10px 14px;
+            border-radius: 10px;
+            background: #2563eb;
+            color: #fff;
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        .course-btn:hover {
+            background: #1d4ed8;
         }
 
         /* POSTS */
@@ -268,6 +334,10 @@
             .post-grid {
                 grid-template-columns: repeat(3, 1fr);
             }
+
+            .course-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
         }
 
         @media (max-width: 900px) {
@@ -319,6 +389,10 @@
                 padding: 14px 0;
                 text-align: center;
             }
+
+            .course-grid {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
@@ -331,7 +405,7 @@
 
             <nav class="nav">
                 <a th:href="@{/blogs}">Blogs</a>
-                <a th:href="@{/courses}">Courses</a>
+                <a th:href="@{/public-courses}">Courses</a>
             </nav>
         </div>
 
@@ -358,11 +432,51 @@
         <section class="section">
             <div class="section-header">
                 <h2 class="section-title">Featured Courses</h2>
-                <a class="section-link" th:href="@{/courses}">View All</a>
+                <a class="section-link" th:href="@{/public-courses}">View All</a>
             </div>
 
-            <div class="empty-box">
-                Course section
+            <div th:if="${#lists.isEmpty(courses)}" style="background:#fff;border:1px solid #e5e7eb;border-radius:16px;padding:24px;">
+                No featured courses available.
+            </div>
+
+            <div class="course-grid" th:if="${!#lists.isEmpty(courses)}">
+                <a class="course-card"
+                   th:each="course, stat : ${courses}"
+                   th:if="${stat.index < 6}"
+                   th:href="@{/public-courses/{id}(id=${course.courseId})}">
+
+                    <img class="course-thumb"
+                         th:src="${course.thumbnailUrl != null and !#strings.isEmpty(course.thumbnailUrl)
+                          ? course.thumbnailUrl : 'https://via.placeholder.com/600x400?text=Course'}"
+                         alt="Course image">
+
+                    <div class="course-body">
+                        <h3 class="course-title" th:text="${course.title}">Course title</h3>
+
+                        <p class="course-desc" th:text="${course.description}">
+                            Course description
+                        </p>
+
+                        <div class="course-meta">
+                            Category:
+                            <span th:text="${course.category != null ? course.category.name : 'N/A'}"></span>
+                        </div>
+
+                        <div class="course-meta">
+                            Level: <span th:text="${course.level}"></span>
+                        </div>
+
+                        <div class="course-meta">
+                            Duration: <span th:text="${course.duration}"></span> hours
+                        </div>
+
+                        <div class="course-price"
+                             th:text="${#numbers.formatDecimal(course.price, 1, 'COMMA', 0, 'POINT')}">
+                        </div>
+
+                        <span class="course-btn">View Details</span>
+                    </div>
+                </a>
             </div>
         </section>
 
