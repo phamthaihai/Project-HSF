@@ -420,7 +420,7 @@
                     <a th:href="@{/blogs}">Blogs</a>
                 </th:block>
 
-                <a th:href="@{/public-courses}">Courses</a>
+                <a th:href="@{/courses}">Courses</a>
             </nav>
         </div>
 
@@ -458,14 +458,13 @@
             </div>
 
             <div class="course-grid" th:if="${!#lists.isEmpty(courses)}">
-                <a class="course-card"
-                   th:each="course, stat : ${courses}"
-                   th:if="${stat.index < 6}"
-                   th:href="@{/public-courses/{id}(id=${course.courseId})}">
+                <div class="course-card"
+                     th:each="course, stat : ${courses}"
+                     th:if="${stat.index < 6}">
 
                     <img class="course-thumb"
                          th:src="${course.thumbnailUrl != null and !#strings.isEmpty(course.thumbnailUrl)
-                          ? course.thumbnailUrl : 'https://via.placeholder.com/600x400?text=Course'}"
+              ? course.thumbnailUrl : 'https://via.placeholder.com/600x400?text=Course'}"
                          alt="Course image">
 
                     <div class="course-body">
@@ -492,9 +491,12 @@
                              th:text="${#numbers.formatDecimal(course.price, 1, 'COMMA', 0, 'POINT')}">
                         </div>
 
-                        <span class="course-btn">View Details</span>
+                        <a class="course-btn"
+                           th:href="@{/public-courses/{id}(id=${course.courseId})}">
+                            View Details
+                        </a>
                     </div>
-                </a>
+                </div>
             </div>
         </section>
 
