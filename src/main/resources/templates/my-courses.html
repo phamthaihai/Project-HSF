@@ -2,136 +2,250 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <meta charset="UTF-8">
     <title>My Courses</title>
     <style>
+        * {
+            box-sizing: border-box;
+        }
+
         body {
+            margin: 0;
             font-family: Arial, sans-serif;
             background: #f5f7fb;
-            margin: 0;
-            padding: 30px;
+            color: #1f2937;
         }
 
         .container {
-            width: 1100px;
-            margin: 0 auto;
+            width: 1180px;
+            max-width: calc(100% - 40px);
+            margin: 32px auto;
         }
 
-        .title {
-            font-size: 32px;
-            font-weight: bold;
-            margin-bottom: 20px;
+        .page-title {
+            font-size: 34px;
+            font-weight: 800;
+            margin: 0 0 8px;
+        }
+
+        .page-subtitle {
+            color: #6b7280;
+            margin-bottom: 22px;
         }
 
         .err {
-            color: red;
-            background: #fff;
-            border: 1px solid #ddd;
-            padding: 14px;
-            border-radius: 8px;
+            color: #b91c1c;
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            padding: 14px 16px;
+            border-radius: 12px;
             margin-bottom: 20px;
         }
 
-        .note {
-            color: #444;
-            margin-bottom: 18px;
+        .empty {
+            background: white;
+            padding: 22px;
+            border: 1px solid #e5e7eb;
+            border-radius: 16px;
+            box-shadow: 0 8px 24px rgba(15, 23, 42, 0.05);
+        }
+
+        .toolbar {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 20px;
+        }
+
+        .link-btn {
+            display: inline-block;
+            text-decoration: none;
+            background: #eff6ff;
+            color: #2563eb;
+            border: 1px solid #bfdbfe;
+            padding: 10px 14px;
+            border-radius: 10px;
+            font-weight: 700;
         }
 
         .grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 18px;
+            gap: 22px;
         }
 
         .card {
             display: flex;
             background: white;
-            border: 1px solid #ddd;
-            border-radius: 12px;
+            border: 1px solid #e5e7eb;
+            border-radius: 18px;
             overflow: hidden;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+            min-height: 220px;
+        }
+
+        .thumb-wrap {
+            width: 260px;
+            min-width: 260px;
+            background: #e5e7eb;
         }
 
         .thumb {
-            width: 220px;
-            height: 150px;
+            width: 100%;
+            height: 100%;
+            min-height: 220px;
             object-fit: cover;
-            background: #ddd;
+            display: block;
         }
 
         .content {
             flex: 1;
-            padding: 14px;
+            padding: 18px;
+            display: flex;
+            flex-direction: column;
         }
 
         .course-title {
-            font-size: 20px;
-            font-weight: bold;
-            margin-bottom: 8px;
+            font-size: 22px;
+            font-weight: 800;
+            margin-bottom: 12px;
+            line-height: 1.35;
         }
 
         .meta {
-            color: #555;
             font-size: 14px;
+            color: #6b7280;
             margin-bottom: 6px;
         }
 
         .desc {
             font-size: 14px;
-            color: #333;
-            margin-bottom: 8px;
+            color: #374151;
+            line-height: 1.6;
+            margin: 12px 0 18px;
+            flex: 1;
         }
 
-        .empty {
-            background: white;
-            padding: 20px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
+        .actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
         }
 
         .btn {
             display: inline-block;
-            padding: 8px 14px;
-            border: 1px solid #777;
-            border-radius: 6px;
-            background: #f2f2f2;
             text-decoration: none;
-            color: black;
+            padding: 11px 16px;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 14px;
+        }
+
+        .btn-primary {
+            background: #2563eb;
+            color: white;
+            border: 1px solid #2563eb;
+        }
+
+        .btn-primary:hover {
+            background: #1d4ed8;
+        }
+
+        .btn-outline {
+            background: white;
+            color: #111827;
+            border: 1px solid #d1d5db;
+        }
+
+        @media (max-width: 1024px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 780px) {
+            .container {
+                max-width: calc(100% - 24px);
+            }
+
+            .card {
+                flex-direction: column;
+            }
+
+            .thumb-wrap {
+                width: 100%;
+                min-width: 100%;
+            }
+
+            .thumb {
+                min-height: 220px;
+            }
         }
     </style>
 </head>
 <body>
 <div class="container">
-    <div class="title">My Courses</div>
+    <h1 class="page-title">My Courses</h1>
+    <div class="page-subtitle">Courses you can start learning right now.</div>
 
     <div th:if="${err}" class="err" th:text="${err}"></div>
 
+    <div class="toolbar">
+        <a th:href="@{/public-courses}" class="link-btn">Browse More Courses</a>
+    </div>
+
     <div th:if="${#lists.isEmpty(courses)}" class="empty">
-        No approved courses found.
+        No courses available in your My Courses list.
     </div>
 
     <div class="grid" th:if="${!#lists.isEmpty(courses)}">
         <div class="card" th:each="c : ${courses}">
-            <img class="thumb"
-                 th:src="${c.thumbnailUrl != null and !#strings.isEmpty(c.thumbnailUrl) ? c.thumbnailUrl : 'https://via.placeholder.com/300x180?text=My+Course'}"
-                 alt="thumbnail">
+            <div class="thumb-wrap">
+                <img class="thumb"
+                     th:src="${c.thumbnailUrl != null and !#strings.isEmpty(c.thumbnailUrl)
+                              ? c.thumbnailUrl
+                              : 'https://via.placeholder.com/600x350?text=My+Course'}"
+                     alt="thumbnail">
+            </div>
 
             <div class="content">
                 <div class="course-title" th:text="${c.title}"></div>
 
                 <div class="meta">
+                    Category:
+                    <span th:text="${c.categoryName != null ? c.categoryName : 'N/A'}"></span>
+                </div>
+
+                <div class="meta">
+                    Instructor:
+                    <span th:text="${c.instructorName != null ? c.instructorName : 'N/A'}"></span>
+                </div>
+
+                <div class="meta">
                     Level:
-                    <span th:text="${c.level}"></span>
+                    <span th:text="${c.level != null ? c.level : 'N/A'}"></span>
                 </div>
 
                 <div class="meta">
                     Duration:
-                    <span th:text="${c.duration}"></span> hours
+                    <span th:text="${c.duration != null ? c.duration : 0}"></span> hours
                 </div>
 
-                <div class="desc" th:text="${c.description}"></div>
+                <div class="desc"
+                     th:text="${c.description != null and !#strings.isEmpty(c.description)
+                              ? c.description
+                              : 'No description available.'}">
+                </div>
 
-                <a href="#" class="btn">Start Learning</a>
+                <div class="actions">
+                    <a class="btn btn-primary"
+                       th:href="@{/my-courses/{id}/learn(id=${c.courseId})}">
+                        Start Learning
+                    </a>
+
+                    <a class="btn btn-outline"
+                       th:href="@{/public-courses/{id}(id=${c.courseId})}">
+                        View Details
+                    </a>
+                </div>
             </div>
         </div>
     </div>

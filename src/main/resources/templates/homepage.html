@@ -427,6 +427,7 @@
         <div class="header-right">
             <th:block th:if="${user != null}">
                 <div class="user-box">
+                    <a th:href="@{/my-courses}" style="color: #374151; font-size: 16px; font-weight: 600; text-decoration: none; margin-right: 15px;">My Courses</a>
                     <span class="user-name" th:text="${user.fullName}">User Name</span>
                     <div class="avatar"
                          th:text="${user.fullName != null && !#strings.isEmpty(user.fullName) ? #strings.substring(user.fullName,0,1) : 'U'}">
