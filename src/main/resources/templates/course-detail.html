@@ -218,8 +218,9 @@
                     </div>
                     <div class="form-group">
                         <label>Sale Price</label>
-                        <input type="number" step="0.01" placeholder="Optional">
+                        <input type="number" step="0.01" placeholder="Optional" id="salePriceInput">
                     </div>
+                    <input type="hidden" th:field="*{salePrice}" id="salePriceField">
                 </div>
             </div>
 
@@ -306,6 +307,17 @@
             .catch(function(error) {
                 statusDiv.innerHTML = '<span style="color: red;">Lỗi: ' + error.message + '</span>';
             });
+        });
+
+        // Handle sale price calculation before submit
+        document.querySelector('form').addEventListener('submit', function(e) {
+            var listedPrice = parseFloat(document.querySelector('input[name="price"]').value) || 0;
+            var salePriceInput = document.getElementById('salePriceInput');
+            var salePrice = parseFloat(salePriceInput.value);
+
+            if (!isNaN(salePrice) && salePrice > 0) {
+                document.getElementById('salePriceField').value = salePrice;
+            }
         });
     })();
 </script>
