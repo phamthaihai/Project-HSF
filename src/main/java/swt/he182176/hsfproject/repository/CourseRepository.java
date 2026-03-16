@@ -18,7 +18,16 @@ public interface CourseRepository extends JpaRepository<Course, Integer> {
                 or trim(:keyword) = ''
                 or lower(c.title) like lower(concat('%', :keyword, '%'))
               )
-        order by c.courseId desc
+          and (
+                :categoryId is null
+                or c.category.categoryId = :categoryId
+              )
+        order by lower(c.title) asc
     """)
-    List<Course> findPublicCourses(@Param("keyword") String keyword);
+    List<Course> findPublicCourses(@Param("keyword") String keyword,
+                                   @Param("categoryId") Integer categoryId);
+
+    List<Course> findByPublishedTrueOrderByCreateAtDesc();
+
+    List<Course> findByInstructor_IdOrderByCreateAtDesc(Integer instructorId);
 }
