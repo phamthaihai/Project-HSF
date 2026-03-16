@@ -1,6 +1,5 @@
 package swt.he182176.hsfproject.controller;
 
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -12,6 +11,7 @@ import swt.he182176.hsfproject.repository.CategoryRepository;
 import swt.he182176.hsfproject.repository.UserRepository;
 import swt.he182176.hsfproject.service.CourseAdminService;
 
+
 import java.time.LocalDateTime;
 
 @Controller
@@ -20,10 +20,14 @@ public class CourseAdminController {
 
     @Autowired
     CourseAdminService courseService;
+
     @Autowired
     CategoryRepository categoryRepository;
+
     @Autowired
     UserRepository userRepository;
+
+
 
     @GetMapping
     public String showCourseList(Model model){
@@ -33,6 +37,7 @@ public class CourseAdminController {
         return "course-list";
     }
 
+
     @GetMapping("/add")
     public String showAddCourse(Model model){
 
@@ -41,7 +46,6 @@ public class CourseAdminController {
         course.setCategory(new Category());
 
         model.addAttribute("course", course);
-
         model.addAttribute("categories", categoryRepository.findAll());
         model.addAttribute("managers", userRepository.findByRole_Name("MANAGER"));
         course.setCreateAt(LocalDateTime.now());
@@ -50,16 +54,14 @@ public class CourseAdminController {
     }
 
 
+
     @GetMapping("/edit/{id}")
-    public String showEditCourse(@PathVariable int id,
-                                 Model model){
+    public String showEditCourse(@PathVariable int id, Model model){
 
         Course course = courseService.getCourseById(id);
 
         model.addAttribute("course", course);
-
         model.addAttribute("categories", categoryRepository.findAll());
-
         model.addAttribute("managers", userRepository.findByRole_Name("MANAGER"));
 
         return "course-detail";
@@ -74,6 +76,7 @@ public class CourseAdminController {
 
         return "redirect:/courses";
     }
+
 
     @GetMapping("/delete/{id}")
     public String deleteCourse(@PathVariable int id){

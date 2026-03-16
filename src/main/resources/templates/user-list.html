@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>User List</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #f5f6fa; margin: 0; padding: 24px; }
+    .box { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,.08); }
+    h2 { margin-top: 0; }
+    .topbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; gap: 12px; }
+    form.filter { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 16px; }
+    input, select, button, a.btn { padding: 10px; border: 1px solid #ccc; border-radius: 6px; text-decoration: none; }
+    button, a.btn { background: #2563eb; color: white; cursor: pointer; }
+    a.link { color: #2563eb; text-decoration: underline; border: none; padding: 0; background: transparent; }
+    table { width: 100%; border-collapse: collapse; background: white; }
+    th, td { border-bottom: 1px solid #ddd; padding: 10px; text-align: left; vertical-align: top; }
+    th { background: #f3f4f6; }
+    .badge { padding: 4px 8px; border-radius: 999px; font-size: 12px; background: #e5e7eb; }
+    .msg { color: green; margin-bottom: 12px; }
+    .err { color: red; margin-bottom: 12px; }
+  </style>
+</head>
+<body>
+<div class="box">
+  <div class="topbar">
+    <h2>User List</h2>
+    <div>
+      <a class="btn" th:href="@{/admin/dashboard}">Back</a>
+      <a class="btn" th:href="@{/users/new}">New User</a>
+    </div>
+  </div>
+
+  <div th:if="${msg}" class="msg" th:text="${msg}"></div>
+  <div th:if="${err}" class="err" th:text="${err}"></div>
+
+  <form class="filter" method="get" th:action="@{/users}">
+    <input type="text" name="keyword" placeholder="Search by email/fullname..." th:value="${keyword}">
+    <input type="text" name="role" placeholder="Role (ADMIN/MEMBER...)" th:value="${role}">
+    <select name="status">
+      <option value="">All Status</option>
+      <option th:each="s : ${statuses}"
+              th:value="${s}"
+              th:text="${s}"
+              th:selected="${status != null and status == s}">
+      </option>
+    </select>
+    <button type="submit">Search</button>
+    <a class="btn" th:href="@{/users}">Reset</a>
+  </form>
+
+  <table>
+    <thead>
+    <tr>
+      <th>ID</th>
+      <th>Full Name</th>
+      <th>Email</th>
+      <th>Phone</th>
+      <th>Role</th>
+      <th>Status</th>
+      <th>Email Verified</th>
+      <th>Updated At</th>
+      <th>Action</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="u : ${users}">
+      <td th:text="${u.id}"></td>
+      <td th:text="${u.fullName}"></td>
+      <td th:text="${u.email}"></td>
+      <td th:text="${u.phone}"></td>
+      <td>
+        <span class="badge" th:text="${u.role != null ? u.role.name : 'N/A'}"></span>
+      </td>
+      <td>
+        <span class="badge" th:text="${u.status}"></span>
+      </td>
+      <td th:text="${u.emailVerified != null and u.emailVerified ? 'Yes' : 'No'}"></td>
+      <td th:text="${u.updatedAt}"></td>
+      <td>
+        <a class="link" th:href="@{'/users/' + ${u.id}}">Edit</a>
+        |
+        <form th:action="@{'/users/' + ${u.id} + '/delete'}"
+              method="post"
+              style="display:inline"
+              onsubmit="return confirm('Bạn có chắc muốn xóa user này?');">
+          <button type="submit"
+                  style="background:none;border:none;padding:0;margin-left:4px;color:#ef4444;cursor:pointer;text-decoration:underline;">
+            Delete
+          </button>
+        </form>
+      </td>
+    </tr>
+    <tr th:if="${#lists.isEmpty(users)}">
+      <td colspan="9">No users found.</td>
+    </tr>
+    </tbody>
+  </table>
+</div>
+</body>
+</html>
+

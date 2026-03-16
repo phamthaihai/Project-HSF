@@ -1,6 +1,7 @@
 package swt.he182176.hsfproject.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import swt.he182176.hsfproject.dto.PostDTO;
@@ -24,8 +25,15 @@ public class PostService {
         return postRepository.searchPublishedBlogs(normalize(keyword), normalize(category));
     }
 
-    public List<String> getAllCategories() {
-        return postRepository.findAllCategories();
+    public List<String> getPublishedCategories() {
+        return postRepository.findPublishedCategories();
+    }
+
+    public List<Post> getRelatedPublishedBlogs(Integer currentId, String category) {
+        if (category == null || category.trim().isBlank()) {
+            return List.of();
+        }
+        return postRepository.findRelatedPublishedBlogs(currentId, category.trim());
     }
 
     public Post getById(Integer id) {
@@ -56,6 +64,13 @@ public class PostService {
         post.setStatus(dto.getStatus());
 
         return postRepository.save(post);
+    }
+
+    public List<Post> getLatestPosts() {
+        return postRepository.findByStatusOrderByCreatedAtDesc(
+                "Published",
+                PageRequest.of(0, 4)
+        );
     }
 
     private String normalize(String value) {

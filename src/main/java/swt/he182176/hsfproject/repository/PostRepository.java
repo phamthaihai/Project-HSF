@@ -1,5 +1,6 @@
 package swt.he182176.hsfproject.repository;
 
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -38,15 +39,33 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
     @Query("""
         SELECT DISTINCT p.type
         FROM Post p
-        WHERE p.type IS NOT NULL AND TRIM(p.type) <> ''
+        WHERE LOWER(p.status) = 'published'
+          AND p.type IS NOT NULL
+          AND TRIM(p.type) <> ''
         ORDER BY p.type
     """)
-    List<String> findAllCategories();
+    List<String> findPublishedCategories();
 
     @Query("""
         SELECT p
         FROM Post p
-        WHERE p.postId = :id AND LOWER(p.status) = 'published'
+        WHERE p.postId = :id
+          AND LOWER(p.status) = 'published'
     """)
     Optional<Post> findPublishedById(@Param("id") Integer id);
+
+    @Query("""
+        SELECT p
+        FROM Post p
+        WHERE LOWER(p.status) = 'published'
+          AND LOWER(p.type) = LOWER(:category)
+          AND p.postId <> :currentId
+        ORDER BY p.updatedAt DESC, p.postId DESC
+    """)
+    List<Post> findRelatedPublishedBlogs(@Param("currentId") Integer currentId,
+                                         @Param("category") String category);
+
+    long countByStatus(String status);
+
+    List<Post> findByStatusOrderByCreatedAtDesc(String status, Pageable pageable);
 }

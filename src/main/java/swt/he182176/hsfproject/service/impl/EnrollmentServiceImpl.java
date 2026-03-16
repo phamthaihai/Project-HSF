@@ -1,0 +1,152 @@
+package swt.he182176.hsfproject.service.impl;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import swt.he182176.hsfproject.dto.EnrollRequest;
+import swt.he182176.hsfproject.entity.Course;
+import swt.he182176.hsfproject.entity.Enrollment;
+import swt.he182176.hsfproject.entity.User;
+import swt.he182176.hsfproject.repository.CourseRepository;
+import swt.he182176.hsfproject.repository.EnrollmentRepository;
+import swt.he182176.hsfproject.repository.UserRepository;
+import swt.he182176.hsfproject.service.EnrollmentService;
+
+import java.time.LocalDateTime;
+import java.util.List;
+@Service
+public class EnrollmentServiceImpl implements EnrollmentService {
+
+    @Autowired
+    private EnrollmentRepository enrollmentRepository;
+
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private CourseRepository courseRepository;
+
+
+
+    @Override
+    public Enrollment enrollCourse(Integer userId, Integer courseId) {
+
+        boolean exists =
+                enrollmentRepository.existsByUser_IdAndCourse_CourseId(userId, courseId);
+
+        if (exists) {
+            throw new RuntimeException("User already enrolled this course");
+        }
+
+        User user = userRepository.findById(userId).orElseThrow();
+        Course course = courseRepository.findById(courseId).orElseThrow();
+
+        Enrollment enrollment = new Enrollment();
+
+        enrollment.setUser(user);
+        enrollment.setCourse(course);
+        enrollment.setStatus("PENDING");
+        enrollment.setRegisteredAt(LocalDateTime.now());
+
+        return enrollmentRepository.save(enrollment);
+    }
+
+    @Override
+    public boolean isEnrolled(Integer userId, Integer courseId) {
+
+        return enrollmentRepository
+                .existsByUser_IdAndCourse_CourseId(userId, courseId);
+    }
+
+    @Override
+    public Enrollment createEnrollment(EnrollRequest request, User user) {
+
+        if (user == null) {
+            throw new RuntimeException("User must login before enrolling");
+        }
+
+        Integer courseId = request.getCourseId();
+
+        boolean exists =
+                enrollmentRepository.existsByUser_IdAndCourse_CourseId(user.getId(), courseId);
+
+        if (exists) {
+            throw new RuntimeException("User already enrolled this course");
+        }
+
+        Course course = courseRepository.findById(courseId).orElseThrow();
+
+        Enrollment enrollment = new Enrollment();
+
+        enrollment.setUser(user);
+        enrollment.setCourse(course);
+
+        enrollment.setFullName(request.getFullName());
+        enrollment.setEmail(request.getEmail());
+        enrollment.setMobile(request.getMobile());
+        enrollment.setNote(request.getNote());
+        enrollment.setPaymentMethod(request.getPaymentMethod());
+
+        enrollment.setStatus("PENDING");
+        enrollment.setRegisteredAt(LocalDateTime.now());
+
+        return enrollmentRepository.save(enrollment);
+    }
+
+    @Override
+    public List<Enrollment> getMyEnrollments(Integer userId) {
+
+        return enrollmentRepository.findByUser_Id(userId);
+    }
+
+    @Override
+    public List<Enrollment> getAllEnrollments() {
+
+        return enrollmentRepository.findAll();
+    }
+
+    @Override
+    public Enrollment getEnrollmentById(Integer id) {
+
+        return enrollmentRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Enrollment not found"));
+    }
+
+    @Override
+    public void approveEnrollment(Integer id) {
+
+        Enrollment enrollment = getEnrollmentById(id);
+
+        enrollment.setStatus("APPROVED");
+        enrollment.setUpdatedAt(LocalDateTime.now());
+
+        enrollmentRepository.save(enrollment);
+    }
+
+    @Override
+    public void rejectEnrollment(Integer id, String note) {
+
+        Enrollment enrollment = getEnrollmentById(id);
+
+        enrollment.setStatus("REJECTED");
+        enrollment.setRejectedNote(note);
+        enrollment.setUpdatedAt(LocalDateTime.now());
+
+        enrollmentRepository.save(enrollment);
+    }
+
+    @Override
+    public void deleteEnrollment(Integer id) {
+
+        enrollmentRepository.deleteById(id);
+    }
+    @Override
+    public void save(Enrollment enrollment) {
+        enrollmentRepository.save(enrollment);
+    }
+    @Override
+    public Enrollment findById(int id) {
+        return enrollmentRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Enrollment not found"));
+    }
+}

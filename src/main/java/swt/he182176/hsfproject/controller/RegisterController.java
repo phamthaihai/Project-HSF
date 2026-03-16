@@ -1,6 +1,5 @@
 package swt.he182176.hsfproject.controller;
 
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -24,44 +23,56 @@ public class RegisterController {
     }
 
     @GetMapping("/register")
-    public String showRegister(Model model){
-        model.addAttribute("registerDTO", new RegisterDTO());
+    public String showRegister(@ModelAttribute("msg") String msg,
+                               @ModelAttribute("err") String err,
+                               Model model) {
+        if (!model.containsAttribute("registerDTO")) {
+            model.addAttribute("registerDTO", new RegisterDTO());
+        }
+
+        if (msg != null && !msg.isBlank()) {
+            model.addAttribute("msg", msg);
+        }
+        if (err != null && !err.isBlank()) {
+            model.addAttribute("err", err);
+        }
+
         return "register";
     }
 
     @PostMapping("/register")
-    public String doRegister(
-            @Valid @ModelAttribute("registerDTO") RegisterDTO dto,
-            BindingResult br,
-            RedirectAttributes ra,
-            HttpServletRequest request
-    ){
-            if (br.hasErrors()) return "register";
-            try{
-                String token = authService.register(dto);
-                String baseUrl = ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString();
-                String verifyLink = baseUrl + "/verify?token=" + token;
-
-                System.out.println("Verify Link: " + verifyLink);
-
-                ra.addFlashAttribute("msg"
-                        ,"Register success! Please check email to verify. (See console verify link)");
-                return "redirect:/login";
-            } catch (Exception e) {
-               ra.addFlashAttribute("err", e.getMessage());
-               return "redirect:/register";
-            }
-
-    }
-    @GetMapping("/verify")
-    public String verify(@RequestParam("token") String token, RedirectAttributes ra){
-        try{
-            authService.verifyEmail(token);
-            ra.addFlashAttribute("msg", "Email verified successfully. You can login now");
-            return "redirect:/login";
-        } catch (Exception e){
-            ra.addFlashAttribute("msg", e.getMessage());
-            return "redirect:/login";
+    public String doRegister(@Valid @ModelAttribute("registerDTO") RegisterDTO dto,
+                             BindingResult br,
+                             RedirectAttributes ra,
+                             Model model) {
+        if (br.hasErrors()) {
+            return "register";
         }
+
+        try {
+            String baseUrl = ServletUriComponentsBuilder
+                    .fromCurrentContextPath()
+                    .build()
+                    .toUriString();
+
+            authService.register(dto, baseUrl);
+            ra.addFlashAttribute("msg", "Register success. Please check your email to verify before logging in.");
+            return "redirect:/login";
+        } catch (Exception e) {
+            model.addAttribute("err", e.getMessage());
+            return "register";
+        }
+    }
+
+    @GetMapping("/verify")
+    public String verify(@RequestParam("token") String token, RedirectAttributes ra) {
+        try {
+            authService.verifyEmail(token);
+            ra.addFlashAttribute("msg", "Email verified successfully. You can log in now.");
+        } catch (Exception e) {
+            ra.addFlashAttribute("err", e.getMessage());
+        }
+
+        return "redirect:/login";
     }
 }
