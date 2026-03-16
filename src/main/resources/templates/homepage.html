@@ -404,7 +404,22 @@
             <a th:href="@{/}" class="logo">LOGO</a>
 
             <nav class="nav">
-                <a th:href="@{/blogs}">Blogs</a>
+                <th:block th:if="${user != null
+        and user.role != null
+        and user.role.name != null
+        and (#strings.equalsIgnoreCase(user.role.name, 'ADMIN')
+            or #strings.equalsIgnoreCase(user.role.name, 'MANAGER')
+            or #strings.equalsIgnoreCase(user.role.name, 'MARKETING'))}">
+                    <a th:href="@{/posts}">Posts</a>
+                </th:block>
+
+                <th:block th:if="${user == null
+        or user.role == null
+        or user.role.name == null
+        or #strings.equalsIgnoreCase(user.role.name, 'MEMBER')}">
+                    <a th:href="@{/blogs}">Blogs</a>
+                </th:block>
+
                 <a th:href="@{/public-courses}">Courses</a>
             </nav>
         </div>
@@ -413,7 +428,10 @@
             <th:block th:if="${user != null}">
                 <div class="user-box">
                     <span class="user-name" th:text="${user.fullName}">User Name</span>
-                    <div class="avatar">AVT</div>
+                    <div class="avatar"
+                         th:text="${user.fullName != null && !#strings.isEmpty(user.fullName) ? #strings.substring(user.fullName,0,1) : 'U'}">
+                        AVT
+                    </div>
                 </div>
             </th:block>
 
@@ -493,7 +511,7 @@
                    th:href="@{/blogs/{id}(id=${post.postId})}">
 
                     <img class="post-thumb"
-                         src="https://picsum.photos/600/400"
+                         th:src="${post.thumbnailUrl != null && !#strings.isEmpty(post.thumbnailUrl)} ? @{${post.thumbnailUrl}} : 'https://picsum.photos/600/400'"
                          alt="Post image">
 
                     <div class="post-body">
@@ -506,7 +524,9 @@
                         <div class="post-meta">
                             <span class="post-type" th:text="${post.type}">Category</span>
                             <span class="post-date"
-                                  th:text="${#temporals.format(post.createdAt, 'dd/MM/yyyy')}">16/03/2026</span>
+                                  th:text="${post.createdAt != null ? #temporals.format(post.createdAt, 'dd/MM/yyyy') : ''}">
+                                16/03/2026
+                            </span>
                         </div>
                     </div>
                 </a>

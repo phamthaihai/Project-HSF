@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import swt.he182176.hsfproject.entity.Course;
 import swt.he182176.hsfproject.entity.User;
 import swt.he182176.hsfproject.repository.EnrollmentRepository;
+import swt.he182176.hsfproject.service.CourseAdminService;
 import swt.he182176.hsfproject.service.CourseService;
 import swt.he182176.hsfproject.service.PostService;
 
@@ -33,16 +34,12 @@ public class HomeController {
         List<Course> courses = courseService.getPublicCourses(null, null);
         model.addAttribute("courses", courses);
 
-        model.addAttribute("latestPosts", postService.getLatestPosts());
+        model.addAttribute("latestPosts", postService.getLatestPublishedPosts());
 
         User user = (User) session.getAttribute("user");
-        model.addAttribute("user", user);
 
-        if (user != null) {
-            List<Course> enrolledCourses =
-                    enrollmentRepository.findApprovedCoursesByUserId(user.getId());
-            model.addAttribute("enrolledCourses", enrolledCourses);
-        }
+        model.addAttribute("user", user);
+        model.addAttribute("latestPosts", postService.getLatestPublishedPosts());
 
         return "homepage";
     }
