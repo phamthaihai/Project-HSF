@@ -1,6 +1,8 @@
 package swt.he182176.hsfproject.entity;
 
 import jakarta.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name="chapter")
@@ -9,27 +11,27 @@ public class Chapter {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer chapterId;
 
-    @Column(name="name")
+    @Column(name="name", columnDefinition = "NVARCHAR(255)")
     private String Name;
 
-    @Column(name="title")
+    @Column(name="title", columnDefinition = "NVARCHAR(500)")
     private String chaptertTitle;
 
-    @Column(name="description")
+    @Column(name="description", columnDefinition = "NVARCHAR(MAX)")
     private String chapterDescription;
 
-    @Column(name = "order")
+    @Column(name = "[order]")
     private Integer chapterOrder;
 
     @ManyToOne()
     @JoinColumn(name="course_id")
     private Course course;
 
-    @ManyToOne()
-    @JoinColumn(name="lesson_id")
-    private Lesson lesson;
+    @OneToMany(mappedBy = "chapter", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderBy("order ASC")
+    private List<Lesson> lessons = new ArrayList<>();
 
-    @Column(name="thumbnail_url")
+    @Column(name="thumbnail_url", columnDefinition = "NVARCHAR(1000)")
     private String thumbnailUrl;
 
     public Chapter(){}
@@ -41,7 +43,6 @@ public class Chapter {
         this.chapterDescription = chapterDescription;
         this.chapterOrder = chapterOrder;
         this.course = course;
-        this.lesson = lesson;
         this.thumbnailUrl = thumbnailUrl;
     }
 
@@ -93,12 +94,12 @@ public class Chapter {
         this.course = course;
     }
 
-    public Lesson getLesson() {
-        return lesson;
+    public List<Lesson> getLessons() {
+        return lessons;
     }
 
-    public void setLesson(Lesson lesson) {
-        this.lesson = lesson;
+    public void setLessons(List<Lesson> lessons) {
+        this.lessons = lessons;
     }
 
     public String getThumbnailUrl() {

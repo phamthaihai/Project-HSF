@@ -10,7 +10,9 @@ import swt.he182176.hsfproject.repository.EnrollmentRepository;
 import swt.he182176.hsfproject.service.CourseAdminService;
 import swt.he182176.hsfproject.service.PostService;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Controller
 public class HomeController {
@@ -41,7 +43,17 @@ public class HomeController {
         if (user != null) {
             List<Course> enrolledCourses =
                     enrollmentRepository.findApprovedCoursesByUserId(user.getId());
-            model.addAttribute("enrolledCourses", enrolledCourses);
+
+            Set<Integer> enrolledCourseIds = new HashSet<>();
+            for (Course c : enrolledCourses) {
+                enrolledCourseIds.add(c.getCourseId());
+            }
+            model.addAttribute("enrolledCourseIds", enrolledCourseIds);
+
+            String roleName = user.getRole() != null ? user.getRole().getName() : null;
+            model.addAttribute("userRole", roleName);
+            boolean isAdmin = "ADMIN".equals(roleName) || "MANAGER".equals(roleName) || "MARKETING".equals(roleName);
+            model.addAttribute("isAdmin", isAdmin);
         }
 
         return "homepage";

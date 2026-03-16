@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <title>Courses Management</title>
 </head>
 <style>body{
@@ -92,6 +94,11 @@ tr:hover{
     color:white;
 }
 
+.detail{
+    background:#6c5ce7;
+    color:white;
+}
+
 /* FORM */
 
 .form-row{
@@ -112,6 +119,20 @@ input, select, textarea{
 
 textarea{
     height:120px;
+}
+
+/* Title column with thumbnail */
+.course-title-cell {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+.course-title-cell .course-thumbnail {
+    width: 48px;
+    height: 32px;
+    object-fit: cover;
+    border: 1px solid #ddd;
+    border-radius: 3px;
 }
 
 /* THUMBNAIL */
@@ -157,7 +178,15 @@ textarea{
 
             <td th:text="${c.courseId}"></td>
 
-            <td th:text="${c.title}"></td>
+            <td>
+                <div class="course-title-cell">
+                    <span th:text="${c.title}">Title</span>
+                    <img th:if="${c.thumbnailUrl != null && !#strings.isEmpty(c.thumbnailUrl)}"
+                         th:src="${c.thumbnailUrl}"
+                         class="course-thumbnail"
+                         alt="Thumbnail">
+                </div>
+            </td>
 
             <td th:text="${c.instructor != null ? c.instructor.fullName : 'N/A'}"></td>
 
@@ -166,18 +195,23 @@ textarea{
             <td th:text="${c.price}"></td>
 
             <td>
-<span class="status" th:if="${c.pulished}">
+<span class="status" th:if="${c.published}">
 Published
 </span>
             </td>
 
-            <td th:text="${c.createAt}"></td>
+            <td th:text="${c.createAt != null ? #temporals.format(c.createAt, 'yyyy-MM-dd HH:mm') : ''}"></td>
 
             <td>
 
                 <a class="action-btn edit"
                    th:href="@{/courses/edit/{id}(id=${c.courseId})}">
                     ✏
+                </a>
+
+                <a class="action-btn detail"
+                   th:href="@{/courses/{id}/content(id=${c.courseId})}">
+                    Chi tiết
                 </a>
 
                 <a class="action-btn delete"

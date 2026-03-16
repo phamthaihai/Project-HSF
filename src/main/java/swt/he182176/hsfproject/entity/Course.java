@@ -11,7 +11,7 @@ public class Course {
     @GeneratedValue(strategy=GenerationType.IDENTITY)
     private Integer courseId;
 
-    @Column(name="title")
+    @Column(name="title", columnDefinition = "NVARCHAR(500)")
     private String title;
 
     @Column(name="description", columnDefinition = "NVARCHAR(MAX)")
@@ -20,7 +20,7 @@ public class Course {
     @Column(name="price")
     private double price;
 
-    @Column(name="level")
+    @Column(name="level", columnDefinition = "NVARCHAR(50)")
     private String level;
 
     @Column(name="duration")
@@ -34,11 +34,11 @@ public class Course {
     @JoinColumn(name="instructor_id")
     private User instructor;
 
-    @Column(name="thumbnail_url")
+    @Column(name="thumbnail_url", columnDefinition = "NVARCHAR(1000)")
     private String thumbnailUrl;
 
-    @Column(name="published")
-    private boolean published;
+    @Column(name="published", nullable = false)
+    private Boolean published;
 
 
 
@@ -47,7 +47,7 @@ public class Course {
 
     public Course() {}
 
-    public Course(Integer courseId, LocalDateTime createAt, boolean published, String thumbnailUrl
+    public Course(Integer courseId, LocalDateTime createAt, Boolean published, String thumbnailUrl
             , Category category, User instructor, Integer duration, double price
             , String level, String description, String title) {
         this.courseId = courseId;
@@ -135,12 +135,12 @@ public class Course {
         this.thumbnailUrl = thumbnailUrl;
     }
 
-    public boolean isPublished() {
+    public Boolean getPublished() {
         return published;
     }
 
-    public void setPulished(boolean pulished) {
-        this.published = pulished;
+    public void setPublished(Boolean published) {
+        this.published = published;
     }
 
     public LocalDateTime getCreateAt() {

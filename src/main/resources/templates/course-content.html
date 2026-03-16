@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Content Management</title>
+    <style>
+        :root {
+            --primary: #2e7be6;
+            --primary-hover: #245fb5;
+            --border: #ddd;
+            --bg: #f6f7fb;
+        }
+        body {
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--bg);
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: #fff;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            padding: 24px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .page-title {
+            margin: 0;
+            font-size: 22px;
+            font-weight: 600;
+            color: #333;
+        }
+        .header-actions {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        .btn-add-chapter {
+            padding: 6px 14px;
+            border-radius: 3px;
+            background: var(--primary);
+            color: #fff;
+            text-decoration: none;
+            font-size: 14px;
+            border: 1px solid var(--primary);
+        }
+        .btn-add-chapter:hover {
+            background: var(--primary-hover);
+        }
+        .btn-back {
+            padding: 6px 14px;
+            border-radius: 3px;
+            background: #eee;
+            color: #333;
+            text-decoration: none;
+            font-size: 14px;
+            border: 1px solid #ccc;
+        }
+        .btn-back:hover {
+            background: #ddd;
+        }
+        .main-layout {
+            display: flex;
+            gap: 30px;
+        }
+        .course-info-panel {
+            flex: 0 0 320px;
+            min-width: 280px;
+        }
+        .content-panel {
+            flex: 1;
+            min-width: 0;
+        }
+        .panel-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin: 0 0 12px 0;
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--border);
+        }
+        .info-row {
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+        .info-label {
+            color: #666;
+            display: block;
+            margin-bottom: 2px;
+        }
+        .info-value {
+            color: #333;
+            font-weight: 500;
+        }
+        .status-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+            background: #2ecc71;
+            color: #fff;
+        }
+        .thumbnail-info {
+            margin-top: 12px;
+        }
+        .thumbnail-info img {
+            width: 100%;
+            max-height: 160px;
+            object-fit: cover;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+        }
+        .content-box {
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            background: #fafafa;
+        }
+        .chapter-block {
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            margin-bottom: 12px;
+            background: #fff;
+            overflow: hidden;
+        }
+        .chapter-header {
+            padding: 12px 14px;
+            background: #f7f7f7;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .chapter-title-text {
+            font-weight: 600;
+            font-size: 15px;
+        }
+        .chapter-desc {
+            font-size: 13px;
+            color: #555;
+            margin-top: 4px;
+        }
+        .chapter-actions {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+        }
+        .chapter-actions a,
+        .lesson-actions a {
+            font-size: 12px;
+            padding: 4px 8px;
+            border-radius: 3px;
+            text-decoration: none;
+        }
+        .btn-add-lesson {
+            background: var(--primary);
+            color: #fff;
+            border: 1px solid var(--primary);
+        }
+        .btn-add-lesson:hover {
+            background: var(--primary-hover);
+        }
+        .btn-edit {
+            background: #eee;
+            color: #333;
+            border: 1px solid #ccc;
+        }
+        .btn-delete {
+            background: #e74c3c;
+            color: #fff;
+            border: 1px solid #e74c3c;
+        }
+        .lesson-list {
+            padding: 10px 14px 12px 24px;
+        }
+        .lesson-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 6px 0;
+            border-bottom: 1px dashed #eee;
+            font-size: 14px;
+        }
+        .lesson-item:last-child {
+            border-bottom: none;
+        }
+        .lesson-title {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .lesson-type {
+            font-size: 11px;
+            color: #666;
+            text-transform: uppercase;
+        }
+        .lesson-duration {
+            font-size: 12px;
+            color: #888;
+        }
+        .lesson-actions {
+            display: flex;
+            gap: 4px;
+        }
+        .empty-content {
+            color: #888;
+            font-size: 14px;
+            padding: 20px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="page-header">
+        <h1 class="page-title" th:text="${course.title != null && !#strings.isEmpty(course.title) ? (course.title + ' - Content Management') : 'Content Management'}">Course - Content Management</h1>
+        <div class="header-actions">
+            <a class="btn-add-chapter" th:href="@{/courses/{courseId}/chapter/add(courseId=${course.courseId})}">+ Add Chapter</a>
+            <a class="btn-back" th:href="@{/courses}">&larr; Back to Courses</a>
+        </div>
+    </div>
+
+    <div class="main-layout">
+        <div class="course-info-panel">
+            <h2 class="panel-title">Course Information</h2>
+            <p style="margin: 0 0 12px 0;">
+                <a th:href="@{/courses/edit/{id}(id=${course.courseId})}" style="font-size: 13px; color: var(--primary);">Chỉnh sửa thông tin khóa học</a>
+            </p>
+            <div class="info-row">
+                <span class="info-label">Title</span>
+                <span class="info-value" th:text="${course.title}">-</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Category</span>
+                <span class="info-value" th:text="${course.category != null ? course.category.name : 'N/A'}">-</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Instructor</span>
+                <span class="info-value" th:text="${course.instructor != null ? course.instructor.fullName : 'N/A'}">-</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Level</span>
+                <span class="info-value" th:text="${course.level != null ? course.level : 'N/A'}">-</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Price</span>
+                <span class="info-value" th:text="${course.price != null ? #numbers.formatDecimal(course.price, 1, 2) : 'N/A'}">-</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Status</span>
+                <span class="status-badge" th:if="${course.published}">Published</span>
+                <span th:if="${course.published == null || !course.published}" style="color:#888;">Unpublished</span>
+            </div>
+            <div class="thumbnail-info" th:if="${course.thumbnailUrl != null && !#strings.isEmpty(course.thumbnailUrl)}">
+                <span class="info-label">Thumbnail</span>
+                <img th:src="${course.thumbnailUrl}" alt="Course thumbnail">
+            </div>
+        </div>
+
+        <div class="content-panel">
+            <h2 class="panel-title">Course Content</h2>
+            <div class="content-box">
+                <div class="empty-content" th:if="${#lists.isEmpty(chapters)}">
+                    No chapters yet. Click "+ Add Chapter" to add content.
+                </div>
+
+                <div th:each="ch : ${chapters}" class="chapter-block">
+                    <div class="chapter-header">
+                        <div>
+                            <div class="chapter-title-text">
+                                Chapter <span th:text="${ch.chapterOrder}">1</span>: <span th:text="${ch.chaptertTitle}">Title</span>
+                            </div>
+                            <div class="chapter-desc" th:if="${ch.chapterDescription != null && !#strings.isEmpty(ch.chapterDescription)}" th:text="${ch.chapterDescription}">Description</div>
+                        </div>
+                        <div class="chapter-actions">
+                            <a class="btn-add-lesson" th:href="@{/courses/chapter/{chapterId}/lesson/add(chapterId=${ch.chapterId})}">+ Add Lesson</a>
+                            <a class="btn-edit" th:href="@{/courses/chapter/edit/{id}(id=${ch.chapterId})}">Edit</a>
+                            <a class="btn-delete" th:href="@{/courses/{courseId}/chapter/delete/{id}(courseId=${course.courseId},id=${ch.chapterId})}"
+                               onclick="return confirm('Xóa chương này?')">Delete</a>
+                        </div>
+                    </div>
+                    <div class="lesson-list">
+                        <div th:if="${#lists.isEmpty(ch.lessons)}" style="color:#999; font-size:13px; padding: 8px 0;">No lessons in this chapter.</div>
+                        <div th:each="ls, stat : ${ch.lessons}" class="lesson-item">
+                            <div class="lesson-title">
+                                <span th:text="${stat.count}">1</span>.
+                                <span th:text="${ls.title}">Lesson title</span>
+                                <span class="lesson-type" th:text="${ls.contentType != null ? ls.contentType : ''}">TYPE</span>
+                                <span class="lesson-duration" th:if="${ls.duration != null && ls.duration > 0}" th:text="${ls.duration + ' min'}"></span>
+                            </div>
+                            <div class="lesson-actions">
+                                <a class="btn-edit" th:href="@{/courses/lesson/edit/{id}(id=${ls.lessonId})}">Edit</a>
+                                <a class="btn-delete" th:href="@{/courses/chapter/{chapterId}/lesson/delete/{id}(chapterId=${ch.chapterId},id=${ls.lessonId})}"
+                                   onclick="return confirm('Xóa bài học này?')">Delete</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

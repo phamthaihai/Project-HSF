@@ -10,6 +10,7 @@ import swt.he182176.hsfproject.entity.User;
 import swt.he182176.hsfproject.repository.CategoryRepository;
 import swt.he182176.hsfproject.repository.UserRepository;
 import swt.he182176.hsfproject.service.CourseAdminService;
+import swt.he182176.hsfproject.service.ContentService;
 
 
 import java.time.LocalDateTime;
@@ -27,6 +28,8 @@ public class CourseAdminController {
     @Autowired
     UserRepository userRepository;
 
+    @Autowired
+    ContentService contentService;
 
 
     @GetMapping
@@ -57,23 +60,36 @@ public class CourseAdminController {
 
     @GetMapping("/edit/{id}")
     public String showEditCourse(@PathVariable int id, Model model){
-
         Course course = courseService.getCourseById(id);
-
         model.addAttribute("course", course);
         model.addAttribute("categories", categoryRepository.findAll());
         model.addAttribute("managers", userRepository.findByRole_Name("MANAGER"));
-
         return "course-detail";
+    }
+
+    @GetMapping("/{id}/content")
+    public String showCourseContent(@PathVariable int id, Model model){
+        Course course = courseService.getCourseById(id);
+        if (course == null) {
+            return "redirect:/courses";
+        }
+        model.addAttribute("course", course);
+        model.addAttribute("chapters", contentService.getChaptersByCourse(id));
+        return "course-content";
     }
 
 
     @PostMapping("/save")
     public String saveCourse(@ModelAttribute Course course){
-
+        if (course.getCourseId() == null) {
+            course.setCreateAt(LocalDateTime.now());
+        } else {
+            Course existing = courseService.getCourseById(course.getCourseId());
+            if (existing != null) {
+                course.setCreateAt(existing.getCreateAt());
+            }
+        }
         courseService.updateCourse(course);
-        course.setCreateAt(LocalDateTime.now());
-
         return "redirect:/courses";
     }
 
