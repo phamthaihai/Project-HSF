@@ -142,6 +142,7 @@
                 <label>Password Confirm*</label>
                 <input type="password" th:field="*{confirmPassword}">
                 <small class="error-text" th:errors="*{confirmPassword}"></small>
+                <small class="error-text" th:if="${#fields.hasErrors('passwordMatch')}" th:errors="*{passwordMatch}"></small>
             </div>
 
             <button type="submit" class="btn-register">Register</button>
