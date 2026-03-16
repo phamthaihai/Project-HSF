@@ -1,30 +1,22 @@
 package swt.he182176.hsfproject.dto;
 
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
 
 public class PostDTO {
 
     private Integer postId;
 
     @NotBlank(message = "Title is required")
-    @Size(max = 255, message = "Title must be <= 255 characters")
     private String name;
 
-    @NotBlank(message = "Category is required")
     private String type;
 
-    @Size(max = 1000, message = "Description must be <= 1000 characters")
     private String description;
 
     @NotBlank(message = "Content is required")
     private String content;
 
-    @NotBlank(message = "Status is required")
     private String status;
-
-    public PostDTO() {
-    }
 
     public Integer getPostId() {
         return postId;

@@ -27,6 +27,9 @@ public class Post {
     @Column(name = "status", length = 20)
     private String status; // Draft / Published / Hidden
 
+    @Column(name = "thumbnail_url", length = 500)
+    private String thumbnailUrl;
+
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
@@ -101,6 +104,14 @@ public class Post {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public String getThumbnailUrl() {
+        return thumbnailUrl;
+    }
+
+    public void setThumbnailUrl(String thumbnailUrl) {
+        this.thumbnailUrl = thumbnailUrl;
     }
 
     public LocalDateTime getCreatedAt() {
