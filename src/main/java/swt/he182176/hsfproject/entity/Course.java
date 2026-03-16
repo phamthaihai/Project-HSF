@@ -139,8 +139,8 @@ public class Course {
         return published;
     }
 
-    public void setPulished(boolean pulished) {
-        this.published = pulished;
+    public void setPublished(boolean published) {
+        this.published = published;
     }
 
     public LocalDateTime getCreateAt() {
