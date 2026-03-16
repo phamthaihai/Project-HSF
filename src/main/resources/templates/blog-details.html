@@ -8,23 +8,102 @@
     .container { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; }
     .left, .right { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,.08); }
     .meta { color: #666; margin-bottom: 12px; }
-    .content { white-space: pre-wrap; line-height: 1.6; }
+    .content { white-space: pre-wrap; line-height: 1.7; }
+    .hero { width: 100%; max-height: 380px; object-fit: cover; border-radius: 12px; border: 1px solid #ddd; margin-bottom: 16px; }
     .related-item { padding: 12px 0; border-bottom: 1px solid #e5e7eb; }
     .related-item:last-child { border-bottom: none; }
     a { text-decoration: none; color: #2563eb; }
+
+    .msg-success { background: #ecfdf5; color: #065f46; border: 1px solid #a7f3d0; padding: 10px; border-radius: 8px; margin-bottom: 12px; }
+    .msg-error { background: #fef2f2; color: #991b1b; border: 1px solid #fecaca; padding: 10px; border-radius: 8px; margin-bottom: 12px; }
+
+    .comment-box { margin-top: 28px; }
+    .comment-form textarea,
+    .reply-form textarea {
+      width: 100%;
+      min-height: 90px;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      resize: vertical;
+    }
+
+    .comment-item {
+      border: 1px solid #e5e7eb;
+      background: #fafafa;
+      border-radius: 10px;
+      padding: 12px;
+      margin-top: 12px;
+    }
+
+    .comment-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 8px;
+      font-size: 14px;
+    }
+
+    .comment-content {
+      white-space: pre-wrap;
+      line-height: 1.6;
+      margin-bottom: 10px;
+    }
+
+    .comment-actions {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      padding: 8px 14px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      text-decoration: none;
+    }
+
+    .btn-primary {
+      background: #2563eb;
+      color: white;
+    }
+
+    .btn-danger {
+      background: #dc2626;
+      color: white;
+    }
+
+    .btn-light {
+      background: #e5e7eb;
+      color: #111827;
+    }
+
+    .reply-form {
+      display: none;
+      margin-top: 10px;
+    }
   </style>
 </head>
 <body>
 <div class="container">
   <div class="left">
+    <a th:href="@{/blogs}">← Back to Blog List</a>
+
     <h1 th:text="${blog.name}"></h1>
+
+    <img class="hero"
+         th:src="${blog.thumbnailUrl != null && !#strings.isEmpty(blog.thumbnailUrl)} ? @{${blog.thumbnailUrl}} : 'https://picsum.photos/900/400'"
+         alt="thumbnail">
 
     <div class="meta">
       Category: <span th:text="${blog.type}"></span>
       |
       Author: <span th:text="${blog.user != null ? blog.user.fullName : 'N/A'}"></span>
       |
-      Updated: <span th:text="${blog.updatedAt}"></span>
+      Updated: <span th:text="${blog.updatedAt != null ? #temporals.format(blog.updatedAt, 'dd/MM/yyyy HH:mm') : ''}"></span>
     </div>
 
     <p><strong>Description:</strong></p>
@@ -33,6 +112,76 @@
     <hr>
 
     <div class="content" th:text="${blog.content}"></div>
+
+    <div class="comment-box">
+      <h2>Discussions</h2>
+
+      <div th:if="${commentSuccess}" class="msg-success" th:text="${commentSuccess}"></div>
+      <div th:if="${commentError}" class="msg-error" th:text="${commentError}"></div>
+
+      <div th:if="${currentUser != null}">
+        <form class="comment-form" th:action="@{'/blogs/' + ${blog.postId} + '/comments'}" method="post" th:object="${commentForm}">
+          <input type="hidden" th:field="*{parentId}">
+          <textarea th:field="*{content}" placeholder="Write your discussion..."></textarea>
+          <div style="margin-top:10px;">
+            <button class="btn btn-primary" type="submit">Comment</button>
+          </div>
+        </form>
+      </div>
+
+      <div th:if="${currentUser == null}">
+        <p>You need to <a th:href="@{/login}">login</a> to comment.</p>
+      </div>
+
+      <div th:if="${#lists.isEmpty(comments)}" style="margin-top: 16px;">
+        No comments yet.
+      </div>
+
+      <div th:each="c : ${comments}"
+           class="comment-item"
+           th:style="'margin-left:' + (${c.depth} * 30) + 'px'">
+
+        <div class="comment-header">
+          <div>
+            <strong th:text="${c.userFullName}"></strong>
+            <span> - </span>
+            <span th:text="${c.createdAt != null ? #temporals.format(c.createdAt, 'dd/MM/yyyy HH:mm') : ''}"></span>
+          </div>
+        </div>
+
+        <div class="comment-content" th:text="${c.content}"></div>
+
+        <div class="comment-actions">
+          <button th:if="${currentUser != null}"
+                  type="button"
+                  class="btn btn-light"
+                  th:attr="onclick='toggleReplyForm(' + ${c.id} + ')'">
+            Reply
+          </button>
+
+          <form th:if="${currentUser != null and (currentUser.id == c.userId or
+                     (currentUser.role != null and currentUser.role.name != null and
+                     (#strings.equalsIgnoreCase(currentUser.role.name, 'ADMIN')
+                     or #strings.equalsIgnoreCase(currentUser.role.name, 'MANAGER')
+                     or #strings.equalsIgnoreCase(currentUser.role.name, 'MARKETING'))))}"
+                th:action="@{'/blogs/' + ${blog.postId} + '/comments/' + ${c.id} + '/delete'}"
+                method="post"
+                style="display:inline;">
+            <button type="submit" class="btn btn-danger">Delete</button>
+          </form>
+        </div>
+
+        <div class="reply-form" th:attr="id='reply-form-' + ${c.id}">
+          <form th:action="@{'/blogs/' + ${blog.postId} + '/comments'}" method="post">
+            <input type="hidden" name="parentId" th:value="${c.id}">
+            <textarea name="content" placeholder="Write your reply..."></textarea>
+            <div style="margin-top:10px;">
+              <button class="btn btn-primary" type="submit">Send Reply</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
   </div>
 
   <div class="right">
@@ -42,8 +191,17 @@
          th:each="r : ${relatedBlogs}"
          th:if="${r.postId != blog.postId}">
       <a th:href="@{'/blogs/' + ${r.postId}}" th:text="${r.name}"></a>
+      <div style="font-size: 13px; color: #666; margin-top: 4px;" th:text="${r.type}"></div>
     </div>
   </div>
 </div>
+
+<script>
+  function toggleReplyForm(commentId) {
+    const form = document.getElementById('reply-form-' + commentId);
+    if (!form) return;
+    form.style.display = form.style.display === 'block' ? 'none' : 'block';
+  }
+</script>
 </body>
 </html>

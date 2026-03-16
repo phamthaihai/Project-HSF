@@ -4,65 +4,364 @@
     <meta charset="UTF-8">
     <title>Post Details</title>
     <style>
-        body { font-family: Arial, sans-serif; background: #f5f6fa; margin: 0; padding: 24px; }
-        .box { max-width: 900px; margin: auto; background: white; padding: 24px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,.08); }
-        .row { margin-bottom: 14px; }
-        label { display: block; margin-bottom: 6px; font-weight: bold; }
-        input, select, textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px; }
-        textarea { min-height: 120px; }
-        .error { color: red; font-size: 13px; }
-        .danger { color: red; margin-bottom: 10px; }
-        button, a.btn { display: inline-block; padding: 10px 16px; border: none; border-radius: 6px; text-decoration: none; cursor: pointer; }
-        button { background: #2563eb; color: white; }
-        a.btn { background: #6b7280; color: white; margin-left: 8px; }
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f3f3f3;
+            color: #222;
+        }
+
+        .page {
+            width: 1120px;
+            max-width: calc(100% - 40px);
+            margin: 38px auto;
+            border: 2px solid #5b8def;
+            background: #fff;
+            padding: 18px 22px 28px;
+        }
+
+        .back {
+            display: inline-block;
+            margin-bottom: 14px;
+            color: #1d4ed8;
+            text-decoration: none;
+        }
+
+        .back:hover {
+            text-decoration: underline;
+        }
+
+        .title {
+            margin: 0 0 24px;
+            font-size: 34px;
+            font-weight: 800;
+        }
+
+        .top-grid {
+            display: grid;
+            grid-template-columns: 1.8fr 0.95fr;
+            gap: 34px;
+            align-items: start;
+            margin-bottom: 18px;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        input[type="text"],
+        textarea,
+        select {
+            width: 100%;
+            border: 1px solid #b9b9b9;
+            border-radius: 3px;
+            padding: 10px 12px;
+            font-size: 14px;
+            background: #fff;
+        }
+
+        .row-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 22px;
+        }
+
+        .select-wrap {
+            display: flex;
+        }
+
+        .select-wrap input {
+            border-right: 0;
+            border-top-right-radius: 0;
+            border-bottom-right-radius: 0;
+        }
+
+        .select-wrap select {
+            width: 42px;
+            border-top-left-radius: 0;
+            border-bottom-left-radius: 0;
+            padding: 0;
+            text-align: center;
+        }
+
+        .status-line {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+            flex-wrap: wrap;
+            margin-top: 8px;
+        }
+
+        .status-line label {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin: 0;
+            font-size: 14px;
+        }
+
+        .thumb-area {
+            padding-top: 16px;
+        }
+
+        .thumb-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .thumb-head .change-text {
+            color: #1d4ed8;
+            text-decoration: underline;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .thumb-preview {
+            width: 100%;
+            height: 190px;
+            object-fit: cover;
+            border: 1px solid #b9b9b9;
+            display: block;
+            background: #efefef;
+            margin-bottom: 14px;
+        }
+
+        .file-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .file-note {
+            margin-top: 8px;
+            font-size: 14px;
+        }
+
+        .editor-box {
+            border: 1px solid #cfcfcf;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 14px;
+        }
+
+        .toolbar {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            flex-wrap: wrap;
+            padding: 8px;
+            border-bottom: 1px solid #d7d7d7;
+            background: #f7f7f7;
+        }
+
+        .tool-btn {
+            min-width: 34px;
+            height: 32px;
+            border: 1px solid #cfcfcf;
+            border-radius: 3px;
+            background: #fff;
+            cursor: default;
+            font-size: 14px;
+        }
+
+        .editor-area {
+            width: 100%;
+            min-height: 320px;
+            border: 0;
+            padding: 12px;
+            resize: vertical;
+            font-size: 14px;
+            outline: none;
+        }
+
+        .actions {
+            margin-top: 20px;
+        }
+
+        .btn {
+            min-width: 130px;
+            height: 38px;
+            border: 1px solid #9f9f9f;
+            border-radius: 4px;
+            background: #fff;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .btn-link {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 130px;
+            height: 38px;
+            border: 1px solid #9f9f9f;
+            border-radius: 4px;
+            background: #fff;
+            color: #222;
+            text-decoration: none;
+            margin-left: 10px;
+            font-size: 14px;
+        }
+
+        .error {
+            color: red;
+            font-size: 13px;
+            margin-top: 5px;
+        }
     </style>
 </head>
 <body>
-<div class="box">
-    <h2 th:text="${isEdit} ? 'Edit Post' : 'New Post'"></h2>
+<div class="page">
+    <a class="back" th:href="@{/posts}">← Back to Post List</a>
 
-    <div th:if="${error}" class="danger" th:text="${error}"></div>
+    <h1 class="title">Post Details</h1>
 
-    <form th:action="@{/posts/save}" th:object="${postDTO}" method="post">
+    <div th:if="${error}" class="error" th:text="${error}"></div>
+
+    <form th:action="@{/posts/save}" th:object="${postDTO}" method="post" enctype="multipart/form-data">
         <input type="hidden" th:field="*{postId}">
 
-        <div class="row">
-            <label>Title</label>
-            <input type="text" th:field="*{name}">
-            <div class="error" th:errors="*{name}"></div>
+        <div class="top-grid">
+            <div>
+                <div class="form-group">
+                    <label>Title*</label>
+                    <input type="text" th:field="*{name}">
+                    <div class="error" th:errors="*{name}"></div>
+                </div>
+
+                <div class="form-group">
+                    <label>Description</label>
+                    <input type="text" th:field="*{description}" placeholder="Short summary for homepage/blog list">
+                    <div class="error" th:errors="*{description}"></div>
+                </div>
+
+                <div class="row-2">
+                    <div class="form-group">
+                        <label>Category</label>
+                        <div class="select-wrap">
+                            <input type="text" th:field="*{type}">
+                            <select tabindex="-1">
+                                <option>▼</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Author</label>
+                        <input type="text"
+                               th:value="${post != null && post.user != null ? post.user.fullName : 'Author Name'}"
+                               readonly>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Status</label>
+
+                    <div class="status-line" th:if="${!isMarketing}">
+                        <label>
+                            <input type="radio" th:field="*{status}" value="Draft">
+                            Draft
+                        </label>
+                        <label>
+                            <input type="radio" th:field="*{status}" value="Published">
+                            Published
+                        </label>
+                        <label>
+                            <input type="radio" th:field="*{status}" value="Hidden">
+                            Hidden
+                        </label>
+                    </div>
+
+                    <div th:if="${isMarketing}">
+                        <input type="text" th:value="${postDTO.status}" readonly>
+                        <input type="hidden" th:field="*{status}">
+                    </div>
+                </div>
+            </div>
+
+            <div class="thumb-area">
+                <div class="thumb-head">
+                    <label style="margin:0;">Thumbnail</label>
+                    <label for="imageFile" class="change-text">Change</label>
+                </div>
+
+                <img id="thumbPreview"
+                     class="thumb-preview"
+                     th:src="${post != null && post.thumbnailUrl != null && !#strings.isEmpty(post.thumbnailUrl)} ? @{${post.thumbnailUrl}} : 'https://picsum.photos/500/300'"
+                     alt="Thumbnail">
+
+                <div class="file-row">
+                    <input id="imageFile" type="file" name="imageFile" accept="image/*">
+                </div>
+
+                <div class="file-note">Upload image under 10MB</div>
+            </div>
         </div>
 
-        <div class="row">
-            <label>Category</label>
-            <input type="text" th:field="*{type}" placeholder="Example: Lap trinh">
-            <div class="error" th:errors="*{type}"></div>
+        <div class="editor-box">
+            <div class="toolbar">
+                <button type="button" class="tool-btn"><b>B</b></button>
+                <button type="button" class="tool-btn"><i>I</i></button>
+                <button type="button" class="tool-btn"><u>U</u></button>
+                <button type="button" class="tool-btn">S</button>
+                <button type="button" class="tool-btn">▣</button>
+                <button type="button" class="tool-btn">≣</button>
+                <button type="button" class="tool-btn">≡</button>
+                <button type="button" class="tool-btn">☷</button>
+                <button type="button" class="tool-btn">🔗</button>
+                <button type="button" class="tool-btn">🖼</button>
+                <button type="button" class="tool-btn">✕</button>
+                <button type="button" class="tool-btn">&lt;/&gt;</button>
+                <button type="button" class="tool-btn">?</button>
+            </div>
+
+            <textarea class="editor-area" th:field="*{content}" placeholder="Write post content here..."></textarea>
         </div>
 
-        <div class="row">
-            <label>Description</label>
-            <textarea th:field="*{description}"></textarea>
-            <div class="error" th:errors="*{description}"></div>
-        </div>
+        <div class="error" th:errors="*{content}"></div>
 
-        <div class="row">
-            <label>Content</label>
-            <textarea th:field="*{content}" style="min-height: 250px;"></textarea>
-            <div class="error" th:errors="*{content}"></div>
+        <div class="actions">
+            <button type="submit" class="btn">Submit</button>
+            <a th:href="@{/posts}" class="btn-link">Cancel</a>
         </div>
-
-        <div class="row">
-            <label>Status</label>
-            <select th:field="*{status}">
-                <option value="Draft">Draft</option>
-                <option value="Published">Published</option>
-                <option value="Hidden">Hidden</option>
-            </select>
-            <div class="error" th:errors="*{status}"></div>
-        </div>
-
-        <button type="submit">Save</button>
-        <a class="btn" th:href="@{/posts}">Back to List</a>
     </form>
 </div>
+
+<script>
+    const imageInput = document.getElementById('imageFile');
+    const thumbPreview = document.getElementById('thumbPreview');
+
+    if (imageInput && thumbPreview) {
+        imageInput.addEventListener('change', function (event) {
+            const file = event.target.files && event.target.files[0];
+            if (!file) return;
+
+            if (!file.type.startsWith('image/')) {
+                alert('Please choose an image file.');
+                imageInput.value = '';
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                thumbPreview.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        });
+    }
+</script>
 </body>
 </html>

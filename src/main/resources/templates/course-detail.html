@@ -182,16 +182,24 @@
                 <div class="form-row">
                     <div class="form-group">
                         <label>Category</label>
-                        <select th:field="*{category}">
+                        <select name="categoryId">
                             <option value="">-- Select Category --</option>
-                            <option th:each="c : ${categories}" th:value="${c.categoryId}" th:text="${c.name}"></option>
+                            <option th:each="c : ${categories}"
+                                    th:value="${c.categoryId}"
+                                    th:text="${c.name}"
+                                    th:selected="${course.category != null and course.category.categoryId == c.categoryId}">
+                            </option>
                         </select>
                     </div>
                     <div class="form-group">
                         <label>Manager</label>
-                        <select th:field="*{instructor}">
+                        <select name="instructorId">
                             <option value="">-- Select Manager --</option>
-                            <option th:each="u : ${managers}" th:value="${u.id}" th:text="${u.fullName}"></option>
+                            <option th:each="u : ${managers}"
+                                    th:value="${u.id}"
+                                    th:text="${u.fullName}"
+                                    th:selected="${course.instructor != null and course.instructor.id == u.id}">
+                            </option>
                         </select>
                     </div>
                 </div>
@@ -238,7 +246,7 @@
                     <label>Status</label>
                     <div class="status-section">
                         <div class="checkbox-group">
-                            <input type="checkbox" th:field="*{pulished}" id="pub">
+                            <input type="checkbox" name="published" id="pub" th:checked="${course.published}">
                             <label for="pub" style="margin:0">Published</label>
                         </div>
                         <div class="checkbox-group">

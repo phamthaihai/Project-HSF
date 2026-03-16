@@ -2,71 +2,75 @@ package swt.he182176.hsfproject.controller;
 
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import swt.he182176.hsfproject.dto.CommentForm;
 import swt.he182176.hsfproject.dto.PostDTO;
 import swt.he182176.hsfproject.entity.Post;
 import swt.he182176.hsfproject.entity.User;
+import swt.he182176.hsfproject.service.PostCommentService;
 import swt.he182176.hsfproject.service.PostService;
 
 @Controller
 public class PostController {
 
-    @Autowired
-    private PostService postService;
+    private final PostService postService;
+    private final PostCommentService postCommentService;
+
+    public PostController(PostService postService, PostCommentService postCommentService) {
+        this.postService = postService;
+        this.postCommentService = postCommentService;
+    }
 
     @GetMapping("/posts")
     public String showPostList(@RequestParam(required = false) String keyword,
                                @RequestParam(required = false) String category,
-                               @RequestParam(required = false) String status,
+                               @RequestParam(required = false) String author,
                                Model model,
                                HttpSession session) {
         User user = (User) session.getAttribute("user");
         if (!canManagePosts(user)) {
-            return "redirect:/login";
+            return "redirect:/";
         }
 
-        model.addAttribute("posts", postService.searchPosts(keyword, category, status));
+        model.addAttribute("posts", postService.searchPosts(keyword, category, author));
         model.addAttribute("categories", postService.getAllCategories());
+        model.addAttribute("authors", postService.getAllAuthors());
         model.addAttribute("keyword", keyword);
         model.addAttribute("category", category);
-        model.addAttribute("status", status);
+        model.addAttribute("author", author);
         return "post-list";
     }
 
     @GetMapping("/posts/new")
-    public String showNewPostForm(Model model, HttpSession session) {
+    public String showNewForm(Model model, HttpSession session) {
         User user = (User) session.getAttribute("user");
         if (!canManagePosts(user)) {
-            return "redirect:/login";
+            return "redirect:/";
         }
 
         PostDTO dto = new PostDTO();
         dto.setStatus("Draft");
 
         model.addAttribute("postDTO", dto);
-        model.addAttribute("categories", postService.getAllCategories());
         model.addAttribute("isEdit", false);
+        model.addAttribute("isMarketing", isMarketing(user));
         return "post-details";
     }
 
     @GetMapping("/posts/{id}")
-    public String showEditPostForm(@PathVariable Integer id,
-                                   Model model,
-                                   HttpSession session) {
+
+    public String showEditForm(@PathVariable Integer id, Model model, HttpSession session) {
         User user = (User) session.getAttribute("user");
         if (!canManagePosts(user)) {
-            return "redirect:/login";
+            return "redirect:/";
         }
 
         Post post = postService.getById(id);
-
-        if (isMarketing(user) && post.getUser() != null && post.getUser().getId() != user.getId()) {
-            return "redirect:/posts";
-        }
 
         PostDTO dto = new PostDTO();
         dto.setPostId(post.getPostId());
@@ -77,50 +81,69 @@ public class PostController {
         dto.setStatus(post.getStatus());
 
         model.addAttribute("postDTO", dto);
-        model.addAttribute("categories", postService.getAllCategories());
-        model.addAttribute("isEdit", true);
         model.addAttribute("post", post);
+        model.addAttribute("isEdit", true);
+        model.addAttribute("isMarketing", isMarketing(user));
         return "post-details";
     }
 
     @PostMapping("/posts/save")
     public String savePost(@Valid @ModelAttribute("postDTO") PostDTO postDTO,
                            BindingResult result,
-                           Model model,
-                           HttpSession session) {
+                           @RequestParam(value = "imageFile", required = false) MultipartFile imageFile,
+                           HttpSession session,
+                           Model model) {
         User user = (User) session.getAttribute("user");
         if (!canManagePosts(user)) {
-            return "redirect:/login";
+            return "redirect:/";
         }
 
         if (result.hasErrors()) {
-            model.addAttribute("categories", postService.getAllCategories());
             model.addAttribute("isEdit", postDTO.getPostId() != null);
+            model.addAttribute("isMarketing", isMarketing(user));
             return "post-details";
         }
 
         try {
-            Post existing = null;
-            if (postDTO.getPostId() != null) {
-                existing = postService.getById(postDTO.getPostId());
-
-                if (isMarketing(user) && existing.getUser() != null && existing.getUser().getId() != user.getId()) {
-                    return "redirect:/posts";
-                }
+            if (isMarketing(user) && postDTO.getPostId() != null) {
+                Post old = postService.getById(postDTO.getPostId());
+                postDTO.setStatus(old.getStatus());
             }
 
-            if (isMarketing(user) && existing != null) {
-                postDTO.setStatus(existing.getStatus());
+            if (isMarketing(user) && postDTO.getPostId() == null) {
+                postDTO.setStatus("Draft");
             }
 
-            postService.save(postDTO, user);
+            postService.save(postDTO, user, imageFile);
             return "redirect:/posts";
         } catch (RuntimeException e) {
             model.addAttribute("error", e.getMessage());
-            model.addAttribute("categories", postService.getAllCategories());
             model.addAttribute("isEdit", postDTO.getPostId() != null);
+            model.addAttribute("isMarketing", isMarketing(user));
             return "post-details";
         }
+    }
+
+    @GetMapping("/posts/{id}/show")
+    public String showPost(@PathVariable Integer id, HttpSession session) {
+        User user = (User) session.getAttribute("user");
+        if (!canManagePosts(user) || isMarketing(user)) {
+            return "redirect:/posts";
+        }
+
+        postService.updateStatus(id, "Published");
+        return "redirect:/posts";
+    }
+
+    @GetMapping("/posts/{id}/hide")
+    public String hidePost(@PathVariable Integer id, HttpSession session) {
+        User user = (User) session.getAttribute("user");
+        if (!canManagePosts(user) || isMarketing(user)) {
+            return "redirect:/posts";
+        }
+
+        postService.updateStatus(id, "Hidden");
+        return "redirect:/posts";
     }
 
     @GetMapping("/blogs")
@@ -135,11 +158,16 @@ public class PostController {
     }
 
     @GetMapping("/blogs/{id}")
-    public String showBlogDetails(@PathVariable Integer id, Model model) {
+    public String showBlogDetails(@PathVariable Integer id, Model model, HttpSession session) {
         Post post = postService.getPublishedBlogById(id);
+        User user = (User) session.getAttribute("user");
+
         model.addAttribute("blog", post);
-        model.addAttribute("categories", postService.getAllCategories());
-        model.addAttribute("relatedBlogs", postService.searchPublishedBlogs(null, post.getType()));
+        model.addAttribute("relatedBlogs", postService.getRelatedPublishedBlogs(post.getPostId(), post.getType()));
+        model.addAttribute("comments", postCommentService.getCommentViewsByPost(post.getPostId()));
+        model.addAttribute("commentForm", new CommentForm());
+        model.addAttribute("currentUser", user);
+
         return "blog-details";
     }
 

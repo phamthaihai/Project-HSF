@@ -2,82 +2,108 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Learning Enrollment</title>
-
     <style>
-
-        body{
-            font-family: Arial;
-            background:#f2f2f2;
+        body {
+            font-family: Arial, sans-serif;
+            background: #f5f7fb;
+            margin: 0;
+            padding: 30px;
         }
 
-        .container{
-            width:700px;
-            margin:40px auto;
-            background:white;
-            padding:25px;
-            border:1px solid #ccc;
+        .container {
+            width: 760px;
+            max-width: 100%;
+            margin: 0 auto;
+            background: white;
+            padding: 28px;
+            border: 1px solid #e5e7eb;
+            border-radius: 18px;
+            box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
         }
 
-        h2{
-            margin-bottom:20px;
+        h2 {
+            margin-top: 0;
+            margin-bottom: 22px;
+            font-size: 30px;
         }
 
-        .row{
-            display:flex;
-            gap:20px;
-            margin-bottom:15px;
+        .row {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 16px;
         }
 
-        .field{
-            flex:1;
-            display:flex;
-            flex-direction:column;
+        .field {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
         }
 
-        label{
-            font-size:14px;
-            margin-bottom:5px;
+        label {
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 7px;
+            color: #111827;
         }
 
-        input, textarea{
-            padding:8px;
-            border:1px solid #ccc;
-            border-radius:3px;
+        input, textarea {
+            padding: 11px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 10px;
+            font-size: 14px;
         }
 
-        textarea{
-            height:70px;
+        textarea {
+            height: 90px;
+            resize: vertical;
         }
 
-        .radio-group{
-            display:flex;
-            gap:15px;
-            align-items:center;
-            margin-top:5px;
+        .radio-group {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            margin-top: 8px;
+            flex-wrap: wrap;
         }
 
-        button{
-            margin-top:15px;
-            padding:7px 15px;
-            border:1px solid #aaa;
-            background:#eee;
-            cursor:pointer;
+        .radio-group label {
+            margin-bottom: 0;
+            font-weight: 500;
         }
 
+        button {
+            margin-top: 18px;
+            padding: 12px 18px;
+            border: none;
+            border-radius: 10px;
+            background: #2563eb;
+            color: white;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #1d4ed8;
+        }
+
+        @media (max-width: 700px) {
+            .row {
+                flex-direction: column;
+            }
+
+            body {
+                padding: 16px;
+            }
+        }
     </style>
-
 </head>
-
 <body>
 
 <div class="container">
-
     <h2>Learning Enrollment</h2>
 
     <form th:action="@{/enroll}" method="post">
-
         <div class="row">
-
             <div class="field">
                 <label>Course</label>
                 <input type="text" th:value="${course.title}" readonly>
@@ -88,62 +114,49 @@
                 <label>Total Fee ($)</label>
                 <input type="text" th:value="${course.price}" readonly>
             </div>
-
         </div>
 
-
         <div class="row">
-
             <div class="field">
-                <label>Full Name*</label>
-                <input type="text" name="fullName">
+                <label>Full Name *</label>
+                <input type="text" name="fullName" th:value="${user.fullName}" required>
             </div>
 
             <div class="field">
-                <label>Email*</label>
-                <input type="email" name="email">
+                <label>Email *</label>
+                <input type="email" name="email" th:value="${user.email}" required>
             </div>
-
         </div>
 
-
         <div class="row">
-
             <div class="field">
-                <label>Mobile*</label>
-                <input type="text" name="mobile">
+                <label>Mobile *</label>
+                <input type="text" name="mobile" th:value="${user.phone}" required>
             </div>
 
             <div class="field">
-                <label>Payment Method</label>
-
+                <label>Payment Method *</label>
                 <div class="radio-group">
                     <label>
-                        <input type="radio" name="paymentMethod" value="PAYOS">
+                        <input type="radio" name="paymentMethod" value="PAYOS" required>
                         Bank Transfer
                     </label>
 
                     <label>
-                        <input type="radio" name="paymentMethod" value="VNPAY">
+                        <input type="radio" name="paymentMethod" value="VNPAY" required>
                         Internet Banking
                     </label>
                 </div>
-
             </div>
-
         </div>
-
 
         <div class="field">
             <label>Enroll Note</label>
-            <textarea name="note"></textarea>
+            <textarea name="note" placeholder="Enter your note..."></textarea>
         </div>
 
-
-        <button type="submit">Submit</button>
-
+        <button type="submit">Submit Enrollment</button>
     </form>
-
 </div>
 
 </body>

@@ -40,16 +40,21 @@ public class Course {
     @Column(name="published")
     private boolean published;
 
-
-
     @Column(name = "created_at")
     private LocalDateTime createAt;
 
     public Course() {}
 
-    public Course(Integer courseId, LocalDateTime createAt, boolean published, String thumbnailUrl
-            , Category category, User instructor, Integer duration, double price
-            , String level, String description, String title) {
+    @PrePersist
+    public void prePersist() {
+        if (this.createAt == null) {
+            this.createAt = LocalDateTime.now();
+        }
+    }
+
+    public Course(Integer courseId, LocalDateTime createAt, boolean published, String thumbnailUrl,
+                  Category category, User instructor, Integer duration, double price,
+                  String level, String description, String title) {
         this.courseId = courseId;
         this.createAt = createAt;
         this.published = published;
@@ -139,8 +144,8 @@ public class Course {
         return published;
     }
 
-    public void setPulished(boolean pulished) {
-        this.published = pulished;
+    public void setPublished(boolean published) {
+        this.published = published;
     }
 
     public LocalDateTime getCreateAt() {

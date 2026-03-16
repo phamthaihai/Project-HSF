@@ -16,6 +16,7 @@ import swt.he182176.hsfproject.service.UserService;
 
 @Controller
 public class LoginController {
+
     @Autowired
     private UserService userService;
 
@@ -27,7 +28,11 @@ public class LoginController {
         // Nếu đã đăng nhập thì chuyển sang trang profile (hoặc trang chủ tùy bạn)
         User currentUser = (User) session.getAttribute("user");
         if (currentUser != null) {
-            return "redirect:/user-profile";
+            if (currentUser.getRole() != null
+                    && "ADMIN".equalsIgnoreCase(currentUser.getRole().getName())) {
+                return "redirect:/admin/dashboard";
+            }
+            return "redirect:/";
         }
 
         // Khởi tạo form nếu chưa có
@@ -67,8 +72,12 @@ public class LoginController {
         session.setAttribute("user", user);
         ra.addFlashAttribute("msg", "Đăng nhập thành công");
 
-        // Sau khi login chuyển sang trang profile (hoặc trang bạn muốn)
-        return "redirect:/user-profile";
+        // Điều hướng theo role sau khi đăng nhập
+        if (user.getRole() != null
+                && "ADMIN".equalsIgnoreCase(user.getRole().getName())) {
+            return "redirect:/admin/dashboard";
+        }
+        return "redirect:/";
     }
 
     @GetMapping("/logout")
