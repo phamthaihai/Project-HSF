@@ -511,178 +511,181 @@
 
 <body>
 
-    <header class="header">
-        <div class="container header-inner">
-            <div class="header-left">
-                <a th:href="@{/}" class="logo">LOGO</a>
+<header class="header">
+    <div class="container header-inner">
+        <div class="header-left">
+            <a th:href="@{/}" class="logo">LOGO</a>
 
-                <nav class="nav">
-                    <a th:href="@{/blogs}">Blogs</a>
-                    <a th:href="@{/public-courses}">Courses</a>
-                </nav>
-            </div>
-
-            <div class="header-right">
-                <!-- Khi chưa đăng nhập -->
-                <th:block th:if="${user == null}">
-                    <div class="auth-links">
-                        <a th:href="@{/login}" class="btn-login">Đăng nhập</a>
-                        <a th:href="@{/register}" class="btn-register">Đăng ký</a>
-                    </div>
-                </th:block>
-
-                <!-- Khi đã đăng nhập -->
-                <th:block th:if="${user != null}">
-                    <div class="user-menu-container">
-                        <div class="user-box">
-                            <span class="user-name" th:text="${user.fullName}">User Name</span>
-                            <div class="avatar">
-                                <span th:text="${#strings.substring(user.fullName, 0, 1)}">U</span>
-                            </div>
-                        </div>
-
-                        <!-- Dropdown menu -->
-                        <div class="user-dropdown">
-                            <!-- Chỉ hiển thị cho ADMIN, MANAGER, MARKETING -->
-                            <a th:if="${isAdmin}" th:href="@{/admin/dashboard}" class="dropdown-item dashboard">
-                                📊 Bảng điều khiển
-                            </a>
-                            <a th:if="${isAdmin}" class="dropdown-divider"></a>
-
-                            <a th:href="@{/my-courses}" class="dropdown-item">
-                                📚 Khóa học của tôi
-                            </a>
-                            <a th:href="@{/user-profile}" class="dropdown-item">
-                                👤 Hồ sơ cá nhân
-                            </a>
-                            <div class="dropdown-divider"></div>
-                            <a th:href="@{/logout}" class="dropdown-item">
-                                🚪 Đăng xuất
-                            </a>
-                        </div>
-                    </div>
-                </th:block>
-            </div>
+            <nav class="nav">
+                <a th:href="@{/blogs}">Blogs</a>
+                <a th:href="@{/public-courses}">Courses</a>
+            </nav>
         </div>
-    </header>
 
-    <main class="page">
-        <div class="container">
-
-            <!-- Featured Courses -->
-            <section class="section">
-                <div class="section-header">
-                    <h2 class="section-title">Khóa học nổi bật</h2>
-                    <a class="section-link" th:href="@{/courses}">Xem tất cả</a>
+        <div class="header-right">
+            <!-- Khi chưa đăng nhập -->
+            <th:block th:if="${user == null}">
+                <div class="auth-links">
+                    <a th:href="@{/login}" class="btn-login">Đăng nhập</a>
+                    <a th:href="@{/register}" class="btn-register">Đăng ký</a>
                 </div>
+            </th:block>
 
-                <div class="course-grid">
-                    <div class="course-card" th:each="c : ${courses}">
+            <!-- Khi đã đăng nhập -->
+            <th:block th:if="${user != null}">
+                <div class="user-menu-container">
+                    <div class="user-box">
+                        <span class="user-name" th:text="${user.fullName}">User Name</span>
+                        <div class="avatar">
+                            <span th:text="${#strings.substring(user.fullName, 0, 1)}">U</span>
+                        </div>
+                    </div>
+
+                    <!-- Dropdown menu -->
+                    <div class="user-dropdown">
+                        <!-- Chỉ hiển thị cho ADMIN, MANAGER, MARKETING -->
+                        <a th:if="${isAdmin}" th:href="@{/admin/dashboard}" class="dropdown-item dashboard">
+                            📊 Bảng điều khiển
+                        </a>
+                        <a th:if="${isAdmin}" class="dropdown-divider"></a>
+
+                        <a th:href="@{/my-courses}" class="dropdown-item">
+                            📚 Khóa học của tôi
+                        </a>
+                        <a th:href="@{/my-enrollments}" class="dropdown-item">
+                            📝 Đơn đăng ký của tôi
+                        </a>
+                        <a th:href="@{/user-profile}" class="dropdown-item">
+                            👤 Hồ sơ cá nhân
+                        </a>
+                        <div class="dropdown-divider"></div>
+                        <a th:href="@{/logout}" class="dropdown-item">
+                            🚪 Đăng xuất
+                        </a>
+                    </div>
+                </div>
+            </th:block>
+        </div>
+    </div>
+</header>
+
+<main class="page">
+    <div class="container">
+
+        <!-- Featured Courses -->
+        <section class="section">
+            <div class="section-header">
+                <h2 class="section-title">Khóa học nổi bật</h2>
+                <a class="section-link" th:href="@{/courses}">Xem tất cả</a>
+            </div>
+
+            <div class="course-grid">
+                <div class="course-card" th:each="c : ${courses}">
+                    <a th:href="@{/public-courses/{id}(id=${c.courseId})}">
+                        <img class="course-thumb"
+                             th:src="${c.thumbnailUrl != null && !#strings.isEmpty(c.thumbnailUrl) ? c.thumbnailUrl : 'https://picsum.photos/600/400'}"
+                             alt="Course thumbnail">
+                    </a>
+
+                    <div class="course-body">
                         <a th:href="@{/public-courses/{id}(id=${c.courseId})}">
-                            <img class="course-thumb"
-                                th:src="${c.thumbnailUrl != null && !#strings.isEmpty(c.thumbnailUrl) ? c.thumbnailUrl : 'https://picsum.photos/600/400'}"
-                                alt="Course thumbnail">
+                            <h3 class="course-title" th:text="${c.title}">Course Title</h3>
                         </a>
 
-                        <div class="course-body">
-                            <a th:href="@{/public-courses/{id}(id=${c.courseId})}">
-                                <h3 class="course-title" th:text="${c.title}">Course Title</h3>
-                            </a>
-
-                            <div class="course-meta">
+                        <div class="course-meta">
                                 <span class="course-price"
-                                    th:text="${#numbers.formatDecimal(c.price, 0, 'COMMA', 0, 'POINT') + ' VNĐ'}">0
+                                      th:text="${#numbers.formatDecimal(c.price, 0, 'COMMA', 0, 'POINT') + ' VNĐ'}">0
                                     VNĐ</span>
 
-                                <!-- Nếu chưa đăng nhập -->
-                                <th:block th:if="${user == null}">
-                                    <a th:href="@{/public-courses/{id}(id=${c.courseId})}"
-                                        class="course-btn btn-enroll">
-                                        + Đăng ký ngay
+                            <!-- Nếu chưa đăng nhập -->
+                            <th:block th:if="${user == null}">
+                                <a th:href="@{/public-courses/{id}(id=${c.courseId})}"
+                                   class="course-btn btn-enroll">
+                                    + Đăng ký ngay
+                                </a>
+                            </th:block>
+
+                            <!-- Nếu đã đăng nhập -->
+                            <th:block th:if="${user != null}">
+                                <!-- Kiểm tra đã enroll chưa -->
+                                <th:block
+                                        th:if="${enrolledCourseIds != null && enrolledCourseIds.contains(c.courseId)}">
+                                    <a th:href="@{/my-courses}" class="course-btn btn-continue">
+                                        Tiếp tục học
                                     </a>
                                 </th:block>
-
-                                <!-- Nếu đã đăng nhập -->
-                                <th:block th:if="${user != null}">
-                                    <!-- Kiểm tra đã enroll chưa -->
-                                    <th:block
-                                        th:if="${enrolledCourseIds != null && enrolledCourseIds.contains(c.courseId)}">
-                                        <a th:href="@{/my-courses}" class="course-btn btn-continue">
-                                            Tiếp tục học
-                                        </a>
-                                    </th:block>
-                                    <th:block
+                                <th:block
                                         th:if="${enrolledCourseIds == null || !enrolledCourseIds.contains(c.courseId)}">
-                                        <a th:href="@{/public-courses/{id}(id=${c.courseId})}"
-                                            class="course-btn btn-enroll">
-                                            Enroll Now
-                                        </a>
-                                    </th:block>
+                                    <a th:href="@{/public-courses/{id}(id=${c.courseId})}"
+                                       class="course-btn btn-enroll">
+                                        Enroll Now
+                                    </a>
                                 </th:block>
-                            </div>
+                            </th:block>
                         </div>
                     </div>
                 </div>
-            </section>
+            </div>
+        </section>
 
-            <!-- Featured Posts -->
-            <section class="section">
-                <div class="section-header">
-                    <h2 class="section-title">Bài viết mới</h2>
-                    <a class="section-link" th:href="@{/blogs}">Xem tất cả</a>
-                </div>
+        <!-- Featured Posts -->
+        <section class="section">
+            <div class="section-header">
+                <h2 class="section-title">Bài viết mới</h2>
+                <a class="section-link" th:href="@{/blogs}">Xem tất cả</a>
+            </div>
 
-                <div class="post-grid">
-                    <a class="post-card" th:each="post : ${latestPosts}" th:href="@{/blogs/{id}(id=${post.postId})}">
+            <div class="post-grid">
+                <a class="post-card" th:each="post : ${latestPosts}" th:href="@{/blogs/{id}(id=${post.postId})}">
 
-                        <img class="post-thumb" src="https://picsum.photos/600/400" alt="Post image">
+                    <img class="post-thumb" src="https://picsum.photos/600/400" alt="Post image">
 
-                        <div class="post-body">
-                            <h3 class="post-title" th:text="${post.name}">Post title</h3>
+                    <div class="post-body">
+                        <h3 class="post-title" th:text="${post.name}">Post title</h3>
 
-                            <p class="post-desc" th:text="${post.description}">
-                                Post description
-                            </p>
+                        <p class="post-desc" th:text="${post.description}">
+                            Post description
+                        </p>
 
-                            <div class="post-meta">
-                                <span class="post-type" th:text="${post.type}">Category</span>
-                                <span class="post-date"
-                                    th:text="${#temporals.format(post.createdAt, 'dd/MM/yyyy')}">16/03/2026</span>
-                            </div>
+                        <div class="post-meta">
+                            <span class="post-type" th:text="${post.type}">Category</span>
+                            <span class="post-date"
+                                  th:text="${#temporals.format(post.createdAt, 'dd/MM/yyyy')}">16/03/2026</span>
                         </div>
-                    </a>
-                </div>
-            </section>
+                    </div>
+                </a>
+            </div>
+        </section>
 
-        </div>
-    </main>
+    </div>
+</main>
 
-    <footer class="footer">
-        <div class="container footer-inner">
-            <div>StudyHub v1 - Copyright @2026</div>
-            <div>Contact: 0912345678 - contact@studyhub.com</div>
-        </div>
-    </footer>
+<footer class="footer">
+    <div class="container footer-inner">
+        <div>StudyHub v1 - Copyright @2026</div>
+        <div>Contact: 0912345678 - contact@studyhub.com</div>
+    </div>
+</footer>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const userBox = document.querySelector('.user-box');
-            const userDropdown = document.querySelector('.user-dropdown');
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const userBox = document.querySelector('.user-box');
+        const userDropdown = document.querySelector('.user-dropdown');
 
-            if (userBox && userDropdown) {
-                userBox.addEventListener('click', function (e) {
-                    e.stopPropagation();
-                    userDropdown.classList.toggle('show');
-                });
+        if (userBox && userDropdown) {
+            userBox.addEventListener('click', function (e) {
+                e.stopPropagation();
+                userDropdown.classList.toggle('show');
+            });
 
-                document.addEventListener('click', function (e) {
-                    if (!userBox.contains(e.target) && !userDropdown.contains(e.target)) {
-                        userDropdown.classList.remove('show');
-                    }
-                });
-            }
-        });
-    </script>
+            document.addEventListener('click', function (e) {
+                if (!userBox.contains(e.target) && !userDropdown.contains(e.target)) {
+                    userDropdown.classList.remove('show');
+                }
+            });
+        }
+    });
+</script>
 </body>
 
 </html>l>

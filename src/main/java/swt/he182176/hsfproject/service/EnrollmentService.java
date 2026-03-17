@@ -29,4 +29,5 @@ public interface EnrollmentService {
     Enrollment findById(int id);
 
     void save(Enrollment enrollment);
+    List<Enrollment> filterEnrollments(Integer courseId, Integer userId, String status, String keyword);
 }
