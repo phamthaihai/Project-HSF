@@ -19,7 +19,7 @@ public class User {
     @Column(length = 255)
     private String avatar;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "role_id")
     private Role role;
 

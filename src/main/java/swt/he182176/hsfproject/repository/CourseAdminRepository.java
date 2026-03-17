@@ -12,6 +12,12 @@ public interface CourseAdminRepository extends JpaRepository<Course, Integer> {
     @Query("SELECT c FROM Course c LEFT JOIN FETCH c.instructor LEFT JOIN FETCH c.category")
     List<Course> findAllWithDetails();
 
+    @Query("SELECT c FROM Course c LEFT JOIN FETCH c.instructor LEFT JOIN FETCH c.category ORDER BY c.createAt DESC")
+    List<Course> findTop5ByOrderByCreateAtDescWithDetails();
+
+    @Query("SELECT c FROM Course c LEFT JOIN FETCH c.instructor LEFT JOIN FETCH c.category WHERE c.published = true ORDER BY c.createAt DESC")
+    List<Course> findTop8ByPublishedTrueOrderByCreateAtDescWithDetails();
+
     List<Course> findByPublishedTrue();
 
     long countByPublished(boolean published);
