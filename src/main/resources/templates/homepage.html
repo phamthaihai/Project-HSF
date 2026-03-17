@@ -590,25 +590,23 @@
                             <span class="course-price" th:text="${#numbers.formatDecimal(c.price, 0, 'COMMA', 0, 'POINT') + ' VNĐ'}">0 VNĐ</span>
 
                             <!-- Nếu chưa đăng nhập -->
-                            <th:block th:if="${user == null}">
-                                <a th:href="@{/enroll/{id}(id=${c.courseId})}" class="course-btn btn-enroll">
-                                    + Enroll Now
-                                </a>
+                            <th:block th:if="${session.user == null}">
+                                <a th:href="@{/login}" class="course-btn btn-enroll">Enroll Now</a>
                             </th:block>
 
                             <!-- Nếu đã đăng nhập -->
-                            <th:block th:if="${user != null}">
-                                <!-- Kiểm tra đã enroll chưa -->
-                                <th:block th:if="${enrolledCourseIds != null && enrolledCourseIds.contains(c.courseId)}">
-                                    <a th:href="@{/public-courses/{id}(id=${c.courseId})}" class="course-btn btn-continue">
-                                        Tiếp tục học
-                                    </a>
-                                </th:block>
-                                <th:block th:if="${enrolledCourseIds == null || !enrolledCourseIds.contains(c.courseId)}">
-                                    <a th:href="@{/enroll/{id}(id=${c.courseId})}" class="course-btn btn-enroll">
-                                        Enroll Now
-                                    </a>
-                                </th:block>
+                            <th:block th:if="${session.user != null}">
+                                <a th:if="${enrolledCourseIds != null and enrolledCourseIds.contains(c.courseId)}"
+                                   th:href="@{/courses/{id}/content(id=${c.courseId})}"
+                                   class="course-btn btn-continue">
+                                    Tiếp tục học
+                                </a>
+
+                                <a th:if="${enrolledCourseIds == null or !enrolledCourseIds.contains(c.courseId)}"
+                                   th:href="@{/enroll/{id}(id=${c.courseId})}"
+                                   class="course-btn btn-enroll">
+                                    Enroll Now
+                                </a>
                             </th:block>
                         </div>
                     </div>
