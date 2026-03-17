@@ -26,4 +26,8 @@ public interface CourseRepository extends JpaRepository<Course, Integer> {
     """)
     List<Course> findPublicCourses(@Param("keyword") String keyword,
                                    @Param("categoryId") Integer categoryId);
+
+    List<Course> findByPublishedTrueOrderByCreateAtDesc();
+
+    List<Course> findByInstructor_IdOrderByCreateAtDesc(Integer instructorId);
 }

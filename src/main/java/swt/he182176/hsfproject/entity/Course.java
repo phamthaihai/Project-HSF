@@ -3,6 +3,8 @@ package swt.he182176.hsfproject.entity;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name="course")
@@ -11,7 +13,7 @@ public class Course {
     @GeneratedValue(strategy=GenerationType.IDENTITY)
     private Integer courseId;
 
-    @Column(name="title")
+    @Column(name="title", columnDefinition = "NVARCHAR(500)")
     private String title;
 
     @Column(name="description", columnDefinition = "NVARCHAR(MAX)")
@@ -20,7 +22,10 @@ public class Course {
     @Column(name="price")
     private double price;
 
-    @Column(name="level")
+    @Column(name="sale_price")
+    private Double salePrice;
+
+    @Column(name="level", columnDefinition = "NVARCHAR(50)")
     private String level;
 
     @Column(name="duration")
@@ -34,27 +39,24 @@ public class Course {
     @JoinColumn(name="instructor_id")
     private User instructor;
 
-    @Column(name="thumbnail_url")
+    @Column(name="thumbnail_url", columnDefinition = "NVARCHAR(1000)")
     private String thumbnailUrl;
 
-    @Column(name="published")
-    private boolean published;
+    @Column(name="published", nullable = false)
+    private Boolean published;
+
+    @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderBy("chapterOrder ASC")
+    private List<Chapter> chapters = new ArrayList<>();
 
     @Column(name = "created_at")
     private LocalDateTime createAt;
 
     public Course() {}
 
-    @PrePersist
-    public void prePersist() {
-        if (this.createAt == null) {
-            this.createAt = LocalDateTime.now();
-        }
-    }
-
-    public Course(Integer courseId, LocalDateTime createAt, boolean published, String thumbnailUrl,
-                  Category category, User instructor, Integer duration, double price,
-                  String level, String description, String title) {
+    public Course(Integer courseId, LocalDateTime createAt, Boolean published, String thumbnailUrl
+            , Category category, User instructor, Integer duration, double price
+            , String level, String description, String title) {
         this.courseId = courseId;
         this.createAt = createAt;
         this.published = published;
@@ -100,6 +102,14 @@ public class Course {
         this.price = price;
     }
 
+    public Double getSalePrice() {
+        return salePrice;
+    }
+
+    public void setSalePrice(Double salePrice) {
+        this.salePrice = salePrice;
+    }
+
     public String getLevel() {
         return level;
     }
@@ -140,11 +150,15 @@ public class Course {
         this.thumbnailUrl = thumbnailUrl;
     }
 
-    public boolean isPublished() {
+    public Boolean isPublished() {
         return published;
     }
 
-    public void setPublished(boolean published) {
+    public Boolean getPublished() {
+        return published;
+    }
+
+    public void setPublished(Boolean published) {
         this.published = published;
     }
 
@@ -154,5 +168,13 @@ public class Course {
 
     public void setCreateAt(LocalDateTime createAt) {
         this.createAt = createAt;
+    }
+
+    public List<Chapter> getChapters() {
+        return chapters;
+    }
+
+    public void setChapters(List<Chapter> chapters) {
+        this.chapters = chapters;
     }
 }

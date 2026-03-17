@@ -4,49 +4,445 @@
   <meta charset="UTF-8">
   <title>User Profile</title>
   <style>
-    body { font-family: Arial, sans-serif; background: #f5f6fa; margin: 0; padding: 30px; }
-    .box { max-width: 700px; margin: auto; background: white; padding: 24px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,.08); }
-    h2 { margin-top: 0; }
-    .row { margin-bottom: 14px; }
-    label { display: block; margin-bottom: 6px; font-weight: bold; }
-    input { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px; }
-    .error { color: red; font-size: 13px; }
-    .success { color: green; margin-bottom: 10px; }
-    .danger { color: red; margin-bottom: 10px; }
-    button, a.btn { display: inline-block; padding: 10px 16px; border: none; border-radius: 6px; text-decoration: none; cursor: pointer; }
-    button { background: #2563eb; color: white; }
-    a.btn { background: #6b7280; color: white; margin-left: 8px; }
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f4f6fb;
+      color: #1f2937;
+    }
+
+    .page {
+      max-width: 1000px;
+      margin: 40px auto;
+      padding: 0 20px;
+    }
+
+    .title {
+      font-size: 32px;
+      font-weight: 700;
+      color: #1f3b73;
+      margin-bottom: 20px;
+    }
+
+    .card {
+      background: #fff;
+      border: 1px solid #dbe3ef;
+      border-radius: 14px;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.06);
+      overflow: hidden;
+    }
+
+    .tabs {
+      display: flex;
+      border-bottom: 1px solid #e5e7eb;
+      background: #f8fafc;
+    }
+
+    .tab-link {
+      display: inline-block;
+      padding: 14px 22px;
+      text-decoration: none;
+      color: #374151;
+      font-weight: 600;
+      border-right: 1px solid #e5e7eb;
+    }
+
+    .tab-link.active {
+      background: #fff;
+      color: #1d4ed8;
+    }
+
+    .content {
+      padding: 28px;
+    }
+
+    .panel { display: none; }
+    .panel.active { display: block; }
+
+    .profile-layout {
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      gap: 30px;
+    }
+
+    .left-box {
+      text-align: center;
+      border-right: 1px solid #eef2f7;
+      padding-right: 20px;
+    }
+
+    .avatar {
+      width: 170px;
+      height: 170px;
+      margin: 0 auto 16px;
+      border-radius: 50%;
+      overflow: hidden;
+      border: 4px solid #e5eefc;
+      background: #eef2ff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 58px;
+      color: #4f46e5;
+      font-weight: 700;
+    }
+
+    .avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .avatar-fallback {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .avatar-upload {
+      margin-top: 6px;
+      margin-bottom: 14px;
+    }
+
+    .avatar-upload input[type="file"] {
+      display: none;
+    }
+
+    .choose-btn {
+      display: inline-block;
+      padding: 10px 18px;
+      border-radius: 10px;
+      border: 1px solid #cbd5e1;
+      background: #fff;
+      color: #2563eb;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.18s ease;
+    }
+
+    .choose-btn:hover {
+      background: #eff6ff;
+      border-color: #93c5fd;
+    }
+
+    .file-name {
+      margin-top: 8px;
+      font-size: 13px;
+      color: #6b7280;
+      word-break: break-word;
+      min-height: 18px;
+    }
+
+    .email-text {
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 8px;
+      word-break: break-word;
+    }
+
+    .role-badge {
+      display: inline-block;
+      margin-top: 6px;
+      padding: 8px 14px;
+      border-radius: 999px;
+      background: #eff6ff;
+      color: #1d4ed8;
+      font-weight: 700;
+      font-size: 14px;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 16px;
+    }
+
+    .row {
+      display: flex;
+      flex-direction: column;
+    }
+
+    label {
+      font-weight: 700;
+      margin-bottom: 8px;
+      color: #374151;
+    }
+
+    input[type="text"],
+    input[type="email"],
+    input[type="password"] {
+      width: 100%;
+      height: 44px;
+      padding: 10px 12px;
+      border: 1px solid #cbd5e1;
+      border-radius: 10px;
+      font-size: 15px;
+      outline: none;
+      background: #fff;
+    }
+
+    input[type="text"]:focus,
+    input[type="email"]:focus,
+    input[type="password"]:focus {
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 3px rgba(59,130,246,0.12);
+    }
+
+    input[readonly] {
+      background: #f8fafc;
+      color: #6b7280;
+    }
+
+    .error {
+      color: #dc2626;
+      font-size: 13px;
+      margin-top: 6px;
+    }
+
+    .success-box, .danger-box {
+      padding: 12px 14px;
+      border-radius: 10px;
+      margin-bottom: 16px;
+      font-size: 14px;
+    }
+
+    .success-box {
+      background: #ecfdf5;
+      border: 1px solid #a7f3d0;
+      color: #065f46;
+    }
+
+    .danger-box {
+      background: #fef2f2;
+      border: 1px solid #fecaca;
+      color: #991b1b;
+    }
+
+    .actions {
+      margin-top: 8px;
+    }
+
+    .btn {
+      display: inline-block;
+      min-width: 140px;
+      height: 44px;
+      padding: 0 18px;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      text-decoration: none;
+      font-weight: 700;
+      font-size: 15px;
+    }
+
+    .btn-primary {
+      background: #2563eb;
+      color: white;
+    }
+
+    .password-box {
+      max-width: 520px;
+    }
+
+    @media (max-width: 768px) {
+      .profile-layout {
+        grid-template-columns: 1fr;
+      }
+
+      .left-box {
+        border-right: none;
+        border-bottom: 1px solid #eef2f7;
+        padding-right: 0;
+        padding-bottom: 24px;
+      }
+
+      .content {
+        padding: 18px;
+      }
+
+      .title {
+        font-size: 26px;
+      }
+    }
   </style>
 </head>
 <body>
-<div class="box">
-  <h2>User Profile</h2>
+<div class="page">
+  <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:20px;">
+    <div class="title">User Profile</div>
+    <a th:href="@{/}" class="btn">← Back</a>
+  </div>
 
-  <div th:if="${success}" class="success" th:text="${success}"></div>
-  <div th:if="${error}" class="danger" th:text="${error}"></div>
+  <div class="card">
+    <div class="tabs">
+      <a th:href="@{/user-profile(tab='profile')}"
+         th:classappend="${activeTab == 'profile'} ? ' active' : ''"
+         class="tab-link">User Profile</a>
 
-  <form th:action="@{/user-profile}" th:object="${profileDTO}" method="post">
-    <div class="row">
-      <label>Full Name</label>
-      <input type="text" th:field="*{fullName}">
-      <div class="error" th:errors="*{fullName}"></div>
+      <a th:href="@{/user-profile(tab='password')}"
+         th:classappend="${activeTab == 'password'} ? ' active' : ''"
+         class="tab-link">Password Change</a>
     </div>
 
-    <div class="row">
-      <label>Email</label>
-      <input type="email" th:field="*{email}">
-      <div class="error" th:errors="*{email}"></div>
-    </div>
+    <div class="content">
+      <div class="panel" th:classappend="${activeTab == 'profile'} ? ' active' : ''">
+        <div th:if="${success}" class="success-box" th:text="${success}"></div>
+        <div th:if="${error}" class="danger-box" th:text="${error}"></div>
 
-    <div class="row">
-      <label>Phone</label>
-      <input type="text" th:field="*{phone}">
-      <div class="error" th:errors="*{phone}"></div>
-    </div>
+        <form th:action="@{/user-profile}"
+              th:object="${profileDTO}"
+              method="post"
+              enctype="multipart/form-data">
 
-    <button type="submit">Update Profile</button>
-    <a class="btn" th:href="@{/change-password}">Change Password</a>
-  </form>
+          <div class="profile-layout">
+            <div class="left-box">
+              <div class="avatar" id="avatarBox">
+                <img id="avatarPreview"
+                     th:if="${currentUser.avatar != null and !#strings.isEmpty(currentUser.avatar)}"
+                     th:src="@{${currentUser.avatar}}"
+                     alt="Avatar">
+
+                <span id="avatarFallback"
+                      class="avatar-fallback"
+                      th:if="${currentUser.avatar == null or #strings.isEmpty(currentUser.avatar)}"
+                      th:text="${#strings.substring(currentUser.fullName,0,1)}">U</span>
+              </div>
+
+              <div class="avatar-upload">
+                <input type="file"
+                       id="avatarFile"
+                       name="avatarFile"
+                       accept=".png,.jpg,.jpeg,.gif,.webp">
+
+                <label for="avatarFile" class="choose-btn">Choose image</label>
+
+                <div class="file-name" id="fileName">No file selected</div>
+              </div>
+
+              <div class="email-text" th:text="${currentUser.email}">user@gmail.com</div>
+              <div class="role-badge"
+                   th:text="${currentUser.role != null ? currentUser.role.name : 'N/A'}">Role</div>
+            </div>
+
+            <div class="right-box">
+              <div class="form-grid">
+                <div class="row">
+                  <label>Full Name *</label>
+                  <input type="text" th:field="*{fullName}">
+                  <div class="error" th:errors="*{fullName}"></div>
+                </div>
+
+                <div class="row">
+                  <label>Email *</label>
+                  <input type="email" th:field="*{email}">
+                  <div class="error" th:errors="*{email}"></div>
+                </div>
+
+                <div class="row">
+                  <label>Mobile</label>
+                  <input type="text" th:field="*{phone}">
+                  <div class="error" th:errors="*{phone}"></div>
+                </div>
+
+                <div class="row">
+                  <label>Role</label>
+                  <input type="text"
+                         th:value="${currentUser.role != null ? currentUser.role.name : ''}"
+                         readonly>
+                </div>
+
+                <div class="actions">
+                  <button type="submit" class="btn btn-primary">Submit</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+
+      <div class="panel" th:classappend="${activeTab == 'password'} ? ' active' : ''">
+        <div class="password-box">
+          <div th:if="${passwordError}" class="danger-box" th:text="${passwordError}"></div>
+
+          <form th:action="@{/change-password}" th:object="${changePasswordDTO}" method="post">
+            <div class="form-grid">
+              <div class="row">
+                <label>Current Password *</label>
+                <input type="password" th:field="*{oldPassword}">
+                <div class="error" th:errors="*{oldPassword}"></div>
+              </div>
+
+              <div class="row">
+                <label>New Password *</label>
+                <input type="password" th:field="*{newPassword}">
+                <div class="error" th:errors="*{newPassword}"></div>
+              </div>
+
+              <div class="row">
+                <label>New Password Confirm *</label>
+                <input type="password" th:field="*{confirmPassword}">
+                <div class="error" th:errors="*{confirmPassword}"></div>
+              </div>
+
+              <div class="actions">
+                <button type="submit" class="btn btn-primary">Submit</button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
+
+<script>
+  const avatarInput = document.getElementById('avatarFile');
+  const fileName = document.getElementById('fileName');
+  const avatarBox = document.getElementById('avatarBox');
+
+  if (avatarInput && fileName) {
+    avatarInput.addEventListener('change', function () {
+      if (!this.files || this.files.length === 0) {
+        fileName.textContent = 'No file selected';
+        return;
+      }
+
+      const file = this.files[0];
+      fileName.textContent = file.name;
+
+      if (!file.type.startsWith('image/')) {
+        alert('Please choose an image file');
+        this.value = '';
+        fileName.textContent = 'No file selected';
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        let img = document.getElementById('avatarPreview');
+        const fallback = document.getElementById('avatarFallback');
+
+        if (!img) {
+          img = document.createElement('img');
+          img.id = 'avatarPreview';
+          img.alt = 'Avatar';
+          avatarBox.appendChild(img);
+        }
+
+        img.src = e.target.result;
+
+        if (fallback) {
+          fallback.style.display = 'none';
+        }
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+</script>
 </body>
 </html>

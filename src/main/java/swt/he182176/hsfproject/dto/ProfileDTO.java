@@ -2,6 +2,7 @@ package swt.he182176.hsfproject.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
 public class ProfileDTO {
@@ -12,19 +13,24 @@ public class ProfileDTO {
 
     @NotBlank(message = "Email is required")
     @Email(message = "Email is invalid")
+    @Size(max = 255, message = "Email must be <= 255 characters")
     private String email;
 
     @NotBlank(message = "Phone is required")
     @Size(max = 20, message = "Phone must be <= 20 characters")
+    @Pattern(regexp = "^[0-9+\\-\\s()]{8,20}$", message = "Phone number is invalid")
     private String phone;
+
+    private String avatar;
 
     public ProfileDTO() {
     }
 
-    public ProfileDTO(String fullName, String email, String phone) {
+    public ProfileDTO(String fullName, String email, String phone, String avatar) {
         this.fullName = fullName;
         this.email = email;
         this.phone = phone;
+        this.avatar = avatar;
     }
 
     public String getFullName() {
@@ -49,5 +55,13 @@ public class ProfileDTO {
 
     public void setPhone(String phone) {
         this.phone = phone;
+    }
+
+    public String getAvatar() {
+        return avatar;
+    }
+
+    public void setAvatar(String avatar) {
+        this.avatar = avatar;
     }
 }

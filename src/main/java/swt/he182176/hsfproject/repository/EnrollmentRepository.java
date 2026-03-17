@@ -12,21 +12,32 @@ import java.util.List;
 public interface EnrollmentRepository extends JpaRepository<Enrollment, Integer> {
 
     @Query("""
-        select e.course
+        select distinct e.course
         from Enrollment e
         where e.user.id = :userId
-        and e.status = 'APPROVED'
+          and upper(e.status) = 'APPROVED'
+        order by e.course.createAt desc
+    """)
+    List<Course> findApprovedCoursesByUserId(@Param("userId") int userId);
+
+    @Query("""
+        select e
+        from Enrollment e
+        where e.user.id = :userId
+          and upper(e.status) = 'APPROVED'
         order by e.registeredAt desc
     """)
-        // Đổi int thành Integer để an toàn hơn
-    List<Course> findApprovedCoursesByUserId(@Param("userId") Integer userId);
+    List<Enrollment> findApprovedEnrollmentsByUserId(@Param("userId") int userId);
 
-    // Phương thức này đã dùng Integer, rất tốt
     boolean existsByUser_IdAndCourse_CourseId(Integer userId, Integer courseId);
+
+    boolean existsByUser_IdAndCourse_CourseIdAndStatusIgnoreCase(Integer userId,
+                                                                 Integer courseId,
+                                                                 String status);
 
     List<Enrollment> findByUserEmail(String email);
 
-    List<Enrollment> findByCourseInstructorId(Integer instructorId);
+    List<Enrollment> findByCourse_Instructor_Id(Integer instructorId);
 
     List<Enrollment> findByUser_Id(Integer userId);
 }
