@@ -28,11 +28,16 @@ public class UserService {
     @Autowired
     private UserRepository userRepository;
 
+
     @Autowired
     private RoleRepository roleRepository;
 
     @Autowired
     private BCryptPasswordEncoder encoder;
+
+    public List<User> getAllUsers() {
+        return userRepository.findAll();
+    }
 
     public User login(LoginDTO loginDTO) {
         if (loginDTO == null || loginDTO.getEmail() == null || loginDTO.getPassword() == null) {

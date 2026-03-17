@@ -10,4 +10,5 @@ public interface CourseService {
     List<Course> getPublicCourses(String keyword, Integer categoryId);
     List<MyCourseCardDTO> getMyCourses(User loginUser);
     Course getPublicCourseDetail(Integer courseId);
+    List<Course> getAllCourses();
 }

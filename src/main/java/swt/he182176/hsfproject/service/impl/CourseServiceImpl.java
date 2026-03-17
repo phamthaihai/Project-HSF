@@ -20,6 +20,10 @@ public class CourseServiceImpl implements CourseService {
 
     @Autowired
     private EnrollmentRepository enrollmentRepository;
+    @Override
+    public List<Course> getAllCourses() {
+        return courseRepository.findAll();
+    }
 
     @Override
     public List<Course> getPublicCourses(String keyword, Integer categoryId) {

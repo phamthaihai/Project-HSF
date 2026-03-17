@@ -51,22 +51,29 @@ public class EnrollmentController {
         if (user == null) return "redirect:/login";
 
         try {
-            // Tạo Enrollment và lưu vào DB (Service này phải trả về object đã có ID)
+            // 1. Gọi service để xử lý đăng ký
+            // LƯU Ý: Bạn cần sửa EnrollmentService.createEnrollment để:
+            // Nếu đã tồn tại Enrollment (PENDING) -> Trả về Enrollment đó luôn thay vì throw Exception.
             Enrollment enrollment = enrollmentService.createEnrollment(request, user);
 
-            // KIỂM TRA: enrollment.getEnrollmentId() không được null
             if (enrollment.getEnrollmentId() == null) {
                 throw new RuntimeException("Lỗi: Không tạo được ID đăng ký.");
             }
 
-            if ("PAYOS".equalsIgnoreCase(request.getPaymentMethod())) {
-                // Sẽ redirect sang: /HSFProject/payment/payos/15 (Ví dụ ID là 15)
+            // 2. Chuyển hướng theo phương thức thanh toán người dùng chọn trên Form
+            String method = request.getPaymentMethod();
+
+            if ("PAYOS".equalsIgnoreCase(method)) {
                 return "redirect:/payment/payos/" + enrollment.getEnrollmentId();
-            } else {
+            } else if ("VNPAY".equalsIgnoreCase(method)) {
                 return "redirect:/payment/vnpay/" + enrollment.getEnrollmentId();
             }
 
+            return "redirect:/public-courses?msg=success";
+
         } catch (Exception e) {
+            // Nếu lỗi ném ra là "User already enrolled" (khi trạng thái là APPROVED/SUCCESS)
+            // thì ta mới hiển thị thông báo lỗi lên UI.
             ra.addFlashAttribute("err", e.getMessage());
             return "redirect:/enroll/" + request.getCourseId();
         }

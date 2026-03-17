@@ -6,7 +6,9 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import swt.he182176.hsfproject.entity.Enrollment;
+import swt.he182176.hsfproject.service.CourseService;
 import swt.he182176.hsfproject.service.EnrollmentService;
+import swt.he182176.hsfproject.service.UserService;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -17,14 +19,28 @@ public class AdminEnrollmentController {
 
     @Autowired
     private EnrollmentService enrollmentService;
+    @Autowired
+    private CourseService courseService; // Thêm dòng này
+
+    @Autowired
+    private UserService userService;
 
     // LIST
     @GetMapping
-    public String list(Model model) {
+    public String list(
+            @RequestParam(required = false) Integer courseId,
+            @RequestParam(required = false) Integer userId,
+            @RequestParam(required = false) String status,
+            @RequestParam(required = false) String keyword,
+            Model model) {
 
-        List<Enrollment> enrollments = enrollmentService.getAllEnrollments();
-
+        // Lấy danh sách đã lọc
+        List<Enrollment> enrollments = enrollmentService.filterEnrollments(courseId, userId, status, keyword);
         model.addAttribute("enrollments", enrollments);
+
+        // QUAN TRỌNG: Nạp danh sách cho dropdown
+        model.addAttribute("courses", courseService.getAllCourses());
+        model.addAttribute("users", userService.getAllUsers()); // Đảm bảo hàm này trả về danh sách User
 
         return "admin/enrollment-list";
     }
@@ -59,15 +75,13 @@ public class AdminEnrollmentController {
         return "redirect:/admin/enrollments";
     }
 
-    // DELETE
+
     @PostMapping("/{id}/delete")
-    public String delete(@PathVariable Integer id) {
-
+    public String delete(@PathVariable("id") Integer id) {
         enrollmentService.deleteEnrollment(id);
-
         return "redirect:/admin/enrollments";
     }
-    // API UPDATE
+
     @PostMapping("/update")
     public String updateEnrollment(
             @RequestParam int id,
