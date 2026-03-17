@@ -189,7 +189,7 @@
             <tbody>
             <tr th:each="course : ${recentCourses}">
                 <td th:text="${course.title}"></td>
-                <td th:text="${course.instructor.fullName}"></td>
+                <td th:text="${course.instructor?.fullName ?: 'Chưa có giảng viên'}"></td>
                 <td th:text="${course.category.name}"></td>
                 <td><span class="status-badge">Published</span></td>
                 <td th:text="${#temporals.format(course.createAt,'yyyy-MM-dd')}"></td>
