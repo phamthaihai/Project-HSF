@@ -20,8 +20,7 @@ public class User {
     @Column(length = 255)
     private String avatar;
 
-
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "role_id")
     private Role role;
 
@@ -31,6 +30,9 @@ public class User {
     private Boolean emailVerified;
     private String verifyToken;
     private LocalDateTime verifyTokenExpiresAt;
+
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
 
     public Integer getId() {
         return id;
@@ -119,25 +121,12 @@ public class User {
     public void setVerifyTokenExpiresAt(LocalDateTime verifyTokenExpiresAt) {
         this.verifyTokenExpiresAt = verifyTokenExpiresAt;
     }
-    // Thêm vào cuối các fields trong class User
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
 
-    // Tự động gán thời gian khi tạo mới hoặc cập nhật
-    @PrePersist
-    protected void onCreate() {
-        createdAt = LocalDateTime.now();
-        updatedAt = LocalDateTime.now();
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
     }
 
-    @PreUpdate
-    protected void onUpdate() {
-        updatedAt = LocalDateTime.now();
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
     }
-
-    // Đừng quên thêm Getter/Setter cho 2 trường này bên dưới nhé
-    public LocalDateTime getCreatedAt() { return createdAt; }
-    public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
-    public LocalDateTime getUpdatedAt() { return updatedAt; }
-    public void setUpdatedAt(LocalDateTime updatedAt) { this.updatedAt = updatedAt; }
 }

@@ -72,15 +72,18 @@
 
         input[type="text"],
         input[type="number"],
-        select {
+        select,
+        textarea {
             padding: 8px 10px;
             border: 1px solid var(--border-color);
             border-radius: 4px;
             outline: none;
             font-size: 14px;
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+            color: #111;
         }
 
-        input:focus, select:focus {
+        input:focus, select:focus, textarea:focus {
             border-color: var(--primary-color);
         }
 
@@ -131,6 +134,9 @@
             border-radius: 0 0 4px 4px;
             padding: 10px;
             resize: vertical;
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+            font-size: 14px;
+            color: #111;
         }
 
         /* Status & Checkboxes */

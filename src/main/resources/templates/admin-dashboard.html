@@ -106,7 +106,7 @@
 <div class="sidebar" id="sidebar">
     <h4>Learning Admin</h4>
     <a th:href="@{/admin/dashboard}"><i class="fa fa-home"></i> Dashboard</a>
-    <a href="#"><i class="fa fa-book"></i> Training Courses</a>
+    <a th:href="@{/courses}"><i class="fa fa-book"></i> Training Courses</a>
     <a th:href="@{/admin/enrollments}"><i class="fa fa-user-graduate"></i> Course Enrollments</a>
     <a th:href="@{/settings}"><i class="fa fa-cog"></i> System Settings</a>
     <a th:href="@{/users}"><i class="fa fa-users"></i> User Accounts</a>
@@ -189,7 +189,7 @@
             <tbody>
             <tr th:each="course : ${recentCourses}">
                 <td th:text="${course.title}"></td>
-                <td th:text="${course.instructor.fullName}"></td>
+                <td th:text="${course.instructor?.fullName ?: 'Chưa có giảng viên'}"></td>
                 <td th:text="${course.category.name}"></td>
                 <td><span class="status-badge">Published</span></td>
                 <td th:text="${#temporals.format(course.createAt,'yyyy-MM-dd')}"></td>

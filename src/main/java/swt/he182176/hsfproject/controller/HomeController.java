@@ -32,7 +32,7 @@ public class HomeController {
     @GetMapping("/")
     public String home(HttpSession session, Model model) {
 
-        List<Course> courses = courseService.getTop8PublishedCourses();
+        List<Course> courses = courseService.getPublishedCourses();
         model.addAttribute("courses", courses);
 
         model.addAttribute("latestPosts", postService.getLatestPosts());
