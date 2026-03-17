@@ -54,7 +54,7 @@ public class CourseAdminServiceImpl implements CourseAdminService {
 
     @Override
     public List<Course> getTop8PublishedCourses() {
-        return courseAdminRepository.findTop8ByPublishedTrueOrderByCreateAtDescWithDetails();
+        return courseAdminRepository.findTop8ByPublishedTrueOrderByCreateAtDesc();
     }
 
     @Override
@@ -73,7 +73,7 @@ public class CourseAdminServiceImpl implements CourseAdminService {
         long publishedPosts = postRepository.countByStatus("PUBLISHED");
 
         List<Course> recentCourses =
-                courseAdminRepository.findTop5ByOrderByCreateAtDescWithDetails();
+                courseAdminRepository.findTop5ByOrderByCreateAtDesc();
 
         data.put("totalUsers", totalUsers);
         data.put("totalCourses", totalCourses);
