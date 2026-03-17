@@ -575,7 +575,7 @@
 
             <div class="course-grid">
                 <div class="course-card" th:each="c : ${courses}">
-                    <a th:href="@{/courses/{id}(id=${c.courseId})}">
+                    <a th:href="@{/public-courses/{id}(id=${c.courseId})}">
                         <img class="course-thumb"
                              th:src="${c.thumbnailUrl != null && !#strings.isEmpty(c.thumbnailUrl) ? c.thumbnailUrl : 'https://picsum.photos/600/400'}"
                              alt="Course thumbnail">
@@ -591,8 +591,8 @@
 
                             <!-- Nếu chưa đăng nhập -->
                             <th:block th:if="${user == null}">
-                                <a th:href="@{/courses/{id}(id=${c.courseId})}" class="course-btn btn-enroll">
-                                    + Đăng ký ngay
+                                <a th:href="@{/enroll/{id}(id=${c.courseId})}" class="course-btn btn-enroll">
+                                    + Enroll Now
                                 </a>
                             </th:block>
 
@@ -600,12 +600,12 @@
                             <th:block th:if="${user != null}">
                                 <!-- Kiểm tra đã enroll chưa -->
                                 <th:block th:if="${enrolledCourseIds != null && enrolledCourseIds.contains(c.courseId)}">
-                                    <a th:href="@{/courses/{id}(id=${c.courseId})}" class="course-btn btn-continue">
+                                    <a th:href="@{/public-courses/{id}(id=${c.courseId})}" class="course-btn btn-continue">
                                         Tiếp tục học
                                     </a>
                                 </th:block>
                                 <th:block th:if="${enrolledCourseIds == null || !enrolledCourseIds.contains(c.courseId)}">
-                                    <a th:href="@{/courses/{id}(id=${c.courseId})}" class="course-btn btn-enroll">
+                                    <a th:href="@{/enroll/{id}(id=${c.courseId})}" class="course-btn btn-enroll">
                                         Enroll Now
                                     </a>
                                 </th:block>
