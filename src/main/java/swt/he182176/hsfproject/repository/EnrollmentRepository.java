@@ -60,4 +60,5 @@ public interface EnrollmentRepository extends JpaRepository<Enrollment, Integer>
             @Param("userId") Integer userId,
             @Param("status") String status,
             @Param("keyword") String keyword);
+    void deleteByCourse(Course course);
 }
