@@ -40,7 +40,7 @@ public class AuthService {
             throw new IllegalArgumentException("Email already exists");
         }
 
-        Role memberRole = roleRepo.findByName("MANAGER")
+        Role memberRole = roleRepo.findByName("ADMIN")
                 .orElseThrow(() -> new IllegalArgumentException("Role MEMBER not found. Check seed role."));
 
         String token = UUID.randomUUID().toString().replace("-", "");
@@ -54,6 +54,7 @@ public class AuthService {
         user.setStatus(UserStatus.UNVERIFIED);
         user.setEmailVerified(false);
         user.setVerifyToken(token);
+        user.setUpdatedAt(LocalDateTime.now());
         user.setVerifyTokenExpiresAt(LocalDateTime.now().plusMinutes(30));
 
         userRepo.save(user);
@@ -76,6 +77,7 @@ public class AuthService {
         user.setStatus(UserStatus.ACTIVE);
         user.setVerifyToken(null);
         user.setVerifyTokenExpiresAt(null);
+        user.setUpdatedAt(LocalDateTime.now());
 
         userRepo.save(user);
     }

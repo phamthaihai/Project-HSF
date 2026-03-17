@@ -30,6 +30,9 @@ public class User {
     private String verifyToken;
     private LocalDateTime verifyTokenExpiresAt;
 
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
+
     public Integer getId() {
         return id;
     }
@@ -116,5 +119,13 @@ public class User {
 
     public void setVerifyTokenExpiresAt(LocalDateTime verifyTokenExpiresAt) {
         this.verifyTokenExpiresAt = verifyTokenExpiresAt;
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
     }
 }
