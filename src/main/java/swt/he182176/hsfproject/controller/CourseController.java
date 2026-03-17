@@ -9,6 +9,7 @@ import swt.he182176.hsfproject.dto.MyCourseCardDTO;
 import swt.he182176.hsfproject.entity.Course;
 import swt.he182176.hsfproject.entity.User;
 import swt.he182176.hsfproject.repository.CategoryRepository;
+import swt.he182176.hsfproject.repository.EnrollmentRepository;
 import swt.he182176.hsfproject.service.CourseService;
 
 import java.util.List;
@@ -18,6 +19,8 @@ public class CourseController {
 
     @Autowired
     private CourseService courseService;
+    @Autowired
+    private EnrollmentRepository enrollmentRepository;
 
     @Autowired
     private CategoryRepository categoryRepository;
@@ -25,8 +28,22 @@ public class CourseController {
     @GetMapping("/public-courses")
     public String showPublicCourses(@RequestParam(required = false) String keyword,
                                     @RequestParam(required = false) Integer categoryId,
+                                    HttpSession session, // Thêm session để lấy user
                                     Model model) {
         List<Course> courses = courseService.getPublicCourses(keyword, categoryId);
+
+        // Lấy danh sách ID khóa học đã mua nếu user đã đăng nhập
+        User loginUser = (User) session.getAttribute("user");
+        if (loginUser != null) {
+            // Chúng ta lấy danh sách các khóa học đã được duyệt (APPROVED)
+            List<Course> approvedCourses = enrollmentRepository.findApprovedCoursesByUserId(loginUser.getId());
+
+            // Chuyển danh sách course thành danh sách ID để dễ so sánh trong HTML
+            List<Integer> purchasedCourseIds = approvedCourses.stream()
+                    .map(Course::getCourseId)
+                    .toList();
+            model.addAttribute("purchasedCourseIds", purchasedCourseIds);
+        }
 
         model.addAttribute("courses", courses);
         model.addAttribute("keyword", keyword);

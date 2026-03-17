@@ -14,6 +14,8 @@ import swt.he182176.hsfproject.service.EnrollmentService;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
+
 @Service
 public class EnrollmentServiceImpl implements EnrollmentService {
 
@@ -67,20 +69,32 @@ public class EnrollmentServiceImpl implements EnrollmentService {
 
         Integer courseId = request.getCourseId();
 
-        boolean exists =
-                enrollmentRepository.existsByUser_IdAndCourse_CourseId(user.getId(), courseId);
 
-        if (exists) {
-            throw new RuntimeException("User already enrolled this course");
+        Optional<Enrollment> existingEnrollment =
+                enrollmentRepository.findByUser_IdAndCourse_CourseId(user.getId(), courseId);
+
+        if (existingEnrollment.isPresent()) {
+            Enrollment current = existingEnrollment.get();
+
+            if ("APPROVED".equalsIgnoreCase(current.getStatus())) {
+                throw new RuntimeException("User already enrolled this course");
+            }
+
+            current.setFullName(request.getFullName());
+            current.setEmail(request.getEmail());
+            current.setMobile(request.getMobile());
+            current.setNote(request.getNote());
+            current.setPaymentMethod(request.getPaymentMethod());
+            current.setUpdatedAt(LocalDateTime.now());
+
+            return enrollmentRepository.save(current);
         }
-
-        Course course = courseRepository.findById(courseId).orElseThrow();
+        Course course = courseRepository.findById(courseId)
+                .orElseThrow(() -> new RuntimeException("Course not found"));
 
         Enrollment enrollment = new Enrollment();
-
         enrollment.setUser(user);
         enrollment.setCourse(course);
-
         enrollment.setFullName(request.getFullName());
         enrollment.setEmail(request.getEmail());
         enrollment.setMobile(request.getMobile());
@@ -148,5 +162,9 @@ public class EnrollmentServiceImpl implements EnrollmentService {
     public Enrollment findById(int id) {
         return enrollmentRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Enrollment not found"));
+    }
+    @Override
+    public List<Enrollment> filterEnrollments(Integer courseId, Integer userId, String status, String keyword) {
+        return enrollmentRepository.filterEnrollments(courseId, userId, status, keyword);
     }
 }

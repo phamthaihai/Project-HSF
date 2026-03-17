@@ -1,10 +1,12 @@
 package swt.he182176.hsfproject.service.impl;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import swt.he182176.hsfproject.entity.Course;
 import swt.he182176.hsfproject.repository.CourseAdminRepository;
 import swt.he182176.hsfproject.repository.PostRepository;
 import swt.he182176.hsfproject.repository.UserRepository;
+import swt.he182176.hsfproject.repository.EnrollmentRepository; // Cần import thêm cái này
 import swt.he182176.hsfproject.service.CourseAdminService;
 
 import java.util.HashMap;
@@ -17,15 +19,18 @@ public class CourseAdminServiceImpl implements CourseAdminService {
     private final CourseAdminRepository courseAdminRepository;
     private final UserRepository userRepository;
     private final PostRepository postRepository;
+    private final EnrollmentRepository enrollmentRepository; // Thêm repo này để xóa enrollment
 
     public CourseAdminServiceImpl(
             CourseAdminRepository courseAdminRepository,
             UserRepository userRepository,
-            PostRepository postRepository) {
+            PostRepository postRepository,
+            EnrollmentRepository enrollmentRepository) { // Inject vào constructor
 
         this.courseAdminRepository = courseAdminRepository;
         this.userRepository = userRepository;
         this.postRepository = postRepository;
+        this.enrollmentRepository = enrollmentRepository;
     }
 
     @Override
@@ -57,14 +62,23 @@ public class CourseAdminServiceImpl implements CourseAdminService {
         return courseAdminRepository.findTop8ByPublishedTrueOrderByCreateAtDescWithDetails();
     }
 
+
     @Override
+    @Transactional
     public void deleteCourse(int id) {
-        courseAdminRepository.deleteById(id);
+        if (courseAdminRepository.existsById(id)) {
+            Course course = courseAdminRepository.findById(id).get();
+            enrollmentRepository.deleteByCourse(course);
+            courseAdminRepository.delete(course);
+            System.out.println("Xóa thành công khóa học ID: " + id);
+        } else {
+
+            System.out.println("Không tìm thấy khóa học ID: " + id + " để xóa.");
+        }
     }
 
     @Override
     public Map<String, Object> getDashboardData() {
-
         Map<String, Object> data = new HashMap<>();
 
         long totalUsers = userRepository.count();

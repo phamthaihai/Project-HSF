@@ -1,7 +1,6 @@
 package swt.he182176.hsfproject.service;
 
-import org.springframework.transaction.annotation.Transactional;
-import org.hibernate.Hibernate;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -29,13 +28,17 @@ public class UserService {
     @Autowired
     private UserRepository userRepository;
 
+
     @Autowired
     private RoleRepository roleRepository;
 
     @Autowired
     private BCryptPasswordEncoder encoder;
 
-    @Transactional(readOnly = true)
+    public List<User> getAllUsers() {
+        return userRepository.findAll();
+    }
+
     public User login(LoginDTO loginDTO) {
         if (loginDTO == null || loginDTO.getEmail() == null || loginDTO.getPassword() == null) {
             return null;
@@ -43,18 +46,11 @@ public class UserService {
 
         String email = loginDTO.getEmail().trim().toLowerCase();
         Optional<User> userOptional = userRepository.findByEmailIgnoreCase(email);
-        
         if (userOptional.isEmpty()) {
             return null;
         }
-        
+
         User user = userOptional.get();
-        
-        // Force load role to avoid LazyInitializationException after session closes
-        org.hibernate.Hibernate.initialize(user.getRole());
-        if (user.getRole() != null) {
-            user.getRole().getName();
-        }
 
         String rawPassword = loginDTO.getPassword();
         String stored = user.getPasswordHash();

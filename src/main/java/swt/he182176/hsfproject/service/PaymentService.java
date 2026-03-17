@@ -1,11 +1,9 @@
 package swt.he182176.hsfproject.service;
 
-import swt.he182176.hsfproject.entity.Enrollment;
-
-import java.util.Map;
+import jakarta.servlet.http.HttpServletRequest;
 
 public interface PaymentService {
-
-    Map<String, String> createPayment(Enrollment enrollment);
-
+    // Nhận vào Integer (ID) thay vì cả đối tượng Enrollment
+    String createPayOSPayment(Integer enrollmentId) throws Exception;
+    String createVnPayPayment(Integer enrollmentId, HttpServletRequest request) throws Exception;
 }

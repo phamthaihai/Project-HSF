@@ -42,28 +42,40 @@ public class EnrollmentController {
         return "enroll";
     }
 
+
     @PostMapping("/enroll")
     public String enrollCourse(@ModelAttribute EnrollRequest request,
                                HttpSession session,
                                RedirectAttributes ra) {
-
         User user = (User) session.getAttribute("user");
-        if (user == null) {
-            return "redirect:/login";
-        }
+        if (user == null) return "redirect:/login";
 
         try {
+            // 1. Gọi service để xử lý đăng ký
+            // LƯU Ý: Bạn cần sửa EnrollmentService.createEnrollment để:
+            // Nếu đã tồn tại Enrollment (PENDING) -> Trả về Enrollment đó luôn thay vì throw Exception.
             Enrollment enrollment = enrollmentService.createEnrollment(request, user);
 
-            if ("PAYOS".equalsIgnoreCase(request.getPaymentMethod())) {
-                return "redirect:/payment/payos/" + enrollment.getEnrollmentId();
+            if (enrollment.getEnrollmentId() == null) {
+                throw new RuntimeException("Lỗi: Không tạo được ID đăng ký.");
             }
 
-            return "redirect:/payment/vnpay/" + enrollment.getEnrollmentId();
+            // 2. Chuyển hướng theo phương thức thanh toán người dùng chọn trên Form
+            String method = request.getPaymentMethod();
 
-        } catch (RuntimeException e) {
+            if ("PAYOS".equalsIgnoreCase(method)) {
+                return "redirect:/payment/payos/" + enrollment.getEnrollmentId();
+            } else if ("VNPAY".equalsIgnoreCase(method)) {
+                return "redirect:/payment/vnpay/" + enrollment.getEnrollmentId();
+            }
+
+            return "redirect:/public-courses?msg=success";
+
+        } catch (Exception e) {
+            // Nếu lỗi ném ra là "User already enrolled" (khi trạng thái là APPROVED/SUCCESS)
+            // thì ta mới hiển thị thông báo lỗi lên UI.
             ra.addFlashAttribute("err", e.getMessage());
-            return "redirect:/public-courses/" + request.getCourseId();
+            return "redirect:/enroll/" + request.getCourseId();
         }
     }
 }
