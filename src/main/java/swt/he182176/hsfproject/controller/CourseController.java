@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import swt.he182176.hsfproject.dto.MyCourseCardDTO;
 import swt.he182176.hsfproject.entity.Course;
 import swt.he182176.hsfproject.entity.User;
 import swt.he182176.hsfproject.repository.CategoryRepository;
@@ -43,15 +44,18 @@ public class CourseController {
     }
 
     @GetMapping("/my-courses")
-    public String showMyCourses(HttpSession session, Model model) {
+    public String showMyCourses(@RequestParam(required = false) String err,
+                                HttpSession session,
+                                Model model) {
         User loginUser = (User) session.getAttribute("user");
 
         if (loginUser == null) {
             return "redirect:/login";
         }
 
-        List<Course> courses = courseService.getMyCourses(loginUser.getId());
+        List<MyCourseCardDTO> courses = courseService.getMyCourses(loginUser);
         model.addAttribute("courses", courses);
+        model.addAttribute("err", err);
 
         return "my-courses";
     }

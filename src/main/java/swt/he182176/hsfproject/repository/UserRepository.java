@@ -12,6 +12,9 @@ public interface UserRepository extends JpaRepository<User, Integer> {
 
     Optional<User> findByEmail(String email);
 
+    @org.springframework.data.jpa.repository.Query("SELECT u FROM User u LEFT JOIN FETCH u.role WHERE LOWER(u.email) = LOWER(:email)")
+    Optional<User> findByEmailWithRole(@org.springframework.data.repository.query.Param("email") String email);
+
     boolean existsByEmail(String email);
 
     boolean existsByEmailAndIdNot(String email, Integer id);

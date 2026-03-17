@@ -31,11 +31,11 @@ public class Course {
     @Column(name="duration")
     private Integer duration;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name="category_id")
     private Category category;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name="instructor_id")
     private User instructor;
 

@@ -25,7 +25,7 @@ public class UploadController {
     @ResponseBody
     public ResponseEntity<Map<String, String>> uploadImage(@RequestParam("file") MultipartFile file, HttpServletRequest request) {
         Map<String, String> response = new HashMap<>();
-        
+
         if (file.isEmpty()) {
             response.put("error", "File is empty");
             return ResponseEntity.badRequest().body(response);
@@ -52,7 +52,7 @@ public class UploadController {
                 extension = originalFilename.substring(originalFilename.lastIndexOf("."));
             }
             String filename = UUID.randomUUID().toString() + extension;
-            
+
             // Save file
             Path filePath = Paths.get(uploadDir, filename);
             Files.write(filePath, file.getBytes());
@@ -60,12 +60,12 @@ public class UploadController {
             // Return URL to access the file
             String contextPath = request.getContextPath();
             String fileUrl = contextPath + "/uploads/" + filename;
-            
+
             response.put("url", fileUrl);
             response.put("filename", filename);
-            
+
             return ResponseEntity.ok(response);
-            
+
         } catch (IOException e) {
             response.put("error", "Failed to upload file: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
@@ -77,7 +77,7 @@ public class UploadController {
     public ResponseEntity<byte[]> serveFile(HttpServletRequest request) {
         String requestUri = request.getRequestURI();
         String filename = requestUri.substring(requestUri.lastIndexOf("/uploads/") + 9);
-        
+
         try {
             Path filePath = Paths.get(uploadDir, filename);
             if (Files.exists(filePath)) {

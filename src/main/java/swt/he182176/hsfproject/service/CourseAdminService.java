@@ -15,6 +15,8 @@ public interface CourseAdminService {
 
     List<Course> getPublishedCourses();
 
+    List<Course> getTop8PublishedCourses();
+
     void deleteCourse(int id);
 
     Map<String, Object> getDashboardData();

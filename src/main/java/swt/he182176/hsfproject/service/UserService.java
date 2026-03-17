@@ -1,6 +1,7 @@
 package swt.he182176.hsfproject.service;
 
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
+import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -20,7 +21,6 @@ import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -35,6 +35,7 @@ public class UserService {
     @Autowired
     private BCryptPasswordEncoder encoder;
 
+    @Transactional(readOnly = true)
     public User login(LoginDTO loginDTO) {
         if (loginDTO == null || loginDTO.getEmail() == null || loginDTO.getPassword() == null) {
             return null;
@@ -42,11 +43,18 @@ public class UserService {
 
         String email = loginDTO.getEmail().trim().toLowerCase();
         Optional<User> userOptional = userRepository.findByEmailIgnoreCase(email);
+        
         if (userOptional.isEmpty()) {
             return null;
         }
-
+        
         User user = userOptional.get();
+        
+        // Force load role to avoid LazyInitializationException after session closes
+        org.hibernate.Hibernate.initialize(user.getRole());
+        if (user.getRole() != null) {
+            user.getRole().getName();
+        }
 
         String rawPassword = loginDTO.getPassword();
         String stored = user.getPasswordHash();
@@ -63,7 +71,6 @@ public class UserService {
         try {
             passwordOk = encoder.matches(rawPassword, stored);
         } catch (Exception ignored) {
-            // Fallback for manually seeded plain-text passwords.
         }
 
         if (!passwordOk) {
@@ -77,7 +84,6 @@ public class UserService {
         return user;
     }
 
-
     public User save(User user) {
         return userRepository.save(user);
     }
@@ -87,7 +93,23 @@ public class UserService {
     }
 
     public boolean matchesPassword(String rawPassword, String passwordHash) {
-        return encoder.matches(rawPassword, passwordHash);
+        if (passwordHash == null || rawPassword == null) {
+            return false;
+        }
+
+        String stored = passwordHash.trim();
+        if (stored.length() >= 2 && stored.startsWith("'") && stored.endsWith("'")) {
+            stored = stored.substring(1, stored.length() - 1).trim();
+        }
+
+        try {
+            if (encoder.matches(rawPassword, stored)) {
+                return true;
+            }
+        } catch (Exception ignored) {
+        }
+
+        return rawPassword.equals(stored);
     }
 
     public Optional<User> findById(Integer id) {
@@ -139,7 +161,6 @@ public class UserService {
 
     public void saveFromAdmin(UserDTO dto) {
         if (dto.getId() == null) {
-            // create
             if (userRepository.existsByEmail(dto.getEmail())) {
                 throw new RuntimeException("Email already exists");
             }
@@ -155,7 +176,7 @@ public class UserService {
         User user = dto.getId() == null
                 ? new User()
                 : userRepository.findById(dto.getId())
-                    .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new RuntimeException("User not found"));
 
         user.setFullName(dto.getFullName());
         user.setEmail(dto.getEmail());
@@ -169,7 +190,6 @@ public class UserService {
             user.setEmailVerified(dto.getEmailVerified());
         }
 
-        // password: required for new user, optional for update
         if (dto.getId() == null) {
             if (dto.getPassword() == null || dto.getPassword().length() < 6) {
                 throw new RuntimeException("Password must be at least 6 characters for new user");
@@ -203,8 +223,8 @@ public class UserService {
         if (opt.isEmpty()) {
             throw new RuntimeException("Email not found");
         }
+
         User user = opt.get();
-        // generate 6-digit OTP
         String otp = String.format("%06d", (int) (Math.random() * 1_000_000));
         user.setVerifyToken(otp);
         user.setVerifyTokenExpiresAt(LocalDateTime.now().plusMinutes(10));
@@ -217,6 +237,7 @@ public class UserService {
         if (!dto.getNewPassword().equals(dto.getConfirmPassword())) {
             throw new RuntimeException("Confirm password does not match");
         }
+
         String email = dto.getEmail().trim().toLowerCase();
         String otp = dto.getOtp().trim();
 
@@ -240,13 +261,17 @@ public class UserService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        if (userRepository.existsByEmailAndIdNot(dto.getEmail(), userId)) {
+        String fullName = dto.getFullName() == null ? "" : dto.getFullName().trim();
+        String email = dto.getEmail() == null ? "" : dto.getEmail().trim().toLowerCase();
+        String phone = dto.getPhone() == null ? "" : dto.getPhone().trim();
+
+        if (userRepository.existsByEmailAndIdNot(email, userId)) {
             throw new RuntimeException("Email already exists");
         }
 
-        user.setFullName(dto.getFullName());
-        user.setEmail(dto.getEmail());
-        user.setPhone(dto.getPhone());
+        user.setFullName(fullName);
+        user.setEmail(email);
+        user.setPhone(phone);
 
         return userRepository.save(user);
     }
@@ -264,7 +289,38 @@ public class UserService {
             throw new RuntimeException("Confirm password does not match");
         }
 
+        if (matchesPassword(newPassword, user.getPasswordHash())) {
+            throw new RuntimeException("New password must be different from current password");
+        }
+
         user.setPasswordHash(encodePassword(newPassword));
         userRepository.save(user);
+    }
+    @Autowired
+    private FileStorageService fileStorageService;
+
+    @Transactional
+    public User updateProfile(Integer userId, ProfileDTO dto, org.springframework.web.multipart.MultipartFile avatarFile) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        String fullName = dto.getFullName() == null ? "" : dto.getFullName().trim();
+        String email = dto.getEmail() == null ? "" : dto.getEmail().trim().toLowerCase();
+        String phone = dto.getPhone() == null ? "" : dto.getPhone().trim();
+
+        if (userRepository.existsByEmailAndIdNot(email, userId)) {
+            throw new RuntimeException("Email already exists");
+        }
+
+        user.setFullName(fullName);
+        user.setEmail(email);
+        user.setPhone(phone);
+
+        if (avatarFile != null && !avatarFile.isEmpty()) {
+            String avatarPath = fileStorageService.saveAvatar(avatarFile);
+            user.setAvatar(avatarPath);
+        }
+
+        return userRepository.save(user);
     }
 }
