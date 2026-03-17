@@ -11,6 +11,10 @@ public class MyCourseCardDTO {
     private String categoryName;
     private String instructorName;
     private String startLearningUrl;
+    
+    private java.time.LocalDateTime enrolledDate;
+    private Double progressPercent;
+    private String progressStatus;
 
     public Integer getCourseId() {
         return courseId;
@@ -82,5 +86,29 @@ public class MyCourseCardDTO {
 
     public void setStartLearningUrl(String startLearningUrl) {
         this.startLearningUrl = startLearningUrl;
+    }
+
+    public java.time.LocalDateTime getEnrolledDate() {
+        return enrolledDate;
+    }
+
+    public void setEnrolledDate(java.time.LocalDateTime enrolledDate) {
+        this.enrolledDate = enrolledDate;
+    }
+
+    public Double getProgressPercent() {
+        return progressPercent;
+    }
+
+    public void setProgressPercent(Double progressPercent) {
+        this.progressPercent = progressPercent;
+    }
+
+    public String getProgressStatus() {
+        return progressStatus;
+    }
+
+    public void setProgressStatus(String progressStatus) {
+        this.progressStatus = progressStatus;
     }
 }

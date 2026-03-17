@@ -52,6 +52,7 @@
         .toolbar {
             display: flex;
             justify-content: flex-end;
+            gap: 12px;
             margin-bottom: 20px;
         }
 
@@ -110,18 +111,54 @@
             line-height: 1.35;
         }
 
-        .meta {
-            font-size: 14px;
+        .enrolled-date {
+            font-size: 13px;
             color: #6b7280;
-            margin-bottom: 6px;
+            margin-bottom: 24px;
         }
 
-        .desc {
-            font-size: 14px;
-            color: #374151;
-            line-height: 1.6;
-            margin: 12px 0 18px;
-            flex: 1;
+        .progress-section {
+            margin-bottom: 20px;
+        }
+
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            font-size: 13px;
+            color: #6b7280;
+            margin-bottom: 8px;
+        }
+
+        .progress-track {
+            height: 10px;
+            background: #f3f4f6;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: #2563eb;
+            border-radius: 5px;
+        }
+
+        .actions-badges {
+            margin-bottom: 10px;
+        }
+
+        .badge-primary {
+            display: inline-flex;
+            align-items: center;
+            background: #2563eb;
+            color: white;
+            font-size: 13px;
+            font-weight: 600;
+            padding: 5px 12px;
+            border-radius: 6px;
+        }
+
+        .badge-primary span {
+            margin-left: 5px;
         }
 
         .actions {
@@ -189,6 +226,7 @@
     <div th:if="${err}" class="err" th:text="${err}"></div>
 
     <div class="toolbar">
+        <a th:href="@{/}" class="link-btn" style="background: white; color: #374151; border-color: #d1d5db;">Back to Home</a>
         <a th:href="@{/public-courses}" class="link-btn">Browse More Courses</a>
     </div>
 
@@ -209,41 +247,31 @@
             <div class="content">
                 <div class="course-title" th:text="${c.title}"></div>
 
-                <div class="meta">
-                    Category:
-                    <span th:text="${c.categoryName != null ? c.categoryName : 'N/A'}"></span>
+                <div class="enrolled-date" th:if="${c.enrolledDate != null}">
+                    Enrolled on: <span th:text="${#temporals.format(c.enrolledDate, 'yyyy-MM-dd HH:mm:ss')}"></span>
+                </div>
+                <div class="enrolled-date" th:unless="${c.enrolledDate != null}">
+                    Enrolled on: N/A
                 </div>
 
-                <div class="meta">
-                    Instructor:
-                    <span th:text="${c.instructorName != null ? c.instructorName : 'N/A'}"></span>
+                <div class="progress-section">
+                    <div class="progress-header">
+                        <span class="progress-label">Progress</span>
+                        <span class="progress-percent" th:text="${c.progressPercent != null ? #numbers.formatDecimal(c.progressPercent, 1, 2) + '%' : '0.00%'}">0.00%</span>
+                    </div>
+                    <div class="progress-track">
+                        <div class="progress-fill" th:style="'width: ' + ${c.progressPercent != null ? c.progressPercent : 0} + '%;'"></div>
+                    </div>
                 </div>
 
-                <div class="meta">
-                    Level:
-                    <span th:text="${c.level != null ? c.level : 'N/A'}"></span>
-                </div>
-
-                <div class="meta">
-                    Duration:
-                    <span th:text="${c.duration != null ? c.duration : 0}"></span> hours
-                </div>
-
-                <div class="desc"
-                     th:text="${c.description != null and !#strings.isEmpty(c.description)
-                              ? c.description
-                              : 'No description available.'}">
+                <div class="actions-badges">
+                    <span class="badge badge-primary">▶ <span th:text="${c.progressStatus != null ? c.progressStatus : 'In Progress'}">In Progress</span></span>
                 </div>
 
                 <div class="actions">
                     <a class="btn btn-primary"
                        th:href="@{/my-courses/{id}/learn(id=${c.courseId})}">
-                        Start Learning
-                    </a>
-
-                    <a class="btn btn-outline"
-                       th:href="@{/public-courses/{id}(id=${c.courseId})}">
-                        View Details
+                        ▶ Start Learning
                     </a>
                 </div>
             </div>

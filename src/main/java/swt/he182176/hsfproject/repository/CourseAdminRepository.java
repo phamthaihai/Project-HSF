@@ -17,4 +17,6 @@ public interface CourseAdminRepository extends JpaRepository<Course, Integer> {
     long countByPublished(boolean published);
 
     List<Course> findTop5ByOrderByCreateAtDesc();
+
+    List<Course> findTop8ByPublishedTrueOrderByCreateAtDesc();
 }

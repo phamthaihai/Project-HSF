@@ -124,7 +124,7 @@
 
     <a href="#"><i class="fa fa-user-graduate"></i> Course Enrollments</a>
 
-    <a href="#"><i class="fa fa-cog"></i> System Settings</a>
+    <a th:href="@{/settings}"><i class="fa fa-cog"></i> System Settings</a>
 
     <a th:href="@{/users}"><i class="fa fa-users"></i> User Accounts</a>
 
@@ -278,12 +278,12 @@
                     <span class="status-badge">Published</span>
                 </td>
 
-                <td th:text="${#temporals.format(course.createdAt,'yyyy-MM-dd')}"></td>
+                <td th:text="${#temporals.format(course.createAt,'yyyy-MM-dd')}"></td>
 
                 <td>
 
                     <a class="btn btn-sm btn-primary"
-                       th:href="@{/courses/edit/{id}(id=${course.id})}">
+                       th:href="@{/courses/edit/{id}(id=${course.courseId})}">
                         <i class="fa fa-edit"></i>
                     </a>
 
@@ -292,7 +292,7 @@
                     </a>
 
                     <a class="btn btn-sm btn-danger"
-                       th:href="@{/courses/delete/{id}(id=${course.id})}">
+                       th:href="@{/courses/delete/{id}(id=${course.courseId})}">
                         <i class="fa fa-trash"></i>
                     </a>
 

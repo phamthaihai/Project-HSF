@@ -53,6 +53,11 @@ public class CourseAdminServiceImpl implements CourseAdminService {
     }
 
     @Override
+    public List<Course> getTop8PublishedCourses() {
+        return courseAdminRepository.findTop8ByPublishedTrueOrderByCreateAtDesc();
+    }
+
+    @Override
     public void deleteCourse(int id) {
         courseAdminRepository.deleteById(id);
     }

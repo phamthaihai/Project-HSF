@@ -44,22 +44,29 @@ public class CourseServiceImpl implements CourseService {
                 ? loginUser.getRole().getName().trim().toUpperCase()
                 : "";
 
-        List<Course> courses;
+        List<MyCourseCardDTO> result = new ArrayList<>();
 
         if ("ADMIN".equals(roleName)) {
-            courses = courseRepository.findByPublishedTrueOrderByCreateAtDesc();
+            List<Course> courses = courseRepository.findByPublishedTrueOrderByCreateAtDesc();
+            for (Course course : courses) {
+                result.add(toMyCourseCardDTO(course));
+            }
         } else if ("MANAGER".equals(roleName)) {
-            courses = courseRepository.findByInstructor_IdOrderByCreateAtDesc(loginUser.getId());
+            List<Course> courses = courseRepository.findByInstructor_IdOrderByCreateAtDesc(loginUser.getId());
+            for (Course course : courses) {
+                result.add(toMyCourseCardDTO(course));
+            }
         } else if ("MEMBER".equals(roleName)) {
-            courses = enrollmentRepository.findApprovedCoursesByUserId(loginUser.getId());
-        } else {
-            courses = new ArrayList<>();
+            List<swt.he182176.hsfproject.entity.Enrollment> enrollments = enrollmentRepository.findApprovedEnrollmentsByUserId(loginUser.getId());
+            for (swt.he182176.hsfproject.entity.Enrollment enrollment : enrollments) {
+                MyCourseCardDTO dto = toMyCourseCardDTO(enrollment.getCourse());
+                dto.setEnrolledDate(enrollment.getRegisteredAt());
+                dto.setProgressPercent(0.0);
+                dto.setProgressStatus("In Progress");
+                result.add(dto);
+            }
         }
 
-        List<MyCourseCardDTO> result = new ArrayList<>();
-        for (Course course : courses) {
-            result.add(toMyCourseCardDTO(course));
-        }
         return result;
     }
 

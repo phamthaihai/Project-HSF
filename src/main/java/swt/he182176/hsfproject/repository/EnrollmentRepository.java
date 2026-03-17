@@ -20,6 +20,15 @@ public interface EnrollmentRepository extends JpaRepository<Enrollment, Integer>
     """)
     List<Course> findApprovedCoursesByUserId(@Param("userId") int userId);
 
+    @Query("""
+        select e
+        from Enrollment e
+        where e.user.id = :userId
+          and upper(e.status) = 'APPROVED'
+        order by e.registeredAt desc
+    """)
+    List<Enrollment> findApprovedEnrollmentsByUserId(@Param("userId") int userId);
+
     boolean existsByUser_IdAndCourse_CourseId(Integer userId, Integer courseId);
 
     boolean existsByUser_IdAndCourse_CourseIdAndStatusIgnoreCase(Integer userId,
