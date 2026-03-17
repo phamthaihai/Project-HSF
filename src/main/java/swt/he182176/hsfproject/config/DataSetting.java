@@ -12,14 +12,21 @@ public class DataSetting {
     @Bean
     CommandLineRunner initSettingTypes(SettingRepository settingRepository) {
         return args -> {
-            seedRootType(settingRepository, "User Role", 1);
-            seedRootType(settingRepository, "Post Category", 2);
-            seedRootType(settingRepository, "Course Category", 3);
+            Setting userRole = seedRootType(settingRepository, "User Role", 1);
+            Setting postCategory = seedRootType(settingRepository, "Post Category", 2);
+            Setting courseCategory = seedRootType(settingRepository, "Course Category", 3);
+
+            // Seed User Role children
+            if (userRole != null) {
+                seedChildType(settingRepository, "Admin", userRole, 1);
+                seedChildType(settingRepository, "Manager", userRole, 2);
+                seedChildType(settingRepository, "Teacher", userRole, 3);
+            }
         };
     }
 
-    private void seedRootType(SettingRepository repo, String name, int priority) {
-        if (repo.findByNameIgnoreCaseAndTypeIsNull(name).isEmpty()) {
+    private Setting seedRootType(SettingRepository repo, String name, int priority) {
+        return repo.findByNameIgnoreCaseAndTypeIsNull(name).orElseGet(() -> {
             Setting setting = new Setting();
             setting.setName(name);
             setting.setType(null);
@@ -27,7 +34,21 @@ public class DataSetting {
             setting.setPriority(priority);
             setting.setStatus(true);
             setting.setDescription(name + " root type");
+            return repo.save(setting);
+        });
+    }
+
+    private void seedChildType(SettingRepository repo, String name, Setting parent, int priority) {
+        if (!repo.existsDuplicateName(name, parent.getId(), null)) {
+            Setting setting = new Setting();
+            setting.setName(name);
+            setting.setType(parent);
+            setting.setValue(null);
+            setting.setPriority(priority);
+            setting.setStatus(true);
+            setting.setDescription(name);
             repo.save(setting);
         }
     }
+
 }

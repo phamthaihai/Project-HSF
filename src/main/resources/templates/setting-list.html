@@ -169,12 +169,32 @@
     <table class="table table-bordered table-striped mt-3">
       <thead class="table-light">
       <tr>
-        <th>Id</th>
-        <th>Name</th>
+        <th>
+          <a th:href="@{/settings(typeId=${typeId},status=${status},keyword=${keyword},sortField='id',sortDir=${sortField=='id' and sortDir=='asc' ? 'desc' : 'asc'})}">
+            Id <i class="fa" th:classappend="${sortField == 'id' ? (sortDir == 'asc' ? 'fa-sort-up' : 'fa-sort-down') : 'fa-sort'}"></i>
+          </a>
+        </th>
+        <th>
+          <a th:href="@{/settings(typeId=${typeId},status=${status},keyword=${keyword},sortField='name',sortDir=${sortField=='name' and sortDir=='asc' ? 'desc' : 'asc'})}">
+            Name <i class="fa" th:classappend="${sortField == 'name' ? (sortDir == 'asc' ? 'fa-sort-up' : 'fa-sort-down') : 'fa-sort'}"></i>
+          </a>
+        </th>
         <th>Type</th>
-        <th>Value</th>
-        <th>Priority</th>
-        <th>Status</th>
+        <th>
+          <a th:href="@{/settings(typeId=${typeId},status=${status},keyword=${keyword},sortField='value',sortDir=${sortField=='value' and sortDir=='asc' ? 'desc' : 'asc'})}">
+            Value <i class="fa" th:classappend="${sortField == 'value' ? (sortDir == 'asc' ? 'fa-sort-up' : 'fa-sort-down') : 'fa-sort'}"></i>
+          </a>
+        </th>
+        <th>
+          <a th:href="@{/settings(typeId=${typeId},status=${status},keyword=${keyword},sortField='priority',sortDir=${sortField=='priority' and sortDir=='asc' ? 'desc' : 'asc'})}">
+            Priority <i class="fa" th:classappend="${sortField == 'priority' ? (sortDir == 'asc' ? 'fa-sort-up' : 'fa-sort-down') : 'fa-sort'}"></i>
+          </a>
+        </th>
+        <th>
+          <a th:href="@{/settings(typeId=${typeId},status=${status},keyword=${keyword},sortField='status',sortDir=${sortField=='status' and sortDir=='asc' ? 'desc' : 'asc'})}">
+            Status <i class="fa" th:classappend="${sortField == 'status' ? (sortDir == 'asc' ? 'fa-sort-up' : 'fa-sort-down') : 'fa-sort'}"></i>
+          </a>
+        </th>
         <th>Action</th>
       </tr>
       </thead>

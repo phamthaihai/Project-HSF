@@ -19,7 +19,8 @@ public interface SettingRepository extends JpaRepository<Setting, Integer> {
         select s
         from Setting s
         left join s.type t
-        where (:typeId is null or t.id = :typeId)
+        where s.type is not null
+          and (:typeId is null or t.id = :typeId)
           and (:status is null or s.status = :status)
           and (
                 :keyword is null
