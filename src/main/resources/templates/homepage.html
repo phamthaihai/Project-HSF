@@ -1,10 +1,9 @@
 <!DOCTYPE html>
 <html lang="vi" xmlns:th="http://www.thymeleaf.org">
-
 <head>
     <meta charset="UTF-8">
     <title>StudyHub</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 
     <style>
         * {
@@ -165,13 +164,13 @@
             background: #fff;
             border: 1px solid #e5e7eb;
             border-radius: 10px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.12);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.12);
             min-width: 200px;
             z-index: 100;
             overflow: hidden;
         }
 
-        .user-dropdown.show {
+        .user-menu-container:hover .user-dropdown {
             display: block;
         }
 
@@ -447,9 +446,7 @@
 
         /* RESPONSIVE */
         @media (max-width: 1200px) {
-
-            .course-grid,
-            .post-grid {
+            .course-grid, .post-grid {
                 grid-template-columns: repeat(3, 1fr);
             }
         }
@@ -472,8 +469,7 @@
                 font-size: 28px;
             }
 
-            .course-grid,
-            .post-grid {
+            .course-grid, .post-grid {
                 grid-template-columns: repeat(2, 1fr);
             }
         }
@@ -494,8 +490,7 @@
                 flex-direction: column;
             }
 
-            .course-grid,
-            .post-grid {
+            .course-grid, .post-grid {
                 grid-template-columns: 1fr;
             }
 
@@ -508,7 +503,6 @@
         }
     </style>
 </head>
-
 <body>
 
 <header class="header">
@@ -552,10 +546,7 @@
                         <a th:href="@{/my-courses}" class="dropdown-item">
                             📚 Khóa học của tôi
                         </a>
-                        <a th:href="@{/my-enrollments}" class="dropdown-item">
-                            📝 Đơn đăng ký của tôi
-                        </a>
-                        <a th:href="@{/user-profile}" class="dropdown-item">
+                        <a th:href="@{/profile}" class="dropdown-item">
                             👤 Hồ sơ cá nhân
                         </a>
                         <div class="dropdown-divider"></div>
@@ -581,26 +572,23 @@
 
             <div class="course-grid">
                 <div class="course-card" th:each="c : ${courses}">
-                    <a th:href="@{/public-courses/{id}(id=${c.courseId})}">
+                    <a th:href="@{/courses/{id}(id=${c.courseId})}">
                         <img class="course-thumb"
                              th:src="${c.thumbnailUrl != null && !#strings.isEmpty(c.thumbnailUrl) ? c.thumbnailUrl : 'https://picsum.photos/600/400'}"
                              alt="Course thumbnail">
                     </a>
 
                     <div class="course-body">
-                        <a th:href="@{/public-courses/{id}(id=${c.courseId})}">
+                        <a th:href="@{/courses/{id}(id=${c.courseId})}">
                             <h3 class="course-title" th:text="${c.title}">Course Title</h3>
                         </a>
 
                         <div class="course-meta">
-                                <span class="course-price"
-                                      th:text="${#numbers.formatDecimal(c.price, 0, 'COMMA', 0, 'POINT') + ' VNĐ'}">0
-                                    VNĐ</span>
+                            <span class="course-price" th:text="${#numbers.formatDecimal(c.price, 0, 'COMMA', 0, 'POINT') + ' VNĐ'}">0 VNĐ</span>
 
                             <!-- Nếu chưa đăng nhập -->
                             <th:block th:if="${user == null}">
-                                <a th:href="@{/public-courses/{id}(id=${c.courseId})}"
-                                   class="course-btn btn-enroll">
+                                <a th:href="@{/courses/{id}(id=${c.courseId})}" class="course-btn btn-enroll">
                                     + Đăng ký ngay
                                 </a>
                             </th:block>
@@ -608,16 +596,13 @@
                             <!-- Nếu đã đăng nhập -->
                             <th:block th:if="${user != null}">
                                 <!-- Kiểm tra đã enroll chưa -->
-                                <th:block
-                                        th:if="${enrolledCourseIds != null && enrolledCourseIds.contains(c.courseId)}">
-                                    <a th:href="@{/my-courses}" class="course-btn btn-continue">
+                                <th:block th:if="${enrolledCourseIds != null && enrolledCourseIds.contains(c.courseId)}">
+                                    <a th:href="@{/courses/{id}(id=${c.courseId})}" class="course-btn btn-continue">
                                         Tiếp tục học
                                     </a>
                                 </th:block>
-                                <th:block
-                                        th:if="${enrolledCourseIds == null || !enrolledCourseIds.contains(c.courseId)}">
-                                    <a th:href="@{/public-courses/{id}(id=${c.courseId})}"
-                                       class="course-btn btn-enroll">
+                                <th:block th:if="${enrolledCourseIds == null || !enrolledCourseIds.contains(c.courseId)}">
+                                    <a th:href="@{/courses/{id}(id=${c.courseId})}" class="course-btn btn-enroll">
                                         Enroll Now
                                     </a>
                                 </th:block>
@@ -636,9 +621,13 @@
             </div>
 
             <div class="post-grid">
-                <a class="post-card" th:each="post : ${latestPosts}" th:href="@{/blogs/{id}(id=${post.postId})}">
+                <a class="post-card"
+                   th:each="post : ${latestPosts}"
+                   th:href="@{/blogs/{id}(id=${post.postId})}">
 
-                    <img class="post-thumb" src="https://picsum.photos/600/400" alt="Post image">
+                    <img class="post-thumb"
+                         src="https://picsum.photos/600/400"
+                         alt="Post image">
 
                     <div class="post-body">
                         <h3 class="post-title" th:text="${post.name}">Post title</h3>
@@ -667,25 +656,5 @@
     </div>
 </footer>
 
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const userBox = document.querySelector('.user-box');
-        const userDropdown = document.querySelector('.user-dropdown');
-
-        if (userBox && userDropdown) {
-            userBox.addEventListener('click', function (e) {
-                e.stopPropagation();
-                userDropdown.classList.toggle('show');
-            });
-
-            document.addEventListener('click', function (e) {
-                if (!userBox.contains(e.target) && !userDropdown.contains(e.target)) {
-                    userDropdown.classList.remove('show');
-                }
-            });
-        }
-    });
-</script>
 </body>
-
-</html>l>
+</html>
