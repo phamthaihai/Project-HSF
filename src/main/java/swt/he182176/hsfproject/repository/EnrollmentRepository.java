@@ -18,8 +18,10 @@ public interface EnrollmentRepository extends JpaRepository<Enrollment, Integer>
         and e.status = 'APPROVED'
         order by e.registeredAt desc
     """)
-    List<Course> findApprovedCoursesByUserId(@Param("userId") int userId);
+        // Đổi int thành Integer để an toàn hơn
+    List<Course> findApprovedCoursesByUserId(@Param("userId") Integer userId);
 
+    // Phương thức này đã dùng Integer, rất tốt
     boolean existsByUser_IdAndCourse_CourseId(Integer userId, Integer courseId);
 
     List<Enrollment> findByUserEmail(String email);

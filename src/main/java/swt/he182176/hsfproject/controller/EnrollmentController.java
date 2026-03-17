@@ -42,28 +42,33 @@ public class EnrollmentController {
         return "enroll";
     }
 
+
     @PostMapping("/enroll")
     public String enrollCourse(@ModelAttribute EnrollRequest request,
                                HttpSession session,
                                RedirectAttributes ra) {
-
         User user = (User) session.getAttribute("user");
-        if (user == null) {
-            return "redirect:/login";
-        }
+        if (user == null) return "redirect:/login";
 
         try {
+            // Tạo Enrollment và lưu vào DB (Service này phải trả về object đã có ID)
             Enrollment enrollment = enrollmentService.createEnrollment(request, user);
 
-            if ("PAYOS".equalsIgnoreCase(request.getPaymentMethod())) {
-                return "redirect:/payment/payos/" + enrollment.getEnrollmentId();
+            // KIỂM TRA: enrollment.getEnrollmentId() không được null
+            if (enrollment.getEnrollmentId() == null) {
+                throw new RuntimeException("Lỗi: Không tạo được ID đăng ký.");
             }
 
-            return "redirect:/payment/vnpay/" + enrollment.getEnrollmentId();
+            if ("PAYOS".equalsIgnoreCase(request.getPaymentMethod())) {
+                // Sẽ redirect sang: /HSFProject/payment/payos/15 (Ví dụ ID là 15)
+                return "redirect:/payment/payos/" + enrollment.getEnrollmentId();
+            } else {
+                return "redirect:/payment/vnpay/" + enrollment.getEnrollmentId();
+            }
 
-        } catch (RuntimeException e) {
+        } catch (Exception e) {
             ra.addFlashAttribute("err", e.getMessage());
-            return "redirect:/public-courses/" + request.getCourseId();
+            return "redirect:/enroll/" + request.getCourseId();
         }
     }
 }
