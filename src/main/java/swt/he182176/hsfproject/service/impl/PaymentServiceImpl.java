@@ -122,7 +122,7 @@ public class PaymentServiceImpl implements PaymentService {
         String vnp_HashSecret = "YLJM4HA5QOVZKDHER251NG024ME8UHON";
         String vnp_Url = "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html";
 
-        Map<String, String> vnp_Params = new TreeMap<>(); // TreeMap giúp tự động sắp xếp key theo Alphabet (BẮT BUỘC)
+        Map<String, String> vnp_Params = new TreeMap<>();
         vnp_Params.put("vnp_Version", "2.1.0");
         vnp_Params.put("vnp_Command", "pay");
         vnp_Params.put("vnp_TmnCode", vnp_TmnCode);
@@ -136,7 +136,6 @@ public class PaymentServiceImpl implements PaymentService {
         vnp_Params.put("vnp_IpAddr", request.getRemoteAddr());
         vnp_Params.put("vnp_CreateDate", new java.text.SimpleDateFormat("yyyyMMddHHmmss").format(new java.util.Date()));
 
-        // --- BƯỚC QUAN TRỌNG: TẠO CHUỖI QUERY VÀ CHUỖI HASH ---
         StringBuilder hashData = new StringBuilder();
         StringBuilder query = new StringBuilder();
 
@@ -144,10 +143,9 @@ public class PaymentServiceImpl implements PaymentService {
             String key = entry.getKey();
             String value = entry.getValue();
             if (value != null && !value.isEmpty()) {
-                // 1. Build Hash Data (Dùng để tạo chữ ký - KHÔNG encode giá trị)
+
                 hashData.append(key).append('=').append(value).append('&');
 
-                // 2. Build Query (BẮT BUỘC encode)
                 query.append(java.net.URLEncoder.encode(key, StandardCharsets.US_ASCII.toString()))
                         .append('=')
                         .append(java.net.URLEncoder.encode(value, StandardCharsets.US_ASCII.toString()))
@@ -155,20 +153,17 @@ public class PaymentServiceImpl implements PaymentService {
             }
         }
 
-        // Xóa ký tự & cuối cùng
+
         String queryUrl = query.substring(0, query.length() - 1);
         String dataToHash = hashData.substring(0, hashData.length() - 1);
 
-        // FIX LỖI DẤU CỘNG (+): Thay tất cả + thành %20 trong queryUrl
         queryUrl = queryUrl.replace("+", "%20");
 
-        // 3. Tạo SecureHash (HMAC SHA512)
         String vnp_SecureHash = hmacSHA512(vnp_HashSecret, dataToHash);
 
         return vnp_Url + "?" + queryUrl + "&vnp_SecureHash=" + vnp_SecureHash;
     }
 
-    // Hàm băm chuẩn cho VNPAY
     private String hmacSHA512(String key, String data) throws Exception {
         Mac hmacSha512 = Mac.getInstance("HmacSHA512");
         SecretKeySpec secretKey = new SecretKeySpec(key.getBytes(StandardCharsets.UTF_8), "HmacSHA512");
