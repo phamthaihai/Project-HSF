@@ -511,7 +511,7 @@
             <a th:href="@{/}" class="logo">LOGO</a>
 
             <nav class="nav">
-                <a th:href="@{/blogs}">Blogs</a>
+                <a th:href="@{/posts}">Post</a>
                 <a th:href="@{/public-courses}">Courses</a>
             </nav>
         </div>
@@ -549,7 +549,7 @@
                         <a th:href="@{/my-enrollments}" class="dropdown-item">
                             📝 Đơn đăng ký của tôi
                         </a>
-                        <a th:href="@{/profile}" class="dropdown-item">
+                        <a th:href="@{/user-profile}" class="dropdown-item">
                             👤 Hồ sơ cá nhân
                         </a>
                         <div class="dropdown-divider"></div>
@@ -624,12 +624,10 @@
             </div>
 
             <div class="post-grid">
-                <a class="post-card"
-                   th:each="post : ${latestPosts}"
-                   th:href="@{/blogs/{id}(id=${post.postId})}">
+                <a class="post-card" th:each="post : ${latestPosts}" th:href="@{/blogs/{id}(id=${post.postId})}">
 
                     <img class="post-thumb"
-                         src="https://picsum.photos/600/400"
+                         th:src="${post.thumbnailUrl != null and !#strings.isEmpty(post.thumbnailUrl)} ? @{${post.thumbnailUrl}} : 'https://picsum.photos/600/400'"
                          alt="Post image">
 
                     <div class="post-body">
@@ -642,7 +640,9 @@
                         <div class="post-meta">
                             <span class="post-type" th:text="${post.type}">Category</span>
                             <span class="post-date"
-                                  th:text="${#temporals.format(post.createdAt, 'dd/MM/yyyy')}">16/03/2026</span>
+                                  th:text="${post.createdAt != null ? #temporals.format(post.createdAt, 'dd/MM/yyyy') : ''}">
+                    16/03/2026
+                </span>
                         </div>
                     </div>
                 </a>
