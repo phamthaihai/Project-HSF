@@ -35,7 +35,12 @@
 
   <form class="filter" method="get" th:action="@{/users}">
     <input type="text" name="keyword" placeholder="Search by email/fullname..." th:value="${keyword}">
-    <input type="text" name="role" placeholder="Role (ADMIN/MEMBER...)" th:value="${role}">
+    <select name="role">
+      <option value="">All Roles</option>
+      <option value="ADMIN" th:selected="${role == 'ADMIN'}">ADMIN</option>
+      <option value="MANAGER" th:selected="${role == 'MANAGER'}">MANAGER</option>
+      <option value="STUDENT" th:selected="${role == 'STUDENT'}">STUDENT</option>
+    </select>
     <select name="status">
       <option value="">All Status</option>
       <option th:each="s : ${statuses}"

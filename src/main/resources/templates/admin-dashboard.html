@@ -109,7 +109,10 @@
     <a th:href="@{/courses}"><i class="fa fa-book"></i> Training Courses</a>
     <a th:href="@{/admin/enrollments}"><i class="fa fa-user-graduate"></i> Course Enrollments</a>
     <a th:href="@{/settings}"><i class="fa fa-cog"></i> System Settings</a>
-    <a th:href="@{/users}"><i class="fa fa-users"></i> User Accounts</a>
+    <a th:href="@{/users}"
+       th:if="${session.user.role.name == 'ADMIN'}">
+        <i class="fa fa-users"></i> User Accounts
+    </a>
     <a th:href="@{/posts}"><i class="fa fa-file"></i> Post List</a>
 </div>
 

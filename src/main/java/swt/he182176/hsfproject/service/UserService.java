@@ -166,6 +166,7 @@ public class UserService {
         return dto;
     }
 
+    //add user
     public void saveFromAdmin(UserDTO dto) {
         if (dto.getId() == null) {
             if (userRepository.existsByEmail(dto.getEmail())) {

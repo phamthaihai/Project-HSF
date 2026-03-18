@@ -70,7 +70,12 @@
     <a href="#"><i class="fa fa-book me-2"></i> Training Courses</a>
     <a th:href="@{/admin/enrollments}" class="active"><i class="fa fa-user-graduate me-2"></i> Course Enrollments</a>
     <a th:href="@{/settings}"><i class="fa fa-cog me-2"></i> System Settings</a>
-    <a th:href="@{/users}"><i class="fa fa-users me-2"></i> User Accounts</a>
+    <a th:href="@{/users}"
+       th:if="${session.user != null
+           and session.user.role != null
+           and session.user.role.name == 'ADMIN'}">
+        <i class="fa fa-users me-2"></i> User Accounts
+    </a>
     <a href="#"><i class="fa fa-file-alt me-2"></i> Post List</a>
 </div>
 

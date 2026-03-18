@@ -39,7 +39,7 @@ public class User {
     private List<Course> courses = new ArrayList<>();
 
     // field bình thường
-    @Column(name = "updated_at")
+    @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
     // ===== GETTER & SETTER =====
@@ -147,4 +147,15 @@ public class User {
     public void setCourses(List<Course> courses) {
         this.courses = courses;
     }
+    @PrePersist
+    public void prePersist() {
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    public void preUpdate() {
+        this.updatedAt = LocalDateTime.now();
+    }
 }
+
+

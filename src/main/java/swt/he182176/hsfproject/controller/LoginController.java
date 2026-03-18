@@ -28,9 +28,12 @@ public class LoginController {
         // Nếu đã đăng nhập thì chuyển sang trang profile (hoặc trang chủ tùy bạn)
         User currentUser = (User) session.getAttribute("user");
         if (currentUser != null) {
-            if (currentUser.getRole() != null
-                    && "ADMIN".equalsIgnoreCase(currentUser.getRole().getName())) {
-                return "redirect:/admin/dashboard";
+            if (currentUser.getRole() != null) {
+                String roleName = currentUser.getRole().getName();
+                if ("ADMIN".equalsIgnoreCase(roleName)
+                        || "MANAGER".equalsIgnoreCase(roleName)) {
+                    return "redirect:/admin/dashboard";
+                }
             }
             return "redirect:/";
         }
@@ -73,9 +76,12 @@ public class LoginController {
         ra.addFlashAttribute("msg", "Đăng nhập thành công");
 
         // Điều hướng theo role sau khi đăng nhập
-        if (user.getRole() != null
-                && "ADMIN".equalsIgnoreCase(user.getRole().getName())) {
-            return "redirect:/admin/dashboard";
+        if (user.getRole() != null) {
+            String roleName = user.getRole().getName();
+            if ("ADMIN".equalsIgnoreCase(roleName)
+                    || "MANAGER".equalsIgnoreCase(roleName)) {
+                return "redirect:/admin/dashboard";
+            }
         }
         return "redirect:/";
     }

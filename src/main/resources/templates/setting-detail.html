@@ -87,7 +87,12 @@
   <a href="#"><i class="fa fa-book"></i> Training Courses</a>
   <a href="#"><i class="fa fa-user-graduate"></i> Course Enrollments</a>
   <a th:href="@{/settings}"><i class="fa fa-cog"></i> System Settings</a>
-  <a th:href="@{/users}"><i class="fa fa-users"></i> User Accounts</a>
+  <a th:href="@{/users}"
+     th:if="${session.user != null
+           and session.user.role != null
+           and session.user.role.name == 'ADMIN'}">
+    <i class="fa fa-users"></i> User Accounts
+  </a>
   <a href="#"><i class="fa fa-file"></i> Post List</a>
 </div>
 
