@@ -110,7 +110,7 @@
     <a th:href="@{/admin/enrollments}"><i class="fa fa-user-graduate"></i> Course Enrollments</a>
     <a th:href="@{/settings}"><i class="fa fa-cog"></i> System Settings</a>
     <a th:href="@{/users}"><i class="fa fa-users"></i> User Accounts</a>
-    <a href="#"><i class="fa fa-file"></i> Post List</a>
+    <a th:href="@{/posts}"><i class="fa fa-file"></i> Post List</a>
 </div>
 
 <div class="topbar" id="topbar">
@@ -193,9 +193,17 @@
                 <td th:text="${course.category.name}"></td>
                 <td><span class="status-badge">Published</span></td>
                 <td th:text="${#temporals.format(course.createAt,'yyyy-MM-dd')}"></td>
-                <td>
-                    <a class="btn btn-sm btn-outline-primary" th:href="@{/courses/edit/{id}(id=${course.courseId})}">
-                        <i class="fa fa-edit"></i>
+                <td class="d-flex gap-2">
+                    <a class="btn btn-sm btn-outline-info"
+                       th:href="@{/courses/edit/{id}(id=${course.courseId})}"
+                       title="Xem chi tiết">
+                        <i class="fa fa-eye"></i>
+                    </a>
+
+                    <a class="btn btn-sm btn-outline-warning"
+                       th:href="@{/courses/{id}/content(id=${course.courseId})}"
+                       title="Chỉnh sửa nội dung">
+                        <i class="fa fa-tasks"></i>
                     </a>
                 </td>
             </tr>
