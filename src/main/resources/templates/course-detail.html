@@ -309,7 +309,6 @@
                 });
         });
 
-        // Handle sale price calculation before submit
         document.querySelector('form').addEventListener('submit', function(e) {
             var listedPrice = parseFloat(document.querySelector('input[name="price"]').value) || 0;
             var salePriceInput = document.getElementById('salePriceInput');
@@ -320,7 +319,6 @@
             }
         });
 
-        // Handle sale price calculation before submit
         document.querySelector('form').addEventListener('submit', function(e) {
             var listedPrice = parseFloat(document.querySelector('input[name="price"]').value) || 0;
             var salePriceInput = document.getElementById('salePriceInput');
