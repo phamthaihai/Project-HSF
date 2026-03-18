@@ -570,12 +570,12 @@
         <section class="section">
             <div class="section-header">
                 <h2 class="section-title">Khóa học nổi bật</h2>
-                <a class="section-link" th:href="@{/courses}">Xem tất cả</a>
+                <a class="section-link" th:href="@{/public-courses}">Xem tất cả</a>
             </div>
 
             <div class="course-grid">
                 <div class="course-card" th:each="c : ${courses}">
-                    <a th:href="@{/courses/{id}(id=${c.courseId})}">
+                    <a th:href="@{/public-courses/{id}(id=${c.courseId})}">
                         <img class="course-thumb"
                              th:src="${c.thumbnailUrl != null && !#strings.isEmpty(c.thumbnailUrl) ? c.thumbnailUrl : 'https://picsum.photos/600/400'}"
                              alt="Course thumbnail">
@@ -590,25 +590,23 @@
                             <span class="course-price" th:text="${#numbers.formatDecimal(c.price, 0, 'COMMA', 0, 'POINT') + ' VNĐ'}">0 VNĐ</span>
 
                             <!-- Nếu chưa đăng nhập -->
-                            <th:block th:if="${user == null}">
-                                <a th:href="@{/courses/{id}(id=${c.courseId})}" class="course-btn btn-enroll">
-                                    + Đăng ký ngay
-                                </a>
+                            <th:block th:if="${session.user == null}">
+                                <a th:href="@{/login}" class="course-btn btn-enroll">Enroll Now</a>
                             </th:block>
 
                             <!-- Nếu đã đăng nhập -->
-                            <th:block th:if="${user != null}">
-                                <!-- Kiểm tra đã enroll chưa -->
-                                <th:block th:if="${enrolledCourseIds != null && enrolledCourseIds.contains(c.courseId)}">
-                                    <a th:href="@{/courses/{id}(id=${c.courseId})}" class="course-btn btn-continue">
-                                        Tiếp tục học
-                                    </a>
-                                </th:block>
-                                <th:block th:if="${enrolledCourseIds == null || !enrolledCourseIds.contains(c.courseId)}">
-                                    <a th:href="@{/courses/{id}(id=${c.courseId})}" class="course-btn btn-enroll">
-                                        Enroll Now
-                                    </a>
-                                </th:block>
+                            <th:block th:if="${session.user != null}">
+                                <a th:if="${enrolledCourseIds != null and enrolledCourseIds.contains(c.courseId)}"
+                                   th:href="@{/courses/{id}/content(id=${c.courseId})}"
+                                   class="course-btn btn-continue">
+                                    Tiếp tục học
+                                </a>
+
+                                <a th:if="${enrolledCourseIds == null or !enrolledCourseIds.contains(c.courseId)}"
+                                   th:href="@{/enroll/{id}(id=${c.courseId})}"
+                                   class="course-btn btn-enroll">
+                                    Enroll Now
+                                </a>
                             </th:block>
                         </div>
                     </div>

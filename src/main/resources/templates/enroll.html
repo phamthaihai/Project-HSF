@@ -54,6 +54,7 @@
             border-radius: 10px;
             font-size: 14px;
             outline: none;
+            transition: all 0.2s;
         }
 
         input:focus, textarea:focus {
@@ -113,6 +114,29 @@
             font-size: 14px;
             border: 1px solid #fecaca;
         }
+
+        .rejection-box {
+            background: #fffbeb;
+            color: #92400e;
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid #fef3c7;
+            margin-bottom: 25px;
+            font-size: 14px;
+        }
+
+        .rejection-title {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 5px;
+            color: #b45309;
+        }
+
+        /* Style cho trạng thái invalid của HTML5 */
+        input:invalid:focus {
+            border-color: #ef4444;
+            box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+        }
     </style>
 </head>
 <body>
@@ -122,7 +146,12 @@
 
     <div th:if="${err}" class="error-box" th:text="${err}"></div>
 
-    <form th:action="@{/enroll}" method="post">
+    <div th:if="${oldEnrollment != null and oldEnrollment.status == 'REJECTED'}" class="rejection-box">
+        <span class="rejection-title">Lý do bị từ chối:</span>
+        <span th:text="${oldEnrollment.rejectedNote}">Nội dung lý do từ chối sẽ hiển thị ở đây.</span>
+    </div>
+
+    <form th:action="@{/enroll}" method="post" id="enrollForm">
         <div class="row">
             <div class="field">
                 <label>Course</label>
@@ -139,30 +168,40 @@
         <div class="row">
             <div class="field">
                 <label>Full Name *</label>
-                <input type="text" name="fullName" th:value="${user.fullName}" required>
+                <input type="text" name="fullName"
+                       th:value="${oldEnrollment != null ? oldEnrollment.fullName : user.fullName}"
+                       minlength="3" maxlength="50" required>
             </div>
 
             <div class="field">
                 <label>Email *</label>
-                <input type="email" name="email" th:value="${user.email}" required>
+                <input type="email" name="email"
+                       th:value="${oldEnrollment != null ? oldEnrollment.email : user.email}"
+                       required>
             </div>
         </div>
 
         <div class="row">
             <div class="field">
                 <label>Mobile *</label>
-                <input type="text" name="mobile" th:value="${user.phone}" required>
+                <input type="text" name="mobile"
+                       th:value="${oldEnrollment != null ? oldEnrollment.mobile : user.phone}"
+                       pattern="^0[0-9]{9}$"
+                       title="Vui lòng nhập số điện thoại 10 chữ số bắt đầu bằng 0"
+                       required>
             </div>
 
             <div class="field">
                 <label>Payment Method *</label>
                 <div class="radio-group">
                     <label class="radio-item">
-                        <input type="radio" name="paymentMethod" value="PAYOS" checked required>
+                        <input type="radio" name="paymentMethod" value="PAYOS"
+                               th:checked="${oldEnrollment == null || oldEnrollment.paymentMethod == 'PAYOS'}" required>
                         Bank Transfer (PayOS)
                     </label>
                     <label class="radio-item">
-                        <input type="radio" name="paymentMethod" value="VNPAY" required>
+                        <input type="radio" name="paymentMethod" value="VNPAY"
+                               th:checked="${oldEnrollment != null && oldEnrollment.paymentMethod == 'VNPAY'}" required>
                         Internet Banking (VNPay)
                     </label>
                 </div>
@@ -171,12 +210,25 @@
 
         <div class="field">
             <label>Enroll Note</label>
-            <textarea name="note" placeholder="Enter your note..."></textarea>
+            <textarea name="note" th:text="${oldEnrollment != null ? oldEnrollment.note : ''}"
+                      placeholder="Enter your note (max 255 characters)..." maxlength="255"></textarea>
         </div>
 
         <button type="submit" class="btn-submit">Submit Enrollment</button>
     </form>
 </div>
+
+<script>
+    // Client-side Validation Feedback
+    const form = document.getElementById('enrollForm');
+
+    form.addEventListener('submit', function (event) {
+        if (!form.checkValidity()) {
+            event.preventDefault(); // Chặn gửi form nếu HTML5 validate không vượt qua
+            alert("Vui lòng điền đúng thông tin theo yêu cầu (Tên > 3 ký tự, SĐT đúng định dạng)!");
+        }
+    });
+</script>
 
 </body>
 </html>

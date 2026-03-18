@@ -33,6 +33,9 @@ public class HomeController {
     public String home(HttpSession session, Model model) {
 
         List<Course> courses = courseService.getPublishedCourses();
+        if (courses.size() > 4) {
+            courses = courses.subList(0, 4);
+        }
         model.addAttribute("courses", courses);
 
         model.addAttribute("latestPosts", postService.getLatestPosts());
