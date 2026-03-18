@@ -82,4 +82,6 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
     """)
     List<Post> findRelatedPublishedBlogs(@Param("currentId") Integer currentId,
                                          @Param("category") String category);
+
+    List<Post> findByUser_Id(Integer userId);
 }

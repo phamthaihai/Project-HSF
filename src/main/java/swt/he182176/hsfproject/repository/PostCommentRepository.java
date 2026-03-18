@@ -10,4 +10,6 @@ public interface PostCommentRepository extends JpaRepository<PostComment, Intege
     List<PostComment> findByPost_PostIdOrderByCreatedAtAscIdAsc(Integer postId);
 
     List<PostComment> findByParent_IdOrderByCreatedAtAscIdAsc(Integer parentId);
+
+    List<PostComment> findByUser_IdOrderByCreatedAtAscIdAsc(Integer userId);
 }

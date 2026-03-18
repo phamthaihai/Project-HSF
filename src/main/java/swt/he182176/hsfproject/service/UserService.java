@@ -13,6 +13,8 @@ import swt.he182176.hsfproject.dto.UserDTO;
 import swt.he182176.hsfproject.entity.Role;
 import swt.he182176.hsfproject.entity.User;
 import swt.he182176.hsfproject.entity.UserStatus;
+import swt.he182176.hsfproject.repository.EnrollmentRepository;
+import swt.he182176.hsfproject.repository.PostRepository;
 import swt.he182176.hsfproject.repository.RoleRepository;
 import swt.he182176.hsfproject.repository.UserRepository;
 
@@ -34,6 +36,15 @@ public class UserService {
 
     @Autowired
     private BCryptPasswordEncoder encoder;
+
+    @Autowired
+    private EnrollmentRepository enrollmentRepository;
+
+    @Autowired
+    private PostRepository postRepository;
+
+    @Autowired
+    private PostCommentService postCommentService;
 
     public List<User> getAllUsers() {
         return userRepository.findAll();
@@ -209,6 +220,21 @@ public class UserService {
     public void deleteUser(Integer id) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("User not found"));
+
+        // Delete comments written by this user (including their reply threads)
+        postCommentService.deleteAllByUserId(id);
+
+        // Delete posts owned by this user (must delete all comments under those posts first)
+        var posts = postRepository.findByUser_Id(id);
+        for (var p : posts) {
+            postCommentService.deleteAllByPostId(p.getPostId());
+        }
+        postRepository.deleteAll(posts);
+
+        // Delete enrollments referencing this user
+        enrollmentRepository.deleteAll(enrollmentRepository.findByUser_Id(id));
+
+        // Finally delete user
         userRepository.delete(user);
     }
 

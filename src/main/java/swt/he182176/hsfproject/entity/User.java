@@ -2,6 +2,8 @@ package swt.he182176.hsfproject.entity;
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "users")
@@ -13,6 +15,7 @@ public class User {
 
     @Column(name = "fullname")
     private String fullName;
+
     private String email;
     private String phone;
     private String passwordHash;
@@ -31,8 +34,15 @@ public class User {
     private String verifyToken;
     private LocalDateTime verifyTokenExpiresAt;
 
+    // 🔥 Quan hệ với Course (quan trọng để xóa cascade)
+    @OneToMany(mappedBy = "instructor", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Course> courses = new ArrayList<>();
+
+    // field bình thường
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
+
+    // ===== GETTER & SETTER =====
 
     public Integer getId() {
         return id;
@@ -128,5 +138,13 @@ public class User {
 
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public List<Course> getCourses() {
+        return courses;
+    }
+
+    public void setCourses(List<Course> courses) {
+        this.courses = courses;
     }
 }

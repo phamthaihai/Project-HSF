@@ -107,6 +107,25 @@ public class PostCommentService {
         deleteRecursive(comment);
     }
 
+    @Transactional
+    public void deleteAllByUserId(Integer userId) {
+        List<PostComment> comments = postCommentRepository.findByUser_IdOrderByCreatedAtAscIdAsc(userId);
+        for (PostComment c : comments) {
+            // c might already be deleted as a child of another comment; ignore if not found
+            postCommentRepository.findById(c.getId()).ifPresent(this::deleteRecursive);
+        }
+    }
+
+    @Transactional
+    public void deleteAllByPostId(Integer postId) {
+        List<PostComment> all = postCommentRepository.findByPost_PostIdOrderByCreatedAtAscIdAsc(postId);
+        for (PostComment c : all) {
+            if (c.getParent() == null) {
+                postCommentRepository.findById(c.getId()).ifPresent(this::deleteRecursive);
+            }
+        }
+    }
+
     private boolean canDelete(PostComment comment, User currentUser) {
         if (currentUser.getId().equals(comment.getUser().getId())) {
             return true;
