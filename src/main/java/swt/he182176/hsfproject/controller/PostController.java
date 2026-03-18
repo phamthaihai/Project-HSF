@@ -170,6 +170,52 @@ public class PostController {
 
         return "blog-details";
     }
+    @PostMapping("/blogs/{id}/comments")
+    public String submitComment(@PathVariable Integer id,
+                                @Valid @ModelAttribute("commentForm") CommentForm commentForm,
+                                BindingResult result,
+                                HttpSession session,
+                                RedirectAttributes redirectAttributes) {
+        User user = (User) session.getAttribute("user");
+
+        if (result.hasErrors()) {
+            redirectAttributes.addFlashAttribute("commentError",
+                    result.getFieldError("content") != null
+                            ? result.getFieldError("content").getDefaultMessage()
+                            : "Invalid comment content");
+            return "redirect:/blogs/" + id;
+        }
+
+        try {
+            Post post = postService.getPublishedBlogById(id);
+            postCommentService.addComment(post, user, commentForm);
+            redirectAttributes.addFlashAttribute("commentSuccess", "Comment submitted successfully.");
+        } catch (RuntimeException e) {
+            redirectAttributes.addFlashAttribute("commentError", e.getMessage());
+        }
+
+        return "redirect:/blogs/" + id;
+    }
+
+    @PostMapping("/blogs/{blogId}/comments/{commentId}/delete")
+    public String deleteComment(@PathVariable Integer blogId,
+                                @PathVariable Integer commentId,
+                                HttpSession session,
+                                RedirectAttributes redirectAttributes) {
+        User user = (User) session.getAttribute("user");
+
+        try {
+            // kiểm tra blog có tồn tại và đang published
+            postService.getPublishedBlogById(blogId);
+
+            postCommentService.deleteComment(commentId, user);
+            redirectAttributes.addFlashAttribute("commentSuccess", "Comment deleted successfully.");
+        } catch (RuntimeException e) {
+            redirectAttributes.addFlashAttribute("commentError", e.getMessage());
+        }
+
+        return "redirect:/blogs/" + blogId;
+    }
 
     private boolean canManagePosts(User user) {
         if (user == null || user.getRole() == null || user.getRole().getName() == null) {
@@ -185,4 +231,6 @@ public class PostController {
                 && user.getRole().getName() != null
                 && "MARKETING".equalsIgnoreCase(user.getRole().getName());
     }
+
+
 }
